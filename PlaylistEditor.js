@@ -24,60 +24,7 @@ import ActionButton from 'react-native-action-button';
 
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
-
-
-class NewPlaylistModal extends React.Component {
-    state = {
-        playlistName: ""
-    }
-
-    onOk() {
-        this.props.onSet(this.state.playlistName);
-    }
-
-    onCancel(visible) {
-        this.props.onCancel();
-    }
-
-    render() {
-        const visible = this.props.visible;
-        const value = this.props.value;
-        return (
-            <Modal
-                animationType="fade"
-                transparent={false}
-                visible={visible}
-                onRequestClose={() => {
-            }}>
-                <View style={{marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'}}>
-                    <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Set Playlist Name</Text>
-                    </View>
-                    <FormLabel>Name</FormLabel>
-                    <FormInput onChangeText={(playlistName) => this.setState({playlistName})} style={styles.entryField}></FormInput>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
-                        <Button
-                            onPress={() => {this.onOk();}}
-                            title="Ok"
-                            icon={{name: 'check', type: 'font-awesome'}}
-                            raised={true}
-                            rounded
-                            backgroundColor={'#3396FF'}
-                        />
-                        <Button
-                            onPress={() => {this.onCancel();}}
-                            title="Cancel"
-                            icon={{name: 'times-circle', type: 'font-awesome'}}
-                            raised={true}
-                            rounded
-                            backgroundColor={'#3396FF'}
-                        />
-                    </View>
-                </View>
-            </Modal>
-        );
-    }
-}
+import NewPlaylistModal from './NewPlaylistModal';
 
 export default class PlaylistEditor extends React.Component {
     constructor(props) {
@@ -216,6 +163,9 @@ export default class PlaylistEditor extends React.Component {
                 <ActionButton buttonColor="rgba(231,76,60,1)">
                     <ActionButton.Item buttonColor='#3498db' title="New Playlist" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onAdd();}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
+                    </ActionButton.Item>
+                    <ActionButton.Item buttonColor='#1abc9c' title="Clear Active" size={40} textStyle={styles.actionButtonText} onPress={() => {MPDConnection.current().setCurrentPlaylistName(undefined);}}>
+                        <FAIcon name="eraser" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>
             </View>

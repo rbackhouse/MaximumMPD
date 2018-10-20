@@ -24,6 +24,7 @@ import ActionButton from 'react-native-action-button';
 
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
+import NewPlaylistModal from './NewPlaylistModal';
 
 export default class AlbumsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -38,15 +39,14 @@ export default class AlbumsScreen extends React.Component {
           searchValue: "",
           albums: [],
           fullset: [],
-          loading: false
+          loading: false,
+          modalVisible: false
         };
     }
 
     componentDidMount() {
         const { navigation } = this.props;
         const artist = navigation.getParam('artist');
-        this.playlistMode = navigation.getParam('playlistMode', false);
-        this.playlistName = navigation.getParam('playlistName');
 
         this.setState({loading: true});
 
@@ -77,8 +77,55 @@ export default class AlbumsScreen extends React.Component {
         this.onDisconnect.remove();
     }
 
-    addAll() {
+    addAll(toPlaylist) {
+        const { navigation } = this.props;
 
+        const artist = navigation.getParam('artist');
+
+        if (toPlaylist) {
+            if (!MPDConnection.current().getCurrentPlaylistName()) {
+                this.setState({modalVisible: true});
+                return;
+            }
+
+            this.state.albums.forEach((album) => {
+                this.setState({loading: true});
+
+                MPDConnection.current().addAlbumToNamedPlayList(
+                    album.name,
+                    artist,
+                    MPDConnection.current().getCurrentPlaylistName(),
+                    () => {
+                        this.setState({loading: false});
+                    },
+                    (err) => {
+                        this.setState({loading: false});
+                        Alert.alert(
+                            "MPD Error",
+                            "Error : "+err
+                        );
+                    }
+                );
+            });
+        } else {
+            this.state.albums.forEach((album) => {
+                this.setState({loading: true});
+                MPDConnection.current().addAlbumToPlayList(
+                    album.name,
+                    artist,
+                    () => {
+                        this.setState({loading: false});
+                    },
+                    (err) => {
+                        this.setState({loading: false});
+                        Alert.alert(
+                            "MPD Error",
+                            "Error : "+err
+                        );
+                    }
+                );
+            });
+        }
     }
 
     search = (text) => {
@@ -96,7 +143,13 @@ export default class AlbumsScreen extends React.Component {
         const { navigation } = this.props;
         const artist = navigation.getParam('artist');
 
-        navigation.navigate('Songs', {artist: artist, album: item.name, playlistMode: this.playlistMode, playlistName: this.playlistName});
+        navigation.navigate('Songs', {artist: artist, album: item.name});
+    }
+
+    finishAdd(name) {
+        this.setState({modalVisible: false});
+        MPDConnection.current().setCurrentPlaylistName(name);
+        this.addAll(true);
     }
 
     renderSeparator = () => {
@@ -127,7 +180,6 @@ export default class AlbumsScreen extends React.Component {
     };
 
     render() {
-        const addAllButtonTitle = this.playlistMode === true ? "Add to Playlist" : "Add to Queue";
         return (
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
                 <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
@@ -160,8 +212,12 @@ export default class AlbumsScreen extends React.Component {
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }
+                <NewPlaylistModal visible={this.state.modalVisible} onSet={(name) => {this.finishAdd(name);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
                 <ActionButton buttonColor="rgba(231,76,60,1)">
-                    <ActionButton.Item buttonColor='#3498db' title={addAllButtonTitle} size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll();}}>
+                    <ActionButton.Item buttonColor='#3498db' title="Add to Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(false);}}>
+                        <FAIcon name="plus-square" size={15} color="#e6e6e6" />
+                    </ActionButton.Item>
+                    <ActionButton.Item buttonColor='#3498db' title="Add to Playlist" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(true);}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>

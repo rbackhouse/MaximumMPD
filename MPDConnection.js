@@ -56,13 +56,12 @@ class Discoverer {
         this.subscription = bonjourListenerEmitter.addListener(
             "OnDiscover",
             (discovered) => {
+                console.log("Discovered : "+JSON.stringify(discovered));
                 if (discovered.type === "add") {
-                    //console.log("Added : "+JSON.stringify(discovered));
                     if (discovered.name) {
                         this.discovered[discovered.name] = discovered;
                     }
                 } else if (discovered.type === "remove") {
-                    //console.log("Removed : "+discovered.name);
                     if (discovered.name) {
                         this.discovered[discovered.name] = undefined;
                     }
@@ -111,18 +110,19 @@ class MPDConnection {
     				this.isConnected = true;
                     this.startEmittingStatus(pwd);
                     mpdEventEmiiter.emit('OnConnect', {host: this.host, port: this.port});
-    				//console.log("Connected");
+    				console.log("Connected");
     				if (callback) {
     					callback();
     				}
     			} else if (state == "internalConnected") {
     				this.queue = [];
     				this.isConnected = true;
+                    console.log("Internal Connected");
     			} else if (state == "disconnected") {
                     mpdEventEmiiter.emit('OnDisconnect', {host: this.host, port: this.port});
                     this.stopEmittingStatus();
     				this.isConnected = false;
-    				//console.log("Disconnected");
+    				console.log("Disconnected");
     				//this.connect();
     			}
             }
@@ -774,6 +774,25 @@ class MPDConnection {
 		});
 	}
 
+    addDirectoryToNamedPlayList(dir, playlist, cb, errorcb) {
+		this.listFiles(dir, function(filelist) {
+			var cmd = "command_list_begin\n";
+			filelist.files.forEach(function(fileEntry) {
+				if (fileEntry.file.indexOf('.cue', fileEntry.file.length - '.cue'.length) === -1) {
+					cmd += "playlistadd \""+playlist+"\"  \""+dir+fileEntry.file+"\"\n";
+				}
+			});
+			cmd += "command_list_end";
+			this.queue.push({
+				cmd: cmd,
+				cb: cb,
+				errorcb: errorcb,
+				response: "",
+				state: INITIAL
+			});
+		}.bind(this));
+	}
+
 	addDirectoryToPlayList(dir, cb, errorcb) {
 		this.listFiles(dir, function(filelist) {
 			var cmd = "command_list_begin\n";
@@ -1255,6 +1274,14 @@ class MPDConnection {
 
     setRandomPlaylistByType(value) {
         this.randomPlaylistByType = value;
+    }
+
+    getCurrentPlaylistName() {
+        return this.currentPlaylistName;
+    }
+
+    setCurrentPlaylistName(name) {
+        this.currentPlaylistName = name;
     }
 
 	_loadFileSuffixes() {

@@ -140,11 +140,6 @@ export default class PlaylistDetails extends React.Component {
         );
     }
 
-    onAddTo() {
-        const { navigation } = this.props;
-        navigation.navigate('Artists', {playlistMode: true, playlistName: navigation.getParam('playlist')});
-    }
-
     onLoad() {
         this.setState({loading: true});
 
@@ -232,7 +227,7 @@ export default class PlaylistDetails extends React.Component {
                     <ActionButton.Item buttonColor='#3498db' title="Delete" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onDelete();}}>
                         <Icon name="ios-trash" size={23} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Add Songs" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onAddTo();}}>
+                    <ActionButton.Item buttonColor='#3498db' title="Set Active" size={40} textStyle={styles.actionButtonText} onPress={() => {MPDConnection.current().setCurrentPlaylistName(this.playlistName);}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>

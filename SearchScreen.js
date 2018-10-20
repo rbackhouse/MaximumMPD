@@ -19,9 +19,11 @@ import React from 'react';
 import { View, Text, StyleSheet, SectionList, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
+import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
+import NewPlaylistModal from './NewPlaylistModal';
 
 export default class SearchScreen extends React.Component {
 
@@ -36,7 +38,9 @@ export default class SearchScreen extends React.Component {
           artists: [],
           albums: [],
           songs: [],
-          loading: false
+          loading: false,
+          modalVisible: false,
+          selectedItem: ""
         };
     }
 
@@ -100,7 +104,7 @@ export default class SearchScreen extends React.Component {
                             songs.push({
                                 title: result.title,
                                 time: result.time,
-                                key: result.file,
+                                key: result.b64file,
                                 artist: result.artist,
                                 album: result.album,
                                 b64file: result.b64file
@@ -134,30 +138,79 @@ export default class SearchScreen extends React.Component {
     };
 
     onPress(item) {
-        if (item.title) {
-            this.setState({loading: true});
-
-            MPDConnection.current().addSongToPlayList(
-                decodeURIComponent(Base64.atob(item.b64file)),
-                () => {
-                    this.setState({loading: false});
-                },
-                (err) => {
-                    this.setState({loading: false});
-                    console.log(err);
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
+        if (item.album) {
+            this.props.navigation.navigate('Songs', {artist: item.artist, album: item.album});
         } else {
-            if (item.album) {
-                this.props.navigation.navigate('Songs', {artist: item.artist, album: item.album});
-            } else {
-                this.props.navigation.navigate('Albums', {artist: item.artist});
-            }
+            this.props.navigation.navigate('Albums', {artist: item.artist});
         }
+    }
+
+    queue(rowMap, item) {
+        if (rowMap[item.key]) {
+			rowMap[item.key].closeRow();
+		}
+
+        MPDConnection.current().addSongToPlayList(
+            decodeURIComponent(Base64.atob(item.b64file)),
+            () => {
+                this.setState({loading: false});
+            },
+            (err) => {
+                this.setState({loading: false});
+                console.log(err);
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            }
+        );
+
+    }
+
+    playlist(rowMap, item) {
+        if (rowMap[item.key]) {
+			rowMap[item.key].closeRow();
+		}
+        if (!MPDConnection.current().getCurrentPlaylistName()) {
+            this.setState({modalVisible: true, selectedItem: item.b64file});
+            return;
+        }
+        MPDConnection.current().addSongToNamedPlayList(
+            decodeURIComponent(Base64.atob(item.b64file)),
+            MPDConnection.current().getCurrentPlaylistName(),
+            () => {
+                this.setState({loading: false});
+            },
+            (err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            }
+        );
+    }
+
+    finishAdd(name, selectedItem) {
+        this.setState({modalVisible: false});
+        MPDConnection.current().setCurrentPlaylistName(name);
+
+        this.setState({loading: true});
+
+        MPDConnection.current().addSongToNamedPlayList(
+            decodeURIComponent(Base64.atob(selectedItem)),
+            MPDConnection.current().getCurrentPlaylistName(),
+            () => {
+                this.setState({loading: false});
+            },
+            (err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            }
+        );
     }
 
     renderSeparator = () => {
@@ -190,30 +243,60 @@ export default class SearchScreen extends React.Component {
                         />
                     </View>
                 </View>
-                <SectionList
+
+                <SwipeListView
+                    useSectionList
                     sections={[
                         {title: 'Artist', data: this.state.artists},
                         {title: 'Albums', data: this.state.albums},
                         {title: 'Songs', data: this.state.songs}
                     ]}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                            <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                                <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
-                                    {item.title && <Text style={styles.item}>{item.title}</Text>}
-                                    {item.artist && <Text style={styles.item}>{item.artist}</Text>}
-                                    {item.album && <Text style={styles.item}>{item.album}</Text>}
-                                    {item.time && <Text style={styles.item}>{item.time}</Text>}
-                                </View>
-                                {item.title && <Icon name="ios-add" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>}
-                                {item.traverse && <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>}
-                            </View>
-                        </TouchableOpacity>
-                    )}
-                    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
                     keyExtractor={item => item.key}
+                    renderItem={(data, map) => {
+                        const item = data.item;
+                        if (item.title) {
+                            return (
+                                <SwipeRow rightOpenValue={-150}>
+                                    <View style={styles.rowBack}>
+                                        <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.queue(map, item) }>
+                                            <Text style={styles.backTextWhite}>Queue</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.playlist(map, item) }>
+                                            <Text style={styles.backTextWhite}>Playlist</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center'}, styles.rowFront]}>
+                                        <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                                        <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                                            {item.title && <Text style={styles.item}>{item.title}</Text>}
+                                            {item.artist && <Text style={styles.item}>{item.artist}</Text>}
+                                            {item.album && <Text style={styles.item}>{item.album}</Text>}
+                                            {item.time && <Text style={styles.item}>{item.time}</Text>}
+                                        </View>
+                                        <Icon name="ios-swap" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                                    </View>
+                                </SwipeRow>
+                            );
+                        } else {
+                            return (
+                                <TouchableOpacity onPress={this.onPress.bind(this, item)}>
+                                    <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+                                        <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                                            {item.artist && <Text style={styles.item}>{item.artist}</Text>}
+                                            {item.album && <Text style={styles.item}>{item.album}</Text>}
+                                        </View>
+                                        <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                                    </View>
+                                </TouchableOpacity>
+                            );
+                        }
+                    }}
+                    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
                     ItemSeparatorComponent={this.renderSeparator}
                 />
+
+                <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
+
                 {this.state.loading &&
                     <View style={styles.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
@@ -239,5 +322,37 @@ const styles = StyleSheet.create({
         fontFamily: 'GillSans-Italic',
         fontWeight: 'bold',
         backgroundColor: 'rgba(247,247,247,1.0)',
-    }
+    },
+    backTextWhite: {
+		color: '#FFF'
+	},
+    rowFront: {
+		alignItems: 'center',
+		backgroundColor: '#FFFFFF',
+		justifyContent: 'center',
+	},
+	rowBack: {
+		alignItems: 'center',
+		backgroundColor: '#DDD',
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		paddingLeft: 15,
+	},
+	backRightBtn: {
+		alignItems: 'center',
+		bottom: 0,
+		justifyContent: 'center',
+		position: 'absolute',
+		top: 0,
+		width: 75
+	},
+	backRightBtnLeft: {
+		backgroundColor: 'grey',
+		right: 75
+	},
+	backRightBtnRight: {
+		backgroundColor: 'darkgray',
+		right: 0
+	}
 });

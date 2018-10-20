@@ -42,7 +42,7 @@ RCT_EXPORT_METHOD(listen:(NSString *)type port:(NSString *)domain) {
 }
 
 + (BOOL)requiresMainQueueSetup {
-  return YES;
+  return NO;
 }
 
 - (void)netServiceBrowserWillSearch:(NSNetServiceBrowser *)browser {}

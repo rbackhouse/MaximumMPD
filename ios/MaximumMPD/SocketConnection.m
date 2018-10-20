@@ -55,10 +55,11 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
 
 - (dispatch_queue_t)methodQueue {
   return dispatch_get_main_queue();
+  //return dispatch_queue_create("org.potpie.MaximumMPD.AsyncQueue", DISPATCH_QUEUE_SERIAL);
 }
 
 + (BOOL)requiresMainQueueSetup {
-  return YES;
+  return NO;
 }
 
 - (void)stream:(NSStream *)stream handleEvent:(NSStreamEvent)streamEvent {
@@ -106,13 +107,12 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
     }
 
     case NSStreamEventEndEncountered: {
-      [stream close];
-      [stream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-      stream = nil;
-
       if (stream == self.inputStream) {
         [self sendEventWithName:@"OnStateChange" body:@{@"msg": @"disconnected"}];
       }
+      [stream close];
+      [stream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+      stream = nil;
       break;
     }
 

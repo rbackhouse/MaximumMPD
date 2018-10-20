@@ -25,9 +25,8 @@ import Base64 from './Base64';
 
 export default class ArtistsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
-        const title = navigation.getParam('playlistMode', false) ? "Artists (Playlist)" : "Artists (Browse)"
         return {
-            title: title
+            title: "Artists"
         };
     };
 
@@ -48,8 +47,6 @@ export default class ArtistsScreen extends React.Component {
         }
 
         const { navigation } = this.props;
-        this.playlistMode = navigation.getParam('playlistMode', false);
-        this.playlistName = navigation.getParam('playlistName');
 
         this.load();
 
@@ -122,7 +119,7 @@ export default class ArtistsScreen extends React.Component {
 
     onPress(item) {
         const { navigation } = this.props;
-        navigation.navigate('Albums', {artist: item.name, playlistMode: this.playlistMode, playlistName: this.playlistName});
+        navigation.navigate('Albums', {artist: item.name});
     }
 
     renderSeparator = () => {

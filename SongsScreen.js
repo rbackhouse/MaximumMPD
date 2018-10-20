@@ -25,9 +25,11 @@ import FAIcon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
 
 import { Button } from 'react-native-elements'
+import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
+import NewPlaylistModal from './NewPlaylistModal';
 
 export default class SongsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -40,7 +42,9 @@ export default class SongsScreen extends React.Component {
         super(props);
         this.state = {
           songs: [],
-          loading: false
+          loading: false,
+          modalVisible: false,
+          selectedItem: ""
         };
     }
 
@@ -48,8 +52,6 @@ export default class SongsScreen extends React.Component {
         const { navigation } = this.props;
         const artist = navigation.getParam('artist');
         const album = navigation.getParam('album');
-        this.playlistMode = navigation.getParam('playlistMode', false);
-        this.playlistName = navigation.getParam('playlistName');
 
         this.setState({loading: true});
 
@@ -81,18 +83,23 @@ export default class SongsScreen extends React.Component {
         this.onDisconnect.remove();
     }
 
-    addAll() {
+    addAll(toPlaylist) {
         const { navigation } = this.props;
         const artist = navigation.getParam('artist');
         const album = navigation.getParam('album');
 
-        this.setState({loading: true});
+        if (toPlaylist === true) {
+            if (!MPDConnection.current().getCurrentPlaylistName()) {
+                this.setState({modalVisible: true, selectedItem: "all"});
+                return;
+            }
 
-        if (this.playlistMode === true) {
+            this.setState({loading: true});
+
             MPDConnection.current().addAlbumToNamedPlayList(
                 album,
                 artist,
-                this.playlistName,
+                MPDConnection.current().getCurrentPlaylistName(),
                 () => {
                     this.setState({loading: false});
                 },
@@ -105,6 +112,8 @@ export default class SongsScreen extends React.Component {
                 }
             );
         } else {
+            this.setState({loading: true});
+
             MPDConnection.current().addAlbumToPlayList(
                 album,
                 artist,
@@ -125,13 +134,17 @@ export default class SongsScreen extends React.Component {
     search = (text) => {
     }
 
-    onPress(item) {
-        this.setState({loading: true});
+    onPress(item, toPlaylist) {
+        if (toPlaylist === true) {
+            if (!MPDConnection.current().getCurrentPlaylistName()) {
+                this.setState({modalVisible: true, selectedItem: item.b64file});
+                return;
+            }
 
-        if (this.playlistMode === true) {
+            this.setState({loading: true});
             MPDConnection.current().addSongToNamedPlayList(
                 decodeURIComponent(Base64.atob(item.b64file)),
-                this.playlistName,
+                MPDConnection.current().getCurrentPlaylistName(),
                 () => {
                     this.setState({loading: false});
                 },
@@ -143,10 +156,68 @@ export default class SongsScreen extends React.Component {
                     );
                 }
             );
-
         } else {
+            this.setState({loading: true});
             MPDConnection.current().addSongToPlayList(
                 decodeURIComponent(Base64.atob(item.b64file)),
+                () => {
+                    this.setState({loading: false});
+                },
+                (err) => {
+                    this.setState({loading: false});
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                }
+            );
+        }
+    }
+
+    queue(rowMap, item) {
+        if (rowMap[item.b64file]) {
+			rowMap[item.b64file].closeRow();
+		}
+        this.onPress(item, false);
+    }
+
+    playlist(rowMap, item) {
+        if (rowMap[item.b64file]) {
+			rowMap[item.b64file].closeRow();
+		}
+        this.onPress(item, true);
+    }
+
+    finishAdd(name, selectedItem) {
+        this.setState({modalVisible: false});
+        MPDConnection.current().setCurrentPlaylistName(name);
+
+        this.setState({loading: true});
+
+        if (selectedItem === "all") {
+            const { navigation } = this.props;
+            const artist = navigation.getParam('artist');
+            const album = navigation.getParam('album');
+
+            MPDConnection.current().addAlbumToNamedPlayList(
+                album,
+                artist,
+                MPDConnection.current().getCurrentPlaylistName(),
+                () => {
+                    this.setState({loading: false});
+                },
+                (err) => {
+                    this.setState({loading: false});
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                }
+            );
+        } else {
+            MPDConnection.current().addSongToNamedPlayList(
+                decodeURIComponent(Base64.atob(selectedItem)),
+                MPDConnection.current().getCurrentPlaylistName(),
                 () => {
                     this.setState({loading: false});
                 },
@@ -174,24 +245,7 @@ export default class SongsScreen extends React.Component {
         );
     };
 
-    renderItem = ({item}) => {
-        return (
-            <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                    <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
-                        <Text style={styles.item}>{item.title}</Text>
-                        <Text style={styles.item}>Track: {item.track} Time: {item.time}</Text>
-                    </View>
-                    <Icon name="ios-add" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
-                </View>
-            </TouchableOpacity>
-        );
-    };
-
     render() {
-        const addAllButtonTitle = this.playlistMode === true ? "Add to Playlist" : "Add to Queue";
-
         return (
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
                 <View style={{flex: .1, flexDirection: 'row', alignItems: 'center' }}>
@@ -201,20 +255,47 @@ export default class SongsScreen extends React.Component {
                         </Text>
                     </View>
                 </View>
-                <FlatList
+                <SwipeListView
+					useFlatList
                     data={this.state.songs}
-                    renderItem={this.renderItem}
-                    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
                     keyExtractor={item => item.b64file}
+                    renderItem={(data, map) => {
+                        const item = data.item;
+                        return (
+                        <SwipeRow rightOpenValue={-150}>
+                            <View style={styles.rowBack}>
+                                <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.queue(map, item) }>
+                                    <Text style={styles.backTextWhite}>Queue</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.playlist(map, item) }>
+                                    <Text style={styles.backTextWhite}>Playlist</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center'}, styles.rowFront]}>
+                                <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                                <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                                    <Text style={styles.item}>{item.title}</Text>
+                                    <Text style={styles.item}>Track: {item.track} Time: {item.time}</Text>
+                                </View>
+                                <Icon name="ios-swap" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                            </View>
+                        </SwipeRow>
+                    );}}
+                    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
                     ItemSeparatorComponent={this.renderSeparator}
-                />
+				/>
                 {this.state.loading &&
                     <View style={styles.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }
+                <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
+
                 <ActionButton buttonColor="rgba(231,76,60,1)">
-                    <ActionButton.Item buttonColor='#3498db' title={addAllButtonTitle} size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll();}}>
+                    <ActionButton.Item buttonColor='#3498db' title="All to Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(false);}}>
+                        <FAIcon name="plus-square" size={15} color="#e6e6e6" />
+                    </ActionButton.Item>
+                    <ActionButton.Item buttonColor='#9b59b6' title="All to Playlist" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(true);}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>
@@ -249,5 +330,38 @@ const styles = StyleSheet.create({
     actionButtonText: {
         fontSize: 13,
         fontFamily: 'GillSans-Italic'
-    }
+    },
+    backTextWhite: {
+		color: '#FFF'
+	},
+    rowFront: {
+		alignItems: 'center',
+		backgroundColor: '#FFFFFF',
+		justifyContent: 'center',
+		height: 50,
+	},
+	rowBack: {
+		alignItems: 'center',
+		backgroundColor: '#DDD',
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		paddingLeft: 15,
+	},
+	backRightBtn: {
+		alignItems: 'center',
+		bottom: 0,
+		justifyContent: 'center',
+		position: 'absolute',
+		top: 0,
+		width: 75
+	},
+	backRightBtnLeft: {
+		backgroundColor: 'grey',
+		right: 75
+	},
+	backRightBtnRight: {
+		backgroundColor: 'darkgray',
+		right: 0
+	}
 });

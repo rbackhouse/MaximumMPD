@@ -23,9 +23,11 @@ import FAIcon from 'react-native-vector-icons/FontAwesome';
 import { HeaderBackButton } from 'react-navigation';
 import { Button } from 'react-native-elements'
 import ActionButton from 'react-native-action-button';
+import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
+import NewPlaylistModal from './NewPlaylistModal';
 
 export default class FilesScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -44,7 +46,9 @@ export default class FilesScreen extends React.Component {
         this.state = {
           files: [],
           dirs: [],
-          loading: false
+          loading: false,
+          modalVisible: false,
+          selectedItem: ""
         };
     }
 
@@ -102,44 +106,40 @@ export default class FilesScreen extends React.Component {
         }
     }
 
-    addAll() {
+    addAll(toPlaylist) {
         let path = "";
         this.state.dirs.forEach(function(dir) {
             path += Base64.atob(dir);
             path += "/";
         });
-        this.setState({loading: true});
-        MPDConnection.current().addDirectoryToPlayList(
-            decodeURIComponent(path),
-            () => {
-                this.setState({loading: false});
-            },
-            (err) => {
-                this.setState({loading: false});
-                console.log(err);
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
+
+        if (toPlaylist) {
+            if (!MPDConnection.current().getCurrentPlaylistName()) {
+                this.setState({modalVisible: true, selectedItem: "all"});
+                return;
             }
-        );
-    }
 
-    onPress(item) {
-        if (item.dir) {
-            this.load(item.b64dir);
-            this.state.dirs.push(item.b64dir);
-        } else {
-            let path = "";
-
-            this.state.dirs.forEach((dir) => {
-				path += Base64.atob(dir);
-				path += "/";
-			});
-			path += Base64.atob(item.b64file);
             this.setState({loading: true});
 
-            MPDConnection.current().addSongToPlayList(
+            MPDConnection.current().addDirectoryToNamedPlayList(
+                decodeURIComponent(path),
+                MPDConnection.current().getCurrentPlaylistName(),
+                () => {
+                    this.setState({loading: false});
+                },
+                (err) => {
+                    this.setState({loading: false});
+                    console.log(err);
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                }
+            );
+        } else {
+            this.setState({loading: true});
+
+            MPDConnection.current().addDirectoryToPlayList(
                 decodeURIComponent(path),
                 () => {
                     this.setState({loading: false});
@@ -154,6 +154,11 @@ export default class FilesScreen extends React.Component {
                 }
             );
         }
+    }
+
+    onPress(item, toPlaylist) {
+        this.load(item.b64dir);
+        this.state.dirs.push(item.b64dir);
     }
 
     load(uri) {
@@ -199,6 +204,121 @@ export default class FilesScreen extends React.Component {
         this.setState({files:files});
     };
 
+    queue(rowMap, item) {
+        if (rowMap[item.b64file]) {
+			rowMap[item.b64file].closeRow();
+		}
+        let path = "";
+
+        this.state.dirs.forEach((dir) => {
+            path += Base64.atob(dir);
+            path += "/";
+        });
+        path += Base64.atob(item.b64file);
+
+        MPDConnection.current().addSongToPlayList(
+            decodeURIComponent(path),
+            () => {
+                this.setState({loading: false});
+            },
+            (err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            }
+        );
+    }
+
+    playlist(rowMap, item) {
+        if (rowMap[item.b64file]) {
+			rowMap[item.b64file].closeRow();
+		}
+        if (!MPDConnection.current().getCurrentPlaylistName()) {
+            this.setState({modalVisible: true, selectedItem: item.b64file});
+            return;
+        }
+        let path = "";
+
+        this.state.dirs.forEach((dir) => {
+            path += Base64.atob(dir);
+            path += "/";
+        });
+        path += Base64.atob(item.b64file);
+
+        this.setState({loading: true});
+
+        MPDConnection.current().addSongToNamedPlayList(
+            decodeURIComponent(path),
+            MPDConnection.current().getCurrentPlaylistName(),
+            () => {
+                this.setState({loading: false});
+            },
+            (err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            }
+        );
+    }
+
+    finishAdd(name, selectedItem) {
+        this.setState({modalVisible: false});
+        MPDConnection.current().setCurrentPlaylistName(name);
+
+        this.setState({loading: true});
+
+        if (selectedItem === "all") {
+            let path = "";
+            this.state.dirs.forEach(function(dir) {
+                path += Base64.atob(dir);
+                path += "/";
+            });
+
+            MPDConnection.current().addDirectoryToNamedPlayList(
+                decodeURIComponent(path),
+                MPDConnection.current().getCurrentPlaylistName(),
+                () => {
+                    this.setState({loading: false});
+                },
+                (err) => {
+                    this.setState({loading: false});
+                    console.log(err);
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                }
+            );
+        } else {
+            let path = "";
+
+            this.state.dirs.forEach((dir) => {
+				path += Base64.atob(dir);
+				path += "/";
+			});
+			path += Base64.atob(selectedItem);
+
+            MPDConnection.current().addSongToNamedPlayList(
+                decodeURIComponent(path),
+                MPDConnection.current().getCurrentPlaylistName(),
+                () => {
+                    this.setState({loading: false});
+                },
+                (err) => {
+                    this.setState({loading: false});
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                }
+            );
+        }
+    }
+
     renderSeparator = () => {
         return (
             <View
@@ -211,23 +331,6 @@ export default class FilesScreen extends React.Component {
             />
         );
     };
-
-    renderItem = ({item}) => {
-        return (
-            <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                    {item.file && <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>}
-                    {item.dir && <Icon name="ios-folder" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>}
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
-                        {item.file && <Text style={styles.item}>{item.file}</Text>}
-                        {item.dir && <Text style={styles.item}>{item.dir}</Text>}
-                    </View>
-                    {item.file && <Icon name="ios-add" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>}
-                    {item.dir && <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>}
-                </View>
-            </TouchableOpacity>
-        );
-    }
 
     render() {
         let showAddAll = false;
@@ -252,20 +355,60 @@ export default class FilesScreen extends React.Component {
                         </Text>
                     </View>
                 </View>
-                <FlatList
+                <SwipeListView
+					useFlatList
                     data={this.state.files}
-                    renderItem={this.renderItem}
-                    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
                     keyExtractor={item => item.b64file || item.b64dir}
+                    renderItem={(data, map) => {
+                        const item = data.item;
+                        if (item.file) {
+                            return (
+                                <SwipeRow rightOpenValue={-150}>
+                                    <View style={styles.rowBack}>
+                                        <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.queue(map, item) }>
+                                            <Text style={styles.backTextWhite}>Queue</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.playlist(map, item) }>
+                                            <Text style={styles.backTextWhite}>Playlist</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center'}, styles.rowFront]}>
+                                        <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                                        <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                                            <Text style={styles.item}>{item.file}</Text>
+                                        </View>
+                                        <Icon name="ios-swap" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                                    </View>
+                                </SwipeRow>
+                            );
+                        } else if (item.dir) {
+                            return (
+                                <TouchableOpacity onPress={this.onPress.bind(this, item)}>
+                                    <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+                                        <Icon name="ios-folder" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                                        <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                                            <Text style={styles.item}>{item.dir}</Text>
+                                        </View>
+                                        <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                                    </View>
+                                </TouchableOpacity>
+                            );
+                        }
+                    }}
+                    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
                     ItemSeparatorComponent={this.renderSeparator}
-                />
+				/>
                 {this.state.loading &&
                     <View style={styles.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }
+                <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
                 {showAddAll && <ActionButton buttonColor="rgba(231,76,60,1)">
-                    <ActionButton.Item buttonColor='#3498db' title="Add to Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll();}}>
+                    <ActionButton.Item buttonColor='#3498db' title="Add to Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(false);}}>
+                        <FAIcon name="plus-square" size={15} color="#e6e6e6" />
+                    </ActionButton.Item>
+                    <ActionButton.Item buttonColor='#3498db' title="Add to Playlist" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(true);}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>}
@@ -301,5 +444,38 @@ const styles = StyleSheet.create({
     actionButtonText: {
         fontSize: 13,
         fontFamily: 'GillSans-Italic'
-    }
+    },
+    backTextWhite: {
+		color: '#FFF'
+	},
+    rowFront: {
+		alignItems: 'center',
+		backgroundColor: '#FFFFFF',
+		justifyContent: 'center',
+		height: 50,
+	},
+	rowBack: {
+		alignItems: 'center',
+		backgroundColor: '#DDD',
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		paddingLeft: 15,
+	},
+	backRightBtn: {
+		alignItems: 'center',
+		bottom: 0,
+		justifyContent: 'center',
+		position: 'absolute',
+		top: 0,
+		width: 75
+	},
+	backRightBtnLeft: {
+		backgroundColor: 'grey',
+		right: 75
+	},
+	backRightBtnRight: {
+		backgroundColor: 'darkgray',
+		right: 0
+	}
 });
