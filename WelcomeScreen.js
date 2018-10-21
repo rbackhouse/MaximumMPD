@@ -25,8 +25,8 @@ export default class WelcomeScreen extends React.Component {
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
                 <View style={{flex: .3, alignItems: 'center', justifyContent: 'center', paddingTop: 10}}>
                     <Text style={styles.title}>Maximum MPD</Text>
-                    <Text style={styles.intro}>Connect by clicking on either a Discovered or Configured MPD server.
-                    Use the bottom right button to add or remove Configured Servers</Text>
+                    <Text style={styles.intro}>Connect by swiping left on either a Discovered or Configured MPD server.
+                    Use the bottom right button to add a new Server</Text>
                 </View>
                 <ConnectionsScreen navigation={this.props.navigation}/>
             </View>
