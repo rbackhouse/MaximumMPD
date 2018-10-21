@@ -108,7 +108,10 @@ class MPDConnection {
                 if (state == "connected") {
     				this.queue = [];
     				this.isConnected = true;
-                    this.startEmittingStatus(pwd);
+                    if (pwd) {
+                        this.login(pwd);
+                    }
+                    //this.startEmittingStatus();
                     mpdEventEmiiter.emit('OnConnect', {host: this.host, port: this.port});
     				console.log("Connected");
     				if (callback) {
@@ -120,7 +123,7 @@ class MPDConnection {
                     console.log("Internal Connected");
     			} else if (state == "disconnected") {
                     mpdEventEmiiter.emit('OnDisconnect', {host: this.host, port: this.port});
-                    this.stopEmittingStatus();
+                    //this.stopEmittingStatus();
     				this.isConnected = false;
     				console.log("Disconnected");
     				//this.connect();
@@ -162,6 +165,9 @@ class MPDConnection {
     			var lines = MPDConnection._lineSplit(data);
     			var lastLine = lines[lines.length-1];
     			if (lastLine.match(/^OK MPD/)) {
+                    let versionString = lastLine.substring("OK MPD ".length);
+                    let split = versionString.split(".");
+                    this.version = parseInt(split[1]);
     				this._loadFileSuffixes();
     			} else if (lastLine.match(/^OK$/)) {
     				if (this.queue.length > 0) {
@@ -247,10 +253,7 @@ class MPDConnection {
         mpdEventEmiiter.emit('OnDisconnect', {host: this.host, port: this.port});
 	}
 
-    startEmittingStatus(pwd) {
-        if (pwd) {
-            this.login(pwd);
-        }
+    startEmittingStatus() {
         this.intervalId = setInterval(() => {
             if (this.isConnected) {
                 this.getStatus((status) => {
@@ -307,8 +310,13 @@ class MPDConnection {
 			}
 			return songs;
 		};
+        let searchCmd = "search any \""+filter+"\"";
+        if (this.version > 19) {
+            searchCmd += " window "+start+":"+end;
+        }
+        console.log("searchCmd = "+searchCmd);
 		this.queue.push({
-            cmd: "search any \""+filter+"\" window "+start+":"+end,
+            cmd: searchCmd,
 			process: processor,
 			cb: cb,
 			errorcb: errorcb,

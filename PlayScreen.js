@@ -70,6 +70,24 @@ export default class PlayScreen extends React.Component {
                 this.setState({status: status, volume: parseInt(status.volume), isPlaying: status.state === "play"});
             }
         );
+
+        this.didBlurSubscription = this.props.navigation.addListener(
+            'didBlur',
+            payload => {
+                MPDConnection.current().stopEmittingStatus();
+            }
+        );
+        this.didFocusSubscription = this.props.navigation.addListener(
+            'didFocus',
+            payload => {
+                MPDConnection.current().startEmittingStatus();
+            }
+        );
+    }
+
+    componentWillUnmount() {
+        this.didBlurSubscription.remove();
+        this.didFocusSubscription.remove();
     }
 
     onPrevious() {
