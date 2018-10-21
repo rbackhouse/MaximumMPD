@@ -392,7 +392,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		backgroundColor: '#FFFFFF',
 		justifyContent: 'center',
-		height: 50,
 	},
 	rowBack: {
 		alignItems: 'center',
