@@ -88,7 +88,6 @@ export default class SearchScreen extends React.Component {
             MPDConnection.current().search(text.toLowerCase(), 0, 99,
                 (results) => {
                     this.setState({loading: false});
-                    console.log(results);
                     results.forEach((result) => {
                         let artist = {artist: result.artist, key: result.artist, traverse: true};
                         let album = {album: result.album, key: result.album, artist: result.artist, traverse: true};
