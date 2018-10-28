@@ -124,7 +124,8 @@ class MPDConnection {
     			} else if (state == "disconnected") {
                     mpdEventEmiiter.emit('OnDisconnect', {host: this.host, port: this.port});
                     //this.stopEmittingStatus();
-    				this.isConnected = false;
+                    this.disconnect();
+                    connection = undefined;
     				console.log("Disconnected");
     				//this.connect();
     			}
@@ -250,7 +251,6 @@ class MPDConnection {
         this.messageSubscription.remove();
 		this.isConnected = false;
 		SocketConnection.disconnect();
-        mpdEventEmiiter.emit('OnDisconnect', {host: this.host, port: this.port});
 	}
 
     startEmittingStatus() {
@@ -945,6 +945,25 @@ class MPDConnection {
 					dirs.push({dir: dir, b64dir: b64dir});
 				}
 			}
+            files.sort((a,b) => {
+				if (a.file < b.file) {
+					return -1;
+				} else if (a.file > b.file) {
+					return 1;
+				} else {
+					return 0;
+				}
+			});
+            dirs.sort((a,b) => {
+				if (a.dir < b.dir) {
+					return -1;
+				} else if (a.dir > b.dir) {
+					return 1;
+				} else {
+					return 0;
+				}
+			});
+
 			return {files: files, dirs: dirs};
 		}.bind(this);
 		var cmd = "listfiles";
