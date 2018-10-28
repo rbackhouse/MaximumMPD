@@ -239,41 +239,6 @@ export default class ConnectionsScreen extends React.Component {
         }
     };
 
-    onRemove() {
-        this.state.configured.forEach((configured) => {
-            if (this.state.selected.get(configured.name+configured.ipAddress+configured.port)) {
-                Alert.alert(
-                    "Delete Connection",
-                    "Are you sure you want to delete "+configured.name+" ?",
-                    [
-                        {text: 'OK', onPress: () => {
-                            MPDConnection.removeConnection(configured)
-                            .then(() => {
-                                MPDConnection.getConnectionList()
-                                    .then((connections) => {
-                                        this.setState({configured: connections});
-                                    });
-                            });
-                        }},
-                        {text: 'Cancel'}
-                    ]
-                );
-            }
-        });
-    }
-
-    onRemoveAll() {
-        this.state.configured.forEach((configured) => {
-            MPDConnection.removeConnection(configured)
-            .then(() => {
-                MPDConnection.getConnectionList()
-                    .then((connections) => {
-                        this.setState({configured: connections});
-                    });
-            });
-        });
-    }
-
     onRowDidOpen() {
 
     }
@@ -294,6 +259,7 @@ export default class ConnectionsScreen extends React.Component {
             "Are you sure you want to delete "+item.name+" ?",
             [
                 {text: 'OK', onPress: () => {
+                    MPDConnection.disconnect();
                     MPDConnection.removeConnection(item)
                     .then(() => {
                         MPDConnection.getConnectionList()
