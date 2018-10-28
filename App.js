@@ -31,6 +31,7 @@ import AlbumsScreen from './AlbumsScreen';
 import SongsScreen from './SongsScreen';
 import PlaylistDetails from './PlaylistDetails';
 import WelcomeScreen from './WelcomeScreen';
+import OutputsScreen from './OutputsScreen';
 import MPDConnection from './MPDConnection';
 
 class Header extends React.Component {
@@ -137,7 +138,8 @@ const FilesStack = createStackNavigator(
 const SettingsStack = createStackNavigator(
     {
         Settings: { screen: SettingsScreen },
-        Connections: { screen: ConnectionsScreen }
+        Connections: { screen: ConnectionsScreen },
+        Outputs: { screen: OutputsScreen }
     },
     {
         navigationOptions: ({ navigation }) => ({
