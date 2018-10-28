@@ -217,7 +217,7 @@ export default class AlbumsScreen extends React.Component {
                     <ActionButton.Item buttonColor='#3498db' title="Add to Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(false);}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Add to Playlist" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(true);}}>
+                    <ActionButton.Item buttonColor='#9b59b6' title="Add to Playlist" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(true);}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>
