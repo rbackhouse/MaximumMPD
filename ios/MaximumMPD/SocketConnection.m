@@ -141,8 +141,6 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
 }
 
 - (void) mpdConnect {
-  NSLog(@"mpdConnect");
-
   CFReadStreamRef readStream;
   CFWriteStreamRef writeStream;
   CFStreamCreatePairWithSocketToHost(NULL, (__bridge CFStringRef)self.host, self.port, &readStream, &writeStream);
@@ -158,8 +156,6 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
 }
 
 - (void) mpdDisconnect {
-  NSLog(@"mpdDisconnect");
-
   [self.inputStream close];
   [self.inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
   self.inputStream = nil;
