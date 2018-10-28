@@ -123,8 +123,15 @@ export default class ConnectionsScreen extends React.Component {
                 this.setState({discovered: discoveredList});
             }
         );
+
+        this.onDisconnect = MPDConnection.getEventEmitter().addListener(
+            "OnDisconnect",
+            () => {
+            }
+        );
+
         const currentConnection = MPDConnection.current();
-        if (currentConnection !== undefined) {
+        if (currentConnection !== undefined && currentConnection.isConnected) {
             console.log("currentConnection "+currentConnection.name+currentConnection.host+currentConnection.port);
             this.state.selected.set(currentConnection.name+currentConnection.host+currentConnection.port, true);
         }
@@ -140,6 +147,9 @@ export default class ConnectionsScreen extends React.Component {
                 })
                 this.setState({configured: connections});
             });
+    }
+    componentWillUnmount() {
+        this.onDisconnect.remove();
     }
 
     keyExtractor = (item, index) => item.name+item.ipAddress+item.port;
@@ -189,6 +199,28 @@ export default class ConnectionsScreen extends React.Component {
     }
 
     addConnection = (name, host, port, password) => {
+        if (name === "") {
+            Alert.alert(
+                "Create Connection Error",
+                "Name must not be blank"
+            );
+            return;
+        }
+        if (host === "") {
+            Alert.alert(
+                "Create Connection Error",
+                "Host must not be blank"
+            );
+            return;
+        }
+        if (port === "") {
+            Alert.alert(
+                "Create Connection Error",
+                "Port must not be blank"
+            );
+            return;
+        }
+
         let parsedPort = parseInt(port);
         if (isNaN(parsedPort)) {
             Alert.alert(
@@ -418,18 +450,3 @@ const styles = StyleSheet.create({
 		right: 0
 	}
 });
-
-/*
-<SectionList
-    sections={[
-        {title: 'Discovered', data: this.state.discovered},
-        {title: 'Configured', data: this.state.configured},
-    ]}
-    renderItem={this.renderItem}
-    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-    keyExtractor={this.keyExtractor}
-    ItemSeparatorComponent={this.renderSeparator}
-    extraData={this.state.selected}
-    scrollEnabled={this.state.scrollEnable}
-/>
-*/
