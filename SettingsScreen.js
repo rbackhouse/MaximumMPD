@@ -283,6 +283,11 @@ export default class SettingsScreen extends React.Component {
                     />
                     <SettingsList.Item
                       hasNavArrow={true}
+                      title='Outputs'
+                      onPress={() => this.props.navigation.navigate('Outputs')}
+                    />
+                    <SettingsList.Item
+                      hasNavArrow={true}
                       title='Update Database'
                       onPress={() => this.updateDB()}
                     />
