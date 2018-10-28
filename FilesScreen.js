@@ -46,9 +46,11 @@ export default class FilesScreen extends React.Component {
         this.state = {
           files: [],
           dirs: [],
+          fullset: [],
           loading: false,
           modalVisible: false,
-          selectedItem: ""
+          selectedItem: "",
+          searchValue: ""
         };
     }
 
@@ -71,7 +73,7 @@ export default class FilesScreen extends React.Component {
             "OnDisconnect",
             () => {
                 console.log("OnDisconnect");
-                this.setState({files: [], dirs: []});
+                this.setState({files: [], dirs: [], fullset: []});
                 this.props.navigation.popToTop();
             }
         );
@@ -175,7 +177,7 @@ export default class FilesScreen extends React.Component {
             path,
             (files) => {
                 this.setState({loading: false});
-                this.setState({files: [...files.files, ...files.dirs]});
+                this.setState({files: [...files.files, ...files.dirs], fullset: [...files.files, ...files.dirs]});
                 if (this.state.dirs.length < 1) {
                     this.props.navigation.setParams({ showBackbutton: false });
                 } else {
@@ -194,14 +196,18 @@ export default class FilesScreen extends React.Component {
     }
 
     search = (text) => {
-        let files = this.state.files.filter((value) => {
-            if (value.file) {
-                return value.file.indexOf(text) > -1;
-            } else {
-                return value.dir.indexOf(text) > -1;
-            }
-        });
-        this.setState({files:files});
+        if (text.length > 0) {
+            let filtered = this.state.fullset.filter((file) => {
+                if (file.dir) {
+                    return file.dir.toLowerCase().indexOf(text.toLowerCase()) > -1;
+                } else {
+                    return file.file.toLowerCase().indexOf(text.toLowerCase()) > -1;
+                }
+            });
+            this.setState({files: filtered, searchValue: text});
+        } else {
+            this.setState({files: this.state.fullset, searchValue: text});
+        }
     };
 
     queue(rowMap, item) {
@@ -349,8 +355,19 @@ export default class FilesScreen extends React.Component {
         return (
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
                 <View style={{flex: .1, flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{flex: 1, justifyContent: 'center'}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic', paddingLeft: 10}}>
+                    <View style={{flex: .5}}>
+                        <SearchBar
+                            clearIcon
+                            lightTheme
+                            round
+                            cancelButtonTitle="Cancel"
+                            placeholder='Search'
+                            onChangeText={this.search}
+                            value={this.state.searchValue}
+                        />
+                    </View>
+                    <View style={{flex: .5}}>
+                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
                             Directories : {dirCount} Files: {fileCount}
                         </Text>
                     </View>
