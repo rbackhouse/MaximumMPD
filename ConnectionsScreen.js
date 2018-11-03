@@ -324,6 +324,7 @@ export default class ConnectionsScreen extends React.Component {
                         </SwipeRow>
                     );}}
                     renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                    ItemSeparatorComponent={this.renderSeparator}
 				/>
                 {this.state.loading &&
                     <View style={styles.loading}>
