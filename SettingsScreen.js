@@ -20,6 +20,7 @@ import { View, Picker, Modal, Text, StyleSheet, Alert } from 'react-native';
 import SettingsList from 'react-native-settings-list';
 import { FormLabel, FormInput, Button } from 'react-native-elements'
 import MPDConnection from './MPDConnection';
+import AlbumArt from './AlbumArt';
 
 class CrossfadeModal extends React.Component {
     state = {
@@ -147,7 +148,8 @@ export default class SettingsScreen extends React.Component {
         repeat: false,
         stopAftetSongPlayed: false,
         removeSongAfterPlay: false,
-        randomPlaylistByType: false
+        randomPlaylistByType: false,
+        albumart: false
     }
 
     componentDidMount() {
@@ -175,6 +177,14 @@ export default class SettingsScreen extends React.Component {
         if (MPDConnection.isConnected()) {
             this.getStatus();
         }
+        AlbumArt.isEnabled()
+        .then((enabled) => {
+            if (enabled === "true") {
+                this.setState({albumart: true});
+            } else {
+                this.setState({albumart: false});
+            }
+        });
     }
 
     componentWillUnmount() {
@@ -211,6 +221,19 @@ export default class SettingsScreen extends React.Component {
                 "DB update has started"
             );
         }
+    }
+
+    clearAlbumArt() {
+        Alert.alert(
+            "Clear Album Art",
+            "Are you sure you want to clear the Album Art Cache?",
+            [
+                {text: 'OK', onPress: () => {
+                    AlbumArt.clearCache();
+                }},
+                {text: 'Cancel'}
+            ]
+        );
     }
 
     onShuffleChange(value) {
@@ -253,6 +276,16 @@ export default class SettingsScreen extends React.Component {
         }
     }
 
+    onAlbumArtChange(value) {
+        this.setState({albumart: value});
+        if (value === true) {
+            AlbumArt.enable();
+        } else {
+
+            AlbumArt.disable();
+        }
+    }
+
     setCrossfade(value) {
         this.setState({crossfade: value});
         this.setState({crossfadeVisible: false});
@@ -290,6 +323,17 @@ export default class SettingsScreen extends React.Component {
                       hasNavArrow={true}
                       title='Update Database'
                       onPress={() => this.updateDB()}
+                    />
+                    <SettingsList.Item
+                                hasNavArrow={false}
+                                switchState={this.state.albumart}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onAlbumArtChange(value)}
+                                title='Album Art'/>
+                    <SettingsList.Item
+                      hasNavArrow={true}
+                      title='Clear Album Art Cache'
+                      onPress={() => this.clearAlbumArt()}
                     />
                     <SettingsList.Header headerStyle={{marginTop:15}} headerText="Playing Configuration"/>
                     <SettingsList.Item

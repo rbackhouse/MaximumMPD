@@ -52,7 +52,7 @@ class Header extends React.Component {
             "OnDisconnect",
             () => {
                 this.setState({isConnected: false});
-                this.props.navigation.navigate('Connections');
+                //this.props.navigation.navigate('Connections');
             }
         );
     }

@@ -18,6 +18,11 @@
 #import "SocketConnection.h"
 #import <React/RCTLog.h>
 
+static NSData *err;
+static NSData *init;
+static NSData *binary;
+static NSData *crdata;
+
 @implementation SocketConnection
 
 - (id) init {
@@ -25,7 +30,7 @@
 
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onPause) name:UIApplicationDidEnterBackgroundNotification object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onResume) name:UIApplicationWillEnterForegroundNotification object:nil];
-
+  self._data = [NSMutableData data];
   return self;
 }
 
@@ -46,11 +51,12 @@ RCT_EXPORT_METHOD(disconnect) {
 
 RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
   NSData *data = [[NSData alloc] initWithData:[message dataUsingEncoding:NSUTF8StringEncoding]];
+  //NSLog(@"writeMessage [%@]", message);
   [self.outputStream write:[data bytes] maxLength:[data length]];
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-  return @[@"OnStateChange", @"OnMessage", @"OnError", @"OnPauseResume"];
+  return @[@"OnStateChange", @"OnError", @"OnPauseResume", @"OnResponse", @"OnInit", @"OnResponseError"];
 }
 
 - (dispatch_queue_t)methodQueue {
@@ -73,6 +79,7 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
           statusMsg = @"internalConnected";
           self.internalConnect = false;
         }
+        NSLog(@"stream open [%@]", statusMsg);
         [self sendEventWithName:@"OnStateChange" body:@{@"msg": statusMsg}];
       }
       break;
@@ -80,17 +87,46 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
 
     case NSStreamEventHasBytesAvailable:
       if (stream == self.inputStream) {
-        uint8_t buffer[1024];
+        uint8_t buffer[8192];
         long len;
 
         while ([self.inputStream hasBytesAvailable]) {
           len = [self.inputStream read:buffer maxLength:sizeof(buffer)];
+          
           if (len > 0) {
-
-            NSString *output = [[NSString alloc] initWithBytes:buffer length:len encoding:NSUTF8StringEncoding];
-
-            if (output != nil) {
-              [self sendEventWithName:@"OnMessage" body:@{@"output": output}];
+            [self._data appendBytes:(const void *)buffer length:len];
+            //NSLog(@"output %ld %@", len, [self._data description]);
+            
+            [self findBinary];
+            
+            if ([self findBufferEnd] == TRUE) {
+              if (self.binaryFound == TRUE) {
+                NSString *out = [NSString stringWithFormat:@"%@%@", self.binaryTxt, @"\nOK\n"];
+                NSData *binaryData = [self._data subdataWithRange:NSMakeRange(self.binaryOffset+1, self.binarySize)];
+                [self sendEventWithName:@"OnResponse" body:@{@"data": out, @"binary": [binaryData base64EncodedStringWithOptions:0]}];
+                self._data = [NSMutableData data];
+                self.binaryFound = FALSE;
+                //NSLog(@"binary out [%ld] [%@]", [binaryData length], out);
+              } else {
+                NSString *out = [[NSString alloc] initWithBytes:[self._data bytes] length:[self._data length] encoding:NSUTF8StringEncoding];
+                [self sendEventWithName:@"OnResponse" body:@{@"data": out}];
+                self._data = [NSMutableData data];
+                //NSLog(@"out [%@]", out);
+              }
+            }
+            
+            if ([self findInit] == TRUE) {
+              NSString *out = [[NSString alloc] initWithBytes:[self._data bytes] length:[self._data length] encoding:NSUTF8StringEncoding];
+              [self sendEventWithName:@"OnInit" body:@{@"data": out}];
+              self._data = [NSMutableData data];
+              //NSLog(@"init [%@]", out);
+            }
+            
+            if ([self findError] == TRUE) {
+              NSString *out = [[NSString alloc] initWithBytes:[self._data bytes] length:[self._data length] encoding:NSUTF8StringEncoding];
+              [self sendEventWithName:@"OnResponseError" body:@{@"data": out}];
+              self._data = [NSMutableData data];
+              //NSLog(@"error [%@]", out);
             }
           }
         }
@@ -101,6 +137,7 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
     case NSStreamEventErrorOccurred: {
       if (stream == self.inputStream) {
         NSError *theError = [stream streamError];
+        NSLog(@"stream error [%@]", theError.localizedDescription);
         [self sendEventWithName:@"OnError" body:@{@"error": theError.localizedDescription}];
       }
       break;
@@ -108,6 +145,12 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
 
     case NSStreamEventEndEncountered: {
       if (stream == self.inputStream) {
+        NSLog(@"stream end");
+        self._data = [NSMutableData data];
+        self.binaryFound = FALSE;
+        self.binaryOffset = 0;
+        self.binarySize = 0;
+        self.binaryTxt = nil;
         [self sendEventWithName:@"OnStateChange" body:@{@"msg": @"disconnected"}];
       }
       [stream close];
@@ -141,6 +184,8 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
 }
 
 - (void) mpdConnect {
+  NSLog(@"mpdConnect");
+
   CFReadStreamRef readStream;
   CFWriteStreamRef writeStream;
   CFStreamCreatePairWithSocketToHost(NULL, (__bridge CFStringRef)self.host, self.port, &readStream, &writeStream);
@@ -156,6 +201,8 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
 }
 
 - (void) mpdDisconnect {
+  NSLog(@"mpdDisconnect");
+
   [self.inputStream close];
   [self.inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
   self.inputStream = nil;
@@ -163,5 +210,102 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
   [self.outputStream close];
   [self.outputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
   self.outputStream = nil;
+}
+
+- (Boolean) findBufferEnd {
+  const char* bytes = (const char*)[self._data bytes];
+  uint8_t b1 = bytes[[self._data length]-1];
+  uint8_t b2 = bytes[[self._data length]-2];
+  uint8_t b3 = bytes[[self._data length]-3];
+  if (b1 == 0x0a && b2 == 0x4b && b3 == 0x4f) {
+    if ([self._data length] > 3) {
+      uint8_t b4 = bytes[[self._data length]-4];
+      if (b4 == 0x0a) {
+        return TRUE;
+      } else {
+        return FALSE;
+      }
+    } else {
+      return TRUE;
+    }
+  } else {
+    return FALSE;
+  }
+}
+
+- (Boolean) findError {
+  if (err == nil) {
+    UInt8 errmsg[] = { 0x41, 0x43, 0x4b, 0x20, 0x5b };
+    err = [NSData dataWithBytes:errmsg length:sizeof(errmsg)];
+  }
+  
+  NSRange range = [self._data rangeOfData:err
+                                  options:NSDataSearchBackwards
+                                    range:NSMakeRange(0u, [self._data length])];
+  if (range.location == NSNotFound) {
+    return FALSE;
+  } else {
+    NSLog(@"Error found at position %lu", (unsigned long)range.location);
+    return TRUE;
+  }
+}
+
+- (Boolean) findInit {
+  if (init == nil) {
+    UInt8 initmsg[] = { 0x4f, 0x4b, 0x20, 0x4d, 0x50, 0x44, 0x20 };
+    init = [NSData dataWithBytes:initmsg length:sizeof(initmsg)];
+  }
+  
+  NSRange range = [self._data rangeOfData:init
+                                  options:0
+                                    range:NSMakeRange(0u, [self._data length])];
+  if (range.location == NSNotFound) {
+    return FALSE;
+  } else {
+    NSLog(@"Init found at position %lu", (unsigned long)range.location);
+    return TRUE;
+  }
+}
+
+- (Boolean) findBinary {
+  if (self.binaryFound == TRUE) {
+    return TRUE;
+  }
+  
+  if (binary == nil) {
+    UInt8 binarymsg[] = { 0x62, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x3a, 0x20 };
+    binary = [NSData dataWithBytes:binarymsg length:sizeof(binarymsg)];
+  }
+  
+  if (crdata == nil) {
+    UInt8 cr = 0x0a;
+    crdata = [NSData dataWithBytes:&cr length:sizeof(cr)];
+  }
+  
+  NSRange range = [self._data rangeOfData:binary
+                                  options:0
+                                    range:NSMakeRange(0u, [self._data length])];
+  if (range.location == NSNotFound) {
+    return FALSE;
+  } else {
+    NSRange crrange = [self._data rangeOfData:crdata
+                                    options:0
+                                      range:NSMakeRange(range.location, [self._data length]-range.location)];
+    if (crrange.location != NSNotFound) {
+      NSData *txtData = [self._data subdataWithRange:NSMakeRange(0u, crrange.location)];
+      self.binaryTxt = [[NSString alloc] initWithBytes:[txtData bytes] length:[txtData length] encoding:NSUTF8StringEncoding];
+      self.binaryFound = TRUE;
+      NSData *size = [self._data subdataWithRange:NSMakeRange(range.location+8, crrange.location - (range.location+8))];
+      NSString *sizeStr = [[NSString alloc] initWithBytes:[size bytes] length:[size length] encoding:NSUTF8StringEncoding];
+      NSNumberFormatter* formatter = [[NSNumberFormatter alloc] init];
+      self.binarySize = [[formatter numberFromString:sizeStr] unsignedLongValue];
+      self.binaryOffset = crrange.location;
+      //NSLog(@"Binary found at position %lu offset %lu size %lu", (unsigned long)range.location, self.binaryOffset, self.binarySize);
+    } else {
+      NSLog(@"CR not found");
+    }
+
+    return TRUE;
+  }
 }
 @end

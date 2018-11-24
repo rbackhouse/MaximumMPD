@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native';
 import { SearchBar } from "react-native-elements";
 
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -29,6 +29,7 @@ import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
+import AlbumArt from './AlbumArt';
 import NewPlaylistModal from './NewPlaylistModal';
 
 export default class SongsScreen extends React.Component {
@@ -44,7 +45,8 @@ export default class SongsScreen extends React.Component {
           songs: [],
           loading: false,
           modalVisible: false,
-          selectedItem: ""
+          selectedItem: "",
+          base64Image: ""
         };
     }
 
@@ -61,6 +63,12 @@ export default class SongsScreen extends React.Component {
             (songs) => {
                 this.setState({loading: false});
                 this.setState({songs: songs});
+                AlbumArt.getAlbumArt(artist, album, songs[0].file)
+                .then((b64) => {
+                    if (b64) {
+                        this.setState({base64Image: 'data:image/png;base64,'+b64});
+                    }
+                });
             },
             (err) => {
                 this.setState({loading: false});
@@ -271,8 +279,13 @@ export default class SongsScreen extends React.Component {
                                     <Text style={styles.backTextWhite}>Playlist</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center'}, styles.rowFront]}>
-                                <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                            <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}, styles.rowFront]}>
+                                {this.state.base64Image.length < 1 &&
+                                    <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./icons8-cd-100.png')}/>
+                                }
+                                {this.state.base64Image.length > 0 &&
+                                    <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: this.state.base64Image}}/>
+                                }
                                 <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                                     <Text style={styles.item}>{item.title}</Text>
                                     <Text style={styles.item}>Track: {item.track} Time: {item.time}</Text>

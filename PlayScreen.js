@@ -16,15 +16,20 @@
 */
 
 import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ProgressViewIOS, SegmentedControlIOS, Image } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, ProgressViewIOS, SegmentedControlIOS, Image, Alert } from 'react-native';
 import { Slider } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import HeaderButtons from 'react-navigation-header-buttons';
+
+import { Dimensions } from 'react-native';
+
 import PlaylistScreen from './PlaylistScreen';
 import PlaylistEditor from './PlaylistEditor';
 
 import MPDConnection from './MPDConnection';
+import Base64 from './Base64';
+import AlbumArt from './AlbumArt';
 
 class HeaderPlaylist extends React.Component {
     playlist = () => {
@@ -55,11 +60,20 @@ export default class PlayScreen extends React.Component {
             volume: 0,
             postion: 0,
             status: undefined,
-            selectedTab: 0
+            selectedTab: 0,
+            base64Image: "",
+            searchedForAlbumArt: false
         }
     }
 
     componentDidMount() {
+        /*
+        const {height, width} = Dimensions.get('window');
+        Alert.alert(
+            "Dimensions",
+            "Height: "+height+" Width : "+width
+        );
+        */
         if (!MPDConnection.isConnected()) {
             this.props.navigation.navigate('Settings');
             this.props.navigation.navigate('Connections');
@@ -67,7 +81,28 @@ export default class PlayScreen extends React.Component {
         MPDConnection.getEventEmitter().addListener(
             "OnStatus",
             (status) => {
+                let currentsong = -1;
+                if (this.state.status) {
+                    currentsong = this.state.status.song;
+                }
                 this.setState({status: status, volume: parseInt(status.volume), isPlaying: status.state === "play"});
+                if (status.song) {
+                    if (currentsong !== status.song) {
+                        this.setState({base64Image: '', searchedForAlbumArt: false});
+                    }
+                    if (!this.state.searchedForAlbumArt && this.state.base64Image.length < 1) {
+                        AlbumArt.getAlbumArt(status.currentsong.artist, status.currentsong.album, status.currentsong.file)
+                        .then((b64) => {
+                            if (b64) {
+                                this.setState({base64Image: 'data:image/png;base64,'+b64, searchedForAlbumArt: true});
+                            } else {
+                                this.setState({searchedForAlbumArt: true});
+                            }
+                        });
+                    }
+                } else {
+                    this.setState({base64Image: '', searchedForAlbumArt: false});
+                }
             }
         );
 
@@ -126,8 +161,8 @@ export default class PlayScreen extends React.Component {
     render() {
       const playPauseIcon = this.state.isPlaying == true ? "pause" : "play";
       let timeTrack = "";
-      let time;
-      let dur;
+      let time = 0;
+      let dur = 0;
       let elapsed = "0:00";
       let duration = "0:00";
       let currentsong = {
@@ -137,14 +172,15 @@ export default class PlayScreen extends React.Component {
       }
       if (this.state.status) {
           currentsong = this.state.status.currentsong;
-          if (this.state.status.time && this.state.status.song) {
-              time = Math.floor(parseInt(this.state.status.time));
+          if (this.state.status.elapsed && this.state.status.song) {
+              time = Math.floor(parseInt(this.state.status.elapsed));
               let minutes = Math.floor(time / 60);
               let seconds = time - minutes * 60;
               seconds = (seconds < 10 ? '0' : '') + seconds;
               elapsed = minutes+":"+seconds;
-
-              dur = Math.floor(parseInt(this.state.status.duration));
+              if (this.state.status.duration) {
+                  dur = Math.floor(parseInt(this.state.status.duration));
+              }
               let dmins = Math.floor(dur / 60);
               let dsecs = dur - dmins * 60;
               dsecs = (dsecs < 10 ? '0' : '') + dsecs;
@@ -152,6 +188,19 @@ export default class PlayScreen extends React.Component {
               timeTrack = "Track: "+(parseInt(this.state.status.song)+1);
           }
       }
+
+      const {height, width} = Dimensions.get('window');
+
+      let albumArtSize;
+
+      if (width === 320) {
+          albumArtSize = 140;
+      } else if (width === 375) {
+          albumArtSize = 175;
+      } else {
+          albumArtSize = 200;
+      }
+
       if (this.state.selectedTab === 0) {
           return (
               <View style={styles.container}>
@@ -178,9 +227,14 @@ export default class PlayScreen extends React.Component {
                                 />
                                 <Text style={{ paddingLeft: 15 }}>{duration}</Text>
                             </View>
-                    </View>
+                      </View>
                       <View style={{flex: .4, width: "60%", alignItems: 'center', justifyContent: 'center'}} >
-                          <Image source={require('./icons8-cd-100.png')}/>
+                          {this.state.base64Image.length < 1 &&
+                              <Image style={{width: albumArtSize, height: albumArtSize}} source={require('./icons8-cd-100.png')}/>
+                          }
+                          {this.state.base64Image.length > 0 &&
+                              <Image style={{width: albumArtSize, height: albumArtSize, resizeMode: 'contain'}} source={{uri: this.state.base64Image}}/>
+                          }
                       </View>
                       <View style={{flex: .2, width: "80%", height: "15%", padding: 15, alignItems: 'center', justifyContent: 'center'}}>
                           <Text numberOfLines={1} style={styles.item}>{currentsong.artist}</Text>

@@ -21,9 +21,11 @@ import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
+import { StackActions, NavigationActions } from 'react-navigation';
 
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
+import AlbumArt from './AlbumArt';
 import NewPlaylistModal from './NewPlaylistModal';
 
 export default class AlbumsScreen extends React.Component {
@@ -55,6 +57,15 @@ export default class AlbumsScreen extends React.Component {
             (albums) => {
                 this.setState({loading: false});
                 this.setState({albums: albums, fullset: albums});
+                albums.forEach((album) => {
+                    AlbumArt.getAlbumArt(artist, album.name)
+                    .then((b64) => {
+                        if (b64) {
+                            album.base64Image = 'data:image/png;base64,'+b64;
+                            this.setState({albums: this.state.albums, fullset: this.state.fullset});
+                        }
+                    });
+                });
             },
             (err) => {
                 this.setState({loading: false});
@@ -67,8 +78,7 @@ export default class AlbumsScreen extends React.Component {
         this.onDisconnect = MPDConnection.getEventEmitter().addListener(
             "OnDisconnect",
             () => {
-                this.setState({albums: []});
-                this.props.navigation.dismiss();
+                this.setState({albums: [], fullset: []});
             }
         );
     }
@@ -168,8 +178,13 @@ export default class AlbumsScreen extends React.Component {
     renderItem = ({item}) => {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                    <Icon name="ios-disc" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}}>
+                    {item.base64Image === undefined &&
+                        <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./icons8-cd-100.png')}/>
+                    }
+                    {item.base64Image !== undefined &&
+                        <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.base64Image}}/>
+                    }
                     <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>

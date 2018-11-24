@@ -41,6 +41,8 @@ const OUTPUTNAME_PREFIX = "outputname: ";
 const OUTPUTENABLED_PREFIX = "outputenabled: ";
 const SUFFIX_PREFIX = "suffix: ";
 const REPLAY_GAIN_MODE = "replay_gain_mode: ";
+const SIZE_PREFIX = "size: ";
+const BINARY_PREFIX = "binary: ";
 
 const INITIAL = 0;
 const WRITTEN = 1;
@@ -60,6 +62,7 @@ class Discoverer {
                 if (discovered.type === "add") {
                     if (discovered.name) {
                         this.discovered[discovered.name] = discovered;
+                        mpdEventEmiiter.emit('OnDiscover', discovered);
                     }
                 } else if (discovered.type === "remove") {
                     if (discovered.name) {
@@ -68,7 +71,6 @@ class Discoverer {
                 } else if (discovered.type === "discover") {
                     //console.log("Discovered : "+discovered.name);
                 }
-                mpdEventEmiiter.emit('OnDiscover', discovered);
             }
         );
         BonjourListener.listen('_mpd._tcp.', 'local.');
@@ -100,7 +102,7 @@ class MPDConnection {
         this.randomPlaylistByType = randomPlaylistByType;
 	}
 
-	connect(pwd, callback) {
+	connect(pwd, callback, noemit) {
         this.stateSubscription = socketConnectionEmitter.addListener(
             "OnStateChange",
             (status) => {
@@ -112,8 +114,10 @@ class MPDConnection {
                         this.login(pwd);
                     }
                     //this.startEmittingStatus();
-                    mpdEventEmiiter.emit('OnConnect', {host: this.host, port: this.port});
-    				console.log("Connected");
+                    if (!noemit) {
+                        mpdEventEmiiter.emit('OnConnect', {host: this.host, port: this.port});
+                        console.log("Connected");
+                    }
     				if (callback) {
     					callback();
     				}
@@ -122,12 +126,12 @@ class MPDConnection {
     				this.isConnected = true;
                     console.log("Internal Connected");
     			} else if (state == "disconnected") {
-                    mpdEventEmiiter.emit('OnDisconnect', {host: this.host, port: this.port});
-                    //this.stopEmittingStatus();
+                    //mpdEventEmiiter.emit('OnDisconnect', {host: this.host, port: this.port});
+                    this.stopEmittingStatus();
                     this.disconnect();
-                    connection = undefined;
-    				console.log("Disconnected");
-    				//this.connect();
+                    //connection = undefined;
+    				//console.log("Disconnected");
+    				this.connect(undefined, undefined, true);
     			}
             }
         )
@@ -148,71 +152,62 @@ class MPDConnection {
 				} else if (callback) {
 					callback(error);
 				}
-
             }
         );
 
 		var data = "";
 
-        this.messageSubscription = socketConnectionEmitter.addListener(
-            "OnMessage",
-            (message) => {
-                let buffer = message.output;
-                data += buffer;
-    			var lastChar = buffer.charAt(buffer.length-1);
-    			if (lastChar != "\n" && lastChar != "\r") {
-    				return;
-    			}
-    			var lines = MPDConnection._lineSplit(data);
-    			var lastLine = lines[lines.length-1];
-    			if (lastLine.match(/^OK MPD/)) {
-                    let versionString = lastLine.substring("OK MPD ".length);
-                    let split = versionString.split(".");
-                    this.version = parseInt(split[1]);
-    				this._loadFileSuffixes();
-    			} else if (lastLine.match(/^OK$/)) {
-    				if (this.queue.length > 0) {
-    					var task = this.queue.shift();
-    					task.response += data.substring(0, data.length - 4);
-    					task.state = MPDConnection.COMPLETE;
-    					//console.log("cmd ["+task.cmd+"] complete");
-    					var result;
-    					if (task.process) {
-    						try {
-    							result = task.process(task.response);
-    						} catch(err) {
-    							if (task.errorcb) {
-    								task.errorcb(err);
-    							}
-    							console.log("Error running task ["+task.cmd+"] : "+err);
-    						}
-    					}
-    					if (task.cb) {
-    						task.cb(result);
-    					}
-    					processQueue();
-    				}
-    			} else if (lastLine.match(/^ACK /)) {
-    				var error = data;
-    				if (this.queue.length > 0) {
-    					var task = this.queue.shift();
-    					task.error = error.trim();
-    					task.state = MPDConnection.COMPLETE;
-    					if (task.errorcb) {
-    						task.errorcb(task.error);
-    					}
-    					console.log("Error running task ["+task.cmd+"] : "+task.error);
-    				} else {
-    					console.log("Error : "+error);
-    				}
-    			} else {
-    				if (this.queue.length > 0) {
-    					var task = this.queue[0];
-    					task.state = MPDConnection.READING;
-    					task.response += data;
-    				}
-    			}
-    			data = "";
+        this.responseSubscription = socketConnectionEmitter.addListener(
+            "OnResponse",
+            (response) => {
+                if (this.queue.length > 0) {
+                    var task = this.queue.shift();
+                    task.response += response.data.substring(0, response.data.length - 4);
+                    task.state = MPDConnection.COMPLETE;
+                    //console.log("cmd ["+task.cmd+"] complete");
+                    var result;
+                    if (task.process) {
+                        try {
+                            result = task.process(task.response, response.binary);
+                        } catch(err) {
+                            if (task.errorcb) {
+                                task.errorcb(err);
+                            }
+                            console.log("Error running task ["+task.cmd+"] : "+err);
+                        }
+                    }
+                    if (task.cb) {
+                        task.cb(result);
+                    }
+                    processQueue();
+                }
+            }
+        );
+
+        this.initSubscription = socketConnectionEmitter.addListener(
+            "OnInit",
+            (init) => {
+                let versionString = init.data.substring("OK MPD ".length);
+                let split = versionString.split(".");
+                this.version = parseInt(split[1]);
+                this._loadFileSuffixes();
+            }
+        );
+
+        this.errorSubscription = socketConnectionEmitter.addListener(
+            "OnResponseError",
+            (error) => {
+                if (this.queue.length > 0) {
+                    var task = this.queue.shift();
+                    task.error = error.data.trim();
+                    task.state = MPDConnection.COMPLETE;
+                    if (task.errorcb) {
+                        task.errorcb(task.error);
+                    }
+                    console.log("Error running task ["+task.cmd+"] : "+task.error);
+                } else {
+                    console.log("Error : "+error);
+                }
             }
         );
 
@@ -248,7 +243,9 @@ class MPDConnection {
 	disconnect() {
         this.stateSubscription.remove();
         this.errorSubscription.remove();
-        this.messageSubscription.remove();
+        this.responseSubscription.remove();
+        this.initSubscription.remove();
+        this.errorSubscription.remove();
 		this.isConnected = false;
 		SocketConnection.disconnect();
 	}
@@ -314,7 +311,6 @@ class MPDConnection {
         if (this.version > 19) {
             searchCmd += " window "+start+":"+end;
         }
-        console.log("searchCmd = "+searchCmd);
 		this.queue.push({
             cmd: searchCmd,
 			process: processor,
@@ -428,6 +424,10 @@ class MPDConnection {
 					currentsong.album = lines[i].substring(ALBUM_PREFIX.length);
 				} else if (line.indexOf(REPLAY_GAIN_MODE) === 0) {
 					status.replayGainStatus = (line.substring(REPLAY_GAIN_MODE.length));
+                } else if (line.indexOf(FILE_PREFIX) === 0) {
+					var file = line.substring(FILE_PREFIX.length);
+					currentsong.file = file;
+					currentsong.b64file = this.toBase64(file);
 				} else {
 					var key = line.substring(0, line.indexOf(':'));
 					var value = line.substring(line.indexOf(':')+2);
@@ -981,27 +981,66 @@ class MPDConnection {
 	}
 
 	albumart(uri, cb, errorcb) {
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			for (var i = 0; i < lines.length; i++) {
-				var line = lines[i];
-				console.log(line);
-			}
-			return {};
-		}.bind(this);
-		var cmd = "albumart";
-		if (uri && uri !== "") {
-			cmd += " \""+this.decode(uri) + "\"";
-		}
-		this.queue.push({
-			cmd: cmd,
-			process: processor,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+        if (this.version < 21) {
+            errorcb("Albumart is not supported");
+            return;
+        }
+        let offset = 0;
+        let b64 = "";
+
+        let processor = (data, binary) => {
+            var lines = MPDConnection._lineSplit(data);
+            let meta = {b64: binary};
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                if (line.indexOf(SIZE_PREFIX) === 0) {
+                    meta.size = parseInt(line.substring(SIZE_PREFIX.length));
+                } else if (line.indexOf(BINARY_PREFIX) === 0) {
+                    meta.binary = parseInt(line.substring(BINARY_PREFIX.length));
+                }
+            }
+            return meta;
+        };
+
+        let metaCheck = (meta) => {
+            offset += meta.binary;
+            b64 += meta.b64;
+            if (offset < meta.size) {
+                addTask();
+            } else {
+                cb(b64);
+            }
+        };
+
+        let addTask = () => {
+            let cmd = "albumart";
+            if (uri && uri !== "") {
+                cmd += " \""+uri+"\" "+offset;
+            }
+            this.queue.push({
+                cmd: cmd,
+                process: processor,
+                cb: metaCheck,
+                errorcb: errorcb,
+                response: "",
+                state: INITIAL
+            });
+        }
+        addTask();
 	}
+
+    albumArtForAlbum(artist, album, cb, errorcb) {
+        this.getSongsForAlbum(album, artist,
+            (songs) => {
+                if (songs.length > 0) {
+                    this.albumart(songs[0].file, cb, errorcb);
+                } else {
+                    errorcb("Songs for "+artist+" "+album+" not found");
+                }
+            },
+            errorcb
+        );
+    }
 
 	listMounts(cb, errorcb) {
 		var processor = function(data) {
@@ -1476,9 +1515,10 @@ export default {
         return promise;
     },
     disconnect: function() {
-        connection.disconnect();
-		connection = undefined;
-
+        if (connection) {
+            connection.disconnect();
+            connection = undefined;
+        }
     },
     isConnected: function() {
         return connection !== undefined;

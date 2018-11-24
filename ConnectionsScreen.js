@@ -132,7 +132,6 @@ export default class ConnectionsScreen extends React.Component {
 
         const currentConnection = MPDConnection.current();
         if (currentConnection !== undefined && currentConnection.isConnected) {
-            console.log("currentConnection "+currentConnection.name+currentConnection.host+currentConnection.port);
             this.state.selected.set(currentConnection.name+currentConnection.host+currentConnection.port, true);
         }
         let discovered = MPDConnection.getDiscoveredList();

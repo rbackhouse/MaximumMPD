@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { View, Text, StyleSheet, SectionList, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, SectionList, ActivityIndicator, TouchableOpacity, Alert, Image } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
@@ -24,6 +24,7 @@ import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import NewPlaylistModal from './NewPlaylistModal';
+import AlbumArt from './AlbumArt';
 
 export default class SearchScreen extends React.Component {
 
@@ -85,7 +86,7 @@ export default class SearchScreen extends React.Component {
         let artists = [], albums = [], songs = [], artistCheck = [], albumCheck = [];
         if (text.length > 2) {
             this.setState({loading: true});
-            MPDConnection.current().search(text.toLowerCase(), 0, 299,
+            MPDConnection.current().search(text.toLowerCase(), 0, 49,
                 (results) => {
                     this.setState({loading: false});
                     results.forEach((result) => {
@@ -98,8 +99,16 @@ export default class SearchScreen extends React.Component {
                         if (!albumCheck.includes(result.album) && album.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
                             albums.push(album);
                             albumCheck.push(result.album);
+                            AlbumArt.getAlbumArt(artist.artist, album.album)
+                            .then((b64) => {
+                                if (b64) {
+                                    album.base64Image = 'data:image/png;base64,'+b64;
+                                    this.setState({albums: albums});
+                                }
+                            });
+
                         }
-                        if (result.title.toLowerCase().indexOf(text.toLowerCase()) > -1) {
+                        if (result.title && result.title.toLowerCase().indexOf(text.toLowerCase()) > -1) {
                             songs.push({
                                 title: result.title,
                                 time: result.time,
@@ -280,6 +289,12 @@ export default class SearchScreen extends React.Component {
                             return (
                                 <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                                     <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+                                        {item.base64Image === undefined &&
+                                            <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./icons8-cd-100.png')}/>
+                                        }
+                                        {item.base64Image !== undefined &&
+                                            <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.base64Image}}/>
+                                        }
                                         <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                                             {item.artist && <Text style={styles.item}>{item.artist}</Text>}
                                             {item.album && <Text style={styles.item}>{item.album}</Text>}

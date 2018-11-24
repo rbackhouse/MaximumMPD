@@ -30,6 +30,11 @@
 @property (strong, nonatomic) NSString* host;
 @property (nonatomic) int port;
 @property (nonatomic) BOOL internalConnect;
+@property (nonatomic) NSMutableData *_data;
+@property (nonatomic) BOOL binaryFound;
+@property (nonatomic) unsigned long binaryOffset;
+@property (nonatomic) unsigned long binarySize;
+@property (nonatomic) NSString *binaryTxt;
 
 @end
 
