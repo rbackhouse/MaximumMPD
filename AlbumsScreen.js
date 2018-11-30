@@ -180,7 +180,7 @@ export default class AlbumsScreen extends React.Component {
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                 <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}}>
                     {item.base64Image === undefined &&
-                        <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./icons8-cd-100.png')}/>
+                        <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
                     }
                     {item.base64Image !== undefined &&
                         <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.base64Image}}/>

@@ -245,7 +245,7 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
   if (range.location == NSNotFound) {
     return FALSE;
   } else {
-    NSLog(@"Error found at position %lu", (unsigned long)range.location);
+    //NSLog(@"Error found at position %lu", (unsigned long)range.location);
     return TRUE;
   }
 }
@@ -262,7 +262,7 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
   if (range.location == NSNotFound) {
     return FALSE;
   } else {
-    NSLog(@"Init found at position %lu", (unsigned long)range.location);
+    //NSLog(@"Init found at position %lu", (unsigned long)range.location);
     return TRUE;
   }
 }

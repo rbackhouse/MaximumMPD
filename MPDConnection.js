@@ -633,7 +633,9 @@ class MPDConnection {
 				} else if (line.indexOf(TRACK_PREFIX) === 0) {
 					song.track = line.substring(TRACK_PREFIX.length);
 				} else if (line.indexOf(TIME_PREFIX) === 0) {
-					song.time = MPDConnection._convertTime(line.substring(TIME_PREFIX.length));
+                    const time = line.substring(TIME_PREFIX.length);
+                    song.rawTime = time;
+					song.time = MPDConnection._convertTime(time);
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
 					song = {};
 					songs.push(song);

@@ -281,7 +281,7 @@ export default class SongsScreen extends React.Component {
                             </View>
                             <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}, styles.rowFront]}>
                                 {this.state.base64Image.length < 1 &&
-                                    <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./icons8-cd-100.png')}/>
+                                    <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
                                 }
                                 {this.state.base64Image.length > 0 &&
                                     <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: this.state.base64Image}}/>

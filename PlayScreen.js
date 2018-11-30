@@ -230,7 +230,7 @@ export default class PlayScreen extends React.Component {
                       </View>
                       <View style={{flex: .4, width: "60%", alignItems: 'center', justifyContent: 'center'}} >
                           {this.state.base64Image.length < 1 &&
-                              <Image style={{width: albumArtSize, height: albumArtSize}} source={require('./icons8-cd-100.png')}/>
+                              <Image style={{width: albumArtSize, height: albumArtSize}} source={require('./images/icons8-cd-filled-100.png')}/>
                           }
                           {this.state.base64Image.length > 0 &&
                               <Image style={{width: albumArtSize, height: albumArtSize, resizeMode: 'contain'}} source={{uri: this.state.base64Image}}/>

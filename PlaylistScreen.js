@@ -104,7 +104,8 @@ export default class PlaylistScreen extends React.Component {
           loading: false,
           isPlaying: false,
           currentSongId: -1,
-          modalVisible: false
+          modalVisible: false,
+          totalTime: ""
         };
     }
 
@@ -204,6 +205,27 @@ export default class PlaylistScreen extends React.Component {
             (playlist) => {
                 this.setState({loading: false});
                 this.setState({playlist: playlist});
+
+                let totalTime = 0;
+                playlist.forEach((entry) => {
+                    totalTime += Math.floor(parseInt(entry.rawTime));
+                });
+                if (totalTime > 0) {
+                    const hours = Math.floor(totalTime / 3600)
+                    if (hours > 0) {
+                        totalTime %= 3600;
+                    }
+                    const minutes = Math.floor(totalTime / 60);
+            		let seconds = totalTime - minutes * 60;
+            		seconds = (seconds < 10 ? '0' : '') + seconds;
+                    if (hours > 0) {
+            		    this.setState({totalTime: hours+"h "+minutes+"m "+seconds+"s"});
+                    } else {
+                        this.setState({totalTime: minutes+"m "+seconds+"s"});
+                    }
+                } else {
+                    this.setState({totalTime: ""});
+                }
             },
             (err) => {
                 this.setState({loading: false});
@@ -273,7 +295,7 @@ export default class PlaylistScreen extends React.Component {
                 <View style={{flex: .1, flexDirection: 'row', alignItems: 'center' }}>
                     <View style={{flex: 1, justifyContent: 'center'}}>
                         <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic', paddingLeft: 10}}>
-                            Total : {this.state.playlist.length}
+                            Total : {this.state.playlist.length}   Time : {this.state.totalTime}
                         </Text>
                     </View>
                 </View>

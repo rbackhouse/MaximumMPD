@@ -16,12 +16,13 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, InteractionManager } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
+import AlbumArt from './AlbumArt';
 
 export default class ArtistsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -88,6 +89,15 @@ export default class ArtistsScreen extends React.Component {
             (artists) => {
                 this.setState({loading: false});
                 this.setState({artists: artists, fullset: artists});
+                AlbumArt.getAlbumArtForArtists(artists)
+                .then((artMap) => {
+                    artists.forEach((artist) => {
+                        if (artMap[artist.name]) {
+                            artist.base64Image = 'data:image/png;base64,'+artMap[artist.name];
+                        }
+                    })
+                    this.setState({artists: this.state.artists, fullset: this.state.fullset});
+                });
             },
             (err) => {
                 this.setState({loading: false});
@@ -139,7 +149,12 @@ export default class ArtistsScreen extends React.Component {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                 <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                    <Icon name="ios-people" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                    {item.base64Image === undefined &&
+                        <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./images/icons8-dj-30.png')}/>
+                    }
+                    {item.base64Image !== undefined &&
+                        <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.base64Image}}/>
+                    }
                     <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
