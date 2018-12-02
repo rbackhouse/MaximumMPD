@@ -57,27 +57,24 @@ export default class SongsScreen extends React.Component {
 
         this.setState({loading: true});
 
-        MPDConnection.current().getSongsForAlbum(
-            album,
-            artist,
-            (songs) => {
-                this.setState({loading: false});
-                this.setState({songs: songs});
-                AlbumArt.getAlbumArt(artist, album, songs[0].file)
-                .then((b64) => {
-                    if (b64) {
-                        this.setState({base64Image: 'data:image/png;base64,'+b64});
-                    }
-                });
-            },
-            (err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            }
-        );
+        MPDConnection.current().getSongsForAlbum(album, artist)
+        .then((songs) => {
+            this.setState({loading: false});
+            this.setState({songs: songs});
+            AlbumArt.getAlbumArt(artist, album, songs[0].file)
+            .then((b64) => {
+                if (b64) {
+                    this.setState({base64Image: 'data:image/png;base64,'+b64});
+                }
+            });
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
         this.onDisconnect = MPDConnection.getEventEmitter().addListener(
             "OnDisconnect",
             () => {
@@ -104,38 +101,30 @@ export default class SongsScreen extends React.Component {
 
             this.setState({loading: true});
 
-            MPDConnection.current().addAlbumToNamedPlayList(
-                album,
-                artist,
-                MPDConnection.current().getCurrentPlaylistName(),
-                () => {
-                    this.setState({loading: false});
-                },
-                (err) => {
-                    this.setState({loading: false});
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
+            MPDConnection.current().addAlbumToNamedPlayList(album, artist, MPDConnection.current().getCurrentPlaylistName())
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         } else {
             this.setState({loading: true});
-
-            MPDConnection.current().addAlbumToPlayList(
-                album,
-                artist,
-                () => {
-                    this.setState({loading: false});
-                },
-                (err) => {
-                    this.setState({loading: false});
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
+            MPDConnection.current().addAlbumToPlayList(album, artist)
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         }
     }
 
@@ -150,35 +139,30 @@ export default class SongsScreen extends React.Component {
             }
 
             this.setState({loading: true});
-            MPDConnection.current().addSongToNamedPlayList(
-                decodeURIComponent(Base64.atob(item.b64file)),
-                MPDConnection.current().getCurrentPlaylistName(),
-                () => {
-                    this.setState({loading: false});
-                },
-                (err) => {
-                    this.setState({loading: false});
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
+            MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(Base64.atob(item.b64file)), MPDConnection.current().getCurrentPlaylistName())
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         } else {
             this.setState({loading: true});
-            MPDConnection.current().addSongToPlayList(
-                decodeURIComponent(Base64.atob(item.b64file)),
-                () => {
-                    this.setState({loading: false});
-                },
-                (err) => {
-                    this.setState({loading: false});
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
+            MPDConnection.current().addSongToPlayList(decodeURIComponent(Base64.atob(item.b64file)))
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         }
     }
 
@@ -223,20 +207,17 @@ export default class SongsScreen extends React.Component {
                 }
             );
         } else {
-            MPDConnection.current().addSongToNamedPlayList(
-                decodeURIComponent(Base64.atob(selectedItem)),
-                MPDConnection.current().getCurrentPlaylistName(),
-                () => {
-                    this.setState({loading: false});
-                },
-                (err) => {
-                    this.setState({loading: false});
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
+            MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(Base64.atob(selectedItem)), MPDConnection.current().getCurrentPlaylistName())
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         }
     }
 

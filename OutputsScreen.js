@@ -58,56 +58,51 @@ export default class OutputsScreen extends React.Component {
     getOutputs() {
         this.setState({loading: true});
 
-        MPDConnection.current().getOutputs(
-            (outputs) => {
-                outputs.forEach((output) => {
-                    output.key = output.id;
-                });
-                this.setState({outputs: outputs, loading: false});
-            },
-            (err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            }
-        );
+        MPDConnection.current().getOutputs()
+        .then((outputs) => {
+            outputs.forEach((output) => {
+                output.key = output.id;
+            });
+            this.setState({outputs: outputs, loading: false});
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     onOutputChange(value, id) {
         this.setState({loading: true});
 
         if (value === true) {
-            MPDConnection.current().enableOutput(
-                id,
-                () => {
-                    this.setState({loading: false});
-                    this.getOutputs();
-                },
-                (err) => {
-                    this.setState({loading: false});
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
+            MPDConnection.current().enableOutput(id)
+            .then(() => {
+                this.setState({loading: false});
+                this.getOutputs();
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         } else {
-            MPDConnection.current().disableOutput(
-                id,
-                () => {
-                    this.setState({loading: false});
-                    this.getOutputs();
-                },
-                (err) => {
-                    this.setState({loading: false});
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
+            MPDConnection.current().disableOutput(id)
+            .then(() => {
+                this.setState({loading: false});
+                this.getOutputs();
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         }
     }
 

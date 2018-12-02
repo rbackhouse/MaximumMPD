@@ -134,6 +134,43 @@ class ReplayGainModal extends React.Component {
     }
 }
 
+class AboutModal extends React.Component {
+    onOk() {
+        this.props.onOk();
+    }
+
+    render() {
+        const visible = this.props.visible;
+        return (
+            <Modal
+                animationType="fade"
+                transparent={false}
+                visible={visible}
+                onRequestClose={() => {
+            }}>
+                <View style={{marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'}}>
+                    <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                        <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>About Maximum MPD</Text>
+                    </View>
+                    <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Version: 1.0</Text>
+                    <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Author: Richard Backhouse</Text>
+                    <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Various Images provided by Icons8 (https://icons8.com)</Text>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                        <Button
+                            onPress={() => {this.onOk();}}
+                            title="Ok"
+                            icon={{name: 'check', type: 'font-awesome'}}
+                            raised={true}
+                            rounded
+                            backgroundColor={'#3396FF'}
+                        />
+                    </View>
+                </View>
+            </Modal>
+        );
+    }
+}
+
 export default class SettingsScreen extends React.Component {
     static navigationOptions = {
         title: 'Settings'
@@ -149,7 +186,8 @@ export default class SettingsScreen extends React.Component {
         stopAftetSongPlayed: false,
         removeSongAfterPlay: false,
         randomPlaylistByType: false,
-        albumart: false
+        albumart: false,
+        aboutVisible: false
     }
 
     componentDidMount() {
@@ -311,6 +349,11 @@ export default class SettingsScreen extends React.Component {
                     <SettingsList.Header headerStyle={{marginTop:15}}/>
                     <SettingsList.Item
                       hasNavArrow={true}
+                      title='About'
+                      onPress={() => this.setState({aboutVisible: true})}
+                    />
+                    <SettingsList.Item
+                      hasNavArrow={true}
                       title='Connections'
                       onPress={() => this.props.navigation.navigate('Connections', {navigateOnConnect: false})}
                     />
@@ -383,6 +426,7 @@ export default class SettingsScreen extends React.Component {
                 </SettingsList>
                 <ReplayGainModal replayGain={this.state.replayGain} visible={this.state.replayGainVisible} onSet={(value) => {this.setReplayGain(value)}} onCancel={() => this.setState({replayGainVisible: false})}></ReplayGainModal>
                 <CrossfadeModal value={this.state.crossfade} visible={this.state.crossfadeVisible} onSet={(value) => {this.setCrossfade(value)}} onCancel={() => this.setState({crossfadeVisible: false})}></CrossfadeModal>
+                <AboutModal visible={this.state.aboutVisible} onOk={() => this.setState({aboutVisible: false})}></AboutModal>
             </View>
         );
     }

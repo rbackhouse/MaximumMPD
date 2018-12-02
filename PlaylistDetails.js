@@ -64,22 +64,20 @@ export default class PlaylistDetails extends React.Component {
 
     load() {
         this.setState({loading: true});
-        MPDConnection.current().getNamedPlayListInfo(
-            this.playlistName,
-            (playlist) => {
+        MPDConnection.current().getNamedPlayListInfo(this.playlistName)
+        .then((playlist) => {
                 this.setState({loading: false});
                 this.setState({playlist: playlist, fullset: playlist});
-            },
-            (err) => {
-                this.setState({loading: false});
-                if (err.indexOf("No such playlist") === -1) {
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            if (err.indexOf("No such playlist") === -1) {
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
             }
-        );
+        });
     }
 
     search = (text) => {
@@ -95,21 +93,18 @@ export default class PlaylistDetails extends React.Component {
 
     onPress(item, index) {
         this.setState({loading: true});
-        MPDConnection.current().deletePlayListItem(
-            this.playlistName,
-            index,
-            () => {
-                this.setState({loading: false});
-                this.load();
-            },
-            (err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            }
-        );
+        MPDConnection.current().deletePlayListItem(this.playlistName, index)
+        .then(() => {
+            this.setState({loading: false});
+            this.load();
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     onDelete() {
@@ -120,20 +115,18 @@ export default class PlaylistDetails extends React.Component {
             [
                 {text: 'OK', onPress: () => {
                     this.setState({loading: true});
-                    MPDConnection.current().deletePlayList(
-                        this.playlistName,
-                        () => {
-                            this.setState({loading: false});
-                            navigation.pop();
-                        },
-                        (err) => {
-                            this.setState({loading: false});
-                            Alert.alert(
-                                "MPD Error",
-                                "Error : "+err
-                            );
-                        }
-                    );
+                    MPDConnection.current().deletePlayList(this.playlistName)
+                    .then(() => {
+                        this.setState({loading: false});
+                        navigation.pop();
+                    })
+                    .catch((err) => {
+                        this.setState({loading: false});
+                        Alert.alert(
+                            "MPD Error",
+                            "Error : "+err
+                        );
+                    });
                 }},
                 {text: 'Cancel'}
             ]
@@ -143,19 +136,17 @@ export default class PlaylistDetails extends React.Component {
     onLoad() {
         this.setState({loading: true});
 
-        MPDConnection.current().loadPlayList(
-            this.playlistName,
-            () => {
-                this.setState({loading: false});
-            },
-            (err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            }
-        );
+        MPDConnection.current().loadPlayList(this.playlistName)
+        .then(() => {
+            this.setState({loading: false});
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     renderSeparator = () => {

@@ -52,29 +52,27 @@ export default class AlbumsScreen extends React.Component {
 
         this.setState({loading: true});
 
-        MPDConnection.current().getAlbumsForArtist(
-            artist,
-            (albums) => {
-                this.setState({loading: false});
-                this.setState({albums: albums, fullset: albums});
-                albums.forEach((album) => {
-                    AlbumArt.getAlbumArt(artist, album.name)
-                    .then((b64) => {
-                        if (b64) {
-                            album.base64Image = 'data:image/png;base64,'+b64;
-                            this.setState({albums: this.state.albums, fullset: this.state.fullset});
-                        }
-                    });
+        MPDConnection.current().getAlbumsForArtist(artist)
+        .then((albums) => {
+            this.setState({loading: false});
+            this.setState({albums: albums, fullset: albums});
+            albums.forEach((album) => {
+                AlbumArt.getAlbumArt(artist, album.name)
+                .then((b64) => {
+                    if (b64) {
+                        album.base64Image = 'data:image/png;base64,'+b64;
+                        this.setState({albums: this.state.albums, fullset: this.state.fullset});
+                    }
                 });
-            },
-            (err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            }
-        );
+            });
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
         this.onDisconnect = MPDConnection.getEventEmitter().addListener(
             "OnDisconnect",
             () => {
@@ -101,39 +99,32 @@ export default class AlbumsScreen extends React.Component {
             this.state.albums.forEach((album) => {
                 this.setState({loading: true});
 
-                MPDConnection.current().addAlbumToNamedPlayList(
-                    album.name,
-                    artist,
-                    MPDConnection.current().getCurrentPlaylistName(),
-                    () => {
-                        this.setState({loading: false});
-                    },
-                    (err) => {
-                        this.setState({loading: false});
-                        Alert.alert(
-                            "MPD Error",
-                            "Error : "+err
-                        );
-                    }
-                );
+                MPDConnection.current().addAlbumToNamedPlayList(album.name, artist, MPDConnection.current().getCurrentPlaylistName())
+                .then(() => {
+                    this.setState({loading: false});
+                })
+                .catch((err) => {
+                    this.setState({loading: false});
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                });
             });
         } else {
             this.state.albums.forEach((album) => {
                 this.setState({loading: true});
-                MPDConnection.current().addAlbumToPlayList(
-                    album.name,
-                    artist,
-                    () => {
-                        this.setState({loading: false});
-                    },
-                    (err) => {
-                        this.setState({loading: false});
-                        Alert.alert(
-                            "MPD Error",
-                            "Error : "+err
-                        );
-                    }
-                );
+                MPDConnection.current().addAlbumToPlayList(album.name, artist)
+                .then(() => {
+                    this.setState({loading: false});
+                })
+                .catch((err) => {
+                    this.setState({loading: false});
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                });
             });
         }
     }

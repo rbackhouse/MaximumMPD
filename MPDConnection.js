@@ -111,7 +111,12 @@ class MPDConnection {
     				this.queue = [];
     				this.isConnected = true;
                     if (pwd) {
-                        this.login(pwd);
+                        this.login(pwd)
+                        .then(() => {
+                        })
+                        .catch((err) => {
+                            callback(err);
+                        });
                     }
                     //this.startEmittingStatus();
                     if (!noemit) {
@@ -280,13 +285,30 @@ class MPDConnection {
 		return decodeURIComponent(uri);
 	}
 
-    search(filter, start, end, cb, errorcb) {
-        var processor = (data) => {
-			var lines = MPDConnection._lineSplit(data);
-			var songs = [];
-			for (var i = 0; i < lines.length; i++) {
-                let line = lines[i];
+    createPromise(cmd, processor) {
+        const promise = new Promise((resolve, reject) => {
+            this.queue.push({
+                cmd: cmd,
+    			process: processor,
+    			cb: (result) => {
+                    resolve(result);
+                },
+    			errorcb: (err) => {
+                    reject(err);
+                },
+    			response: "",
+    			state: INITIAL
+    		});
+        });
+        return promise;
+    }
 
+    search(filter, start, end) {
+        const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+			let songs = [];
+            let song;
+			lines.forEach((line) => {
                 if (line.indexOf(ARTIST_PREFIX) === 0) {
 					song.artist = line.substring(ARTIST_PREFIX.length);
 				} else if (line.indexOf(ALBUM_PREFIX) === 0) {
@@ -300,33 +322,26 @@ class MPDConnection {
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
 					song = {};
 					songs.push(song);
-					var file = line.substring(FILE_PREFIX.length);
+					const file = line.substring(FILE_PREFIX.length);
 					song.file = file;
 					song.b64file = this.toBase64(file);
 				}
-			}
+			});
 			return songs;
 		};
         let searchCmd = "search any \""+filter+"\"";
         if (this.version > 19) {
             searchCmd += " window "+start+":"+end;
         }
-		this.queue.push({
-            cmd: searchCmd,
-			process: processor,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+        return this.createPromise(searchCmd, processor);
     }
 
-    getAllArtists(filter, cb, errorcb) {
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			var artists = [];
-			for (var i = 0; i < lines.length; i++) {
-				var name = lines[i].substring(ARTIST_PREFIX.length);
+    getAllArtists(filter) {
+		const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+			let artists = [];
+            lines.forEach((line) => {
+				let name = line.substring(ARTIST_PREFIX.length);
 				if (name && name.trim().length > 0) {
 					if (filter) {
 						if (name.toLowerCase().indexOf(filter.toLowerCase()) === 0) {
@@ -336,8 +351,8 @@ class MPDConnection {
 						artists.push({name: name});
 					}
 				}
-			}
-			artists.sort(function(a,b) {
+			});
+			artists.sort((a,b) => {
 				if (a.name < b.name) {
 					return -1;
 				} else if (a.name > b.name) {
@@ -347,32 +362,24 @@ class MPDConnection {
 				}
 			});
 			return artists;
-		}.bind(this);
-		this.queue.push({
-			cmd: "list artist",
-			process: processor,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+		};
+        return this.createPromise("list artist", processor);
 	}
 
-	getAllAlbums(filter, cb, errorcb) {
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			var albums = [];
-			var line;
-			var album;
-			for (var i = 0; i < lines.length; i++) {
-				line = lines[i];
+	getAllAlbums(filter) {
+		const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+			let albums = [];
+			let line;
+			let album;
+            lines.forEach((line) => {
 				if (line.indexOf(ARTIST_PREFIX) === 0) {
-					var artist = lines[i].substring(ARTIST_PREFIX.length);
+					let artist = line.substring(ARTIST_PREFIX.length);
 					if (artist && artist.trim().length > 0 && album) {
 						album.artist = artist;
 					}
 				} else if (line.indexOf(ALBUM_PREFIX) === 0) {
-					var name = lines[i].substring(ALBUM_PREFIX.length);
+					let name = line.substring(ALBUM_PREFIX.length);
 					if (name && name.trim().length > 0) {
 						album = {name: name};
 						if (filter) {
@@ -386,8 +393,8 @@ class MPDConnection {
 						}
 					}
 				}
-			}
-			albums.sort(function(a,b) {
+			});
+			albums.sort((a,b) => {
 				if (a.name < b.name) {
 					return -1;
 				} else if (a.name > b.name) {
@@ -397,15 +404,8 @@ class MPDConnection {
 				}
 			});
 			return albums;
-		}.bind(this);
-		this.queue.push({
-			cmd: "list album group artist",
-			process: processor,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+		};
+        return this.createPromise("list album group artist", processor);
 	}
 
 	getStatus(cb, errorcb) {
@@ -501,17 +501,17 @@ class MPDConnection {
 		});
 	}
 
-	getAlbumsForArtist(artist, cb, errorcb) {
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			var albums = [];
-			for (var i = 0; i < lines.length; i++) {
-				var name = lines[i].substring(ALBUM_PREFIX.length);
+	getAlbumsForArtist(artist) {
+		const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+			let albums = [];
+            lines.forEach((line) => {
+				let name = line.substring(ALBUM_PREFIX.length);
 				if (name && name.trim().length > 0) {
 					albums.push({name: name, artist: artist});
 				}
-			}
-			albums.sort(function(a,b) {
+			});
+			albums.sort((a,b) => {
 				if (a.name < b.name) {
 					return -1;
 				} else if (a.name > b.name) {
@@ -521,24 +521,16 @@ class MPDConnection {
 				}
 			});
 			return albums;
-		}.bind(this);
-		this.queue.push({
-			cmd: "list album artist \""+artist+"\"",
-			process: processor,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+		};
+        return this.createPromise("list album artist \""+artist+"\"", processor);
 	}
 
-	getSongsForAlbum(album, artist, cb, errorcb) {
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			var songs = [];
-			var song;
-			for (var i = 0; i < lines.length; i++) {
-				var line = lines[i];
+	getSongsForAlbum(album, artist) {
+		const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+			let songs = [];
+			let song;
+            lines.forEach((line) => {
 				if (line.indexOf(TITLE_PREFIX) === 0) {
 					song.title = line.substring(TITLE_PREFIX.length);
 				} else if (line.indexOf(TRACK_PREFIX) === 0) {
@@ -552,31 +544,23 @@ class MPDConnection {
 					song.file = file;
 					song.b64file = this.toBase64(file);
 				}
-			}
+			});
 			return songs;
-		}.bind(this);
+		};
 		var cmd = "find album \""+album.replace(/"/g, "\\\"")+"\"";
 		if (artist) {
 			cmd += " artist \""+artist.replace(/"/g, "\\\"")+"\"";
 		}
-		this.queue.push({
-			cmd: cmd,
-			process: processor,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+        return this.createPromise(cmd, processor);
 	}
 
-	getSongs(songFilter, type, cb, errorcb) {
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			var songs = [];
-			var song;
-			var count = 0;
-			for (var i = 0; i < lines.length; i++) {
-				var line = lines[i];
+	getSongs(songFilter, type) {
+		const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+			let songs = [];
+			let song;
+			let count = 0;
+            lines.forEach((line) => {
 				if (line.indexOf(ARTIST_PREFIX) === 0) {
 					song.artist = line.substring(ARTIST_PREFIX.length);
 				} else if (line.indexOf(ALBUM_PREFIX) === 0) {
@@ -590,40 +574,32 @@ class MPDConnection {
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
 					song = {};
 					if (count++ > 99) {
-						break;
+						return;
 					}
 					songs.push(song);
-					var file = line.substring(FILE_PREFIX.length);
+					const file = line.substring(FILE_PREFIX.length);
 					song.file = file;
 					song.b64file = this.toBase64(file);
 				}
-			}
+			});
 			return songs;
-		}.bind(this);
+		};
 		if (!type) {
 			type = "title";
 		}
-		this.queue.push({
-			cmd: "search "+type+" \""+songFilter.replace(/"/g, "\\\"")+"\"",
-			process: processor,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+        return this.createPromise("search "+type+" \""+songFilter.replace(/"/g, "\\\"")+"\"", processor);
 	}
 
-    getPlayListInfo(cb, errorcb) {
-        this.getNamedPlayListInfo(undefined, cb, errorcb);
+    getPlayListInfo() {
+        return this.getNamedPlayListInfo(undefined);
     }
 
-	getNamedPlayListInfo(name, cb, errorcb) {
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			var songs = [];
-			var song;
-			for (var i = 0; i < lines.length; i++) {
-				var line = lines[i];
+	getNamedPlayListInfo(name) {
+		const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+			let songs = [];
+			let song;
+            lines.forEach((line) => {
 				if (line.indexOf(ARTIST_PREFIX) === 0) {
 					song.artist = line.substring(ARTIST_PREFIX.length);
 				} else if (line.indexOf(ALBUM_PREFIX) === 0) {
@@ -645,23 +621,16 @@ class MPDConnection {
 				} else if (line.indexOf(POS_PREFIX) === 0) {
 					song.pos = parseInt(line.substring(POS_PREFIX.length));
 				}
-			}
+			});
 			return songs;
-		}.bind(this);
+		};
         let cmd;
         if (name) {
             cmd = "listplaylistinfo \""+name+"\"";
         } else {
             cmd = "playlistinfo"
         }
-		this.queue.push({
-			cmd: cmd,
-			process: processor,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+        return this.createPromise(cmd, processor);
 	}
 
 	next() {
@@ -718,108 +687,118 @@ class MPDConnection {
 		});
 	}
 
-	addAlbumToPlayList(albumName, artistName, cb) {
-		this.getSongsForAlbum(albumName, artistName, function(songs) {
-			var cmd = "command_list_begin\n";
-			for (var i = 0; i < songs.length; i++) {
-				cmd += "add \""+songs[i].file+"\"\n";
-			}
-			cmd += "command_list_end";
-			this.queue.push({
-				cmd: cmd,
-				cb: cb,
-				response: "",
-				state: INITIAL
-			});
-		}.bind(this));
+	addAlbumToPlayList(albumName, artistName) {
+        const promise = new Promise((resolve, reject) => {
+            this.getSongsForAlbum(albumName, artistName)
+            .then((songs) => {
+    			let cmd = "command_list_begin\n";
+                songs.forEach((song) => {
+    				cmd += "add \""+song.file+"\"\n";
+    			});
+    			cmd += "command_list_end";
+                this.createPromise(cmd)
+                .then(() => {
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+    		})
+            .catch((err) => {
+                reject(err);
+            })
+        });
+        return promise;
 	}
 
-    addAlbumToNamedPlayList(albumName, artistName, playlist, cb) {
-        this.getSongsForAlbum(albumName, artistName, function(songs) {
-			var cmd = "command_list_begin\n";
-			for (var i = 0; i < songs.length; i++) {
-				cmd += "playlistadd \""+playlist+"\" \""+songs[i].file+"\"\n";
-			}
-			cmd += "command_list_end";
-			this.queue.push({
-				cmd: cmd,
-				cb: cb,
-				response: "",
-				state: INITIAL
-			});
-		}.bind(this));
+    addAlbumToNamedPlayList(albumName, artistName, playlist) {
+        const promise = new Promise((resolve, reject) => {
+            this.getSongsForAlbum(albumName, artistName)
+            .then((songs) => {
+    			let cmd = "command_list_begin\n";
+                songs.forEach((song) => {
+                    cmd += "playlistadd \""+playlist+"\" \""+song.file+"\"\n";
+    			});
+    			cmd += "command_list_end";
+                this.createPromise(cmd)
+                .then(() => {
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+    		})
+            .catch((err) => {
+                reject(err);
+            })
+        });
+        return promise;
     }
 
-	addSongToPlayList(song, cb, errorcb) {
-		this.queue.push({
-			cmd: "add \""+song+"\"",
-			cb: cb,
-			response: "",
-			errorcb: errorcb,
-			state: INITIAL
-		});
+	addSongToPlayList(song) {
+        return this.createPromise("add \""+song+"\"");
 	}
 
-    addSongToNamedPlayList(song, playlist, cb, errorcb) {
-		this.queue.push({
-			cmd: "playlistadd \""+playlist+"\" \""+song+"\"",
-			cb: cb,
-			response: "",
-			errorcb: errorcb,
-			state: INITIAL
-		});
+    addSongToNamedPlayList(song, playlist) {
+        return this.createPromise("playlistadd \""+playlist+"\" \""+song+"\"");
 	}
 
-	addSongsToPlayList(songs, cb) {
-		var cmd = "command_list_begin\n";
-		for (var i = 0; i < songs.length; i++) {
-			cmd += "add \""+songs[i]+"\"\n";
-		}
+	addSongsToPlayList(songs) {
+		let cmd = "command_list_begin\n";
+        songs.forEach((song) => {
+			cmd += "add \""+song+"\"\n";
+		});
 		cmd += "command_list_end";
-		this.queue.push({
-			cmd: cmd,
-			cb: cb,
-			response: "",
-			state: INITIAL
-		});
+        return this.createPromise(cmd);
 	}
 
-    addDirectoryToNamedPlayList(dir, playlist, cb, errorcb) {
-		this.listFiles(dir, function(filelist) {
-			var cmd = "command_list_begin\n";
-			filelist.files.forEach(function(fileEntry) {
-				if (fileEntry.file.indexOf('.cue', fileEntry.file.length - '.cue'.length) === -1) {
-					cmd += "playlistadd \""+playlist+"\"  \""+dir+fileEntry.file+"\"\n";
-				}
-			});
-			cmd += "command_list_end";
-			this.queue.push({
-				cmd: cmd,
-				cb: cb,
-				errorcb: errorcb,
-				response: "",
-				state: INITIAL
-			});
-		}.bind(this));
+    addDirectoryToNamedPlayList(dir, playlist) {
+        const promise = new Promise((resolve, reject) => {
+    		this.listFiles(dir)
+            .then((filelist) => {
+    			let cmd = "command_list_begin\n";
+    			filelist.files.forEach((fileEntry) => {
+    				if (fileEntry.file.indexOf('.cue', fileEntry.file.length - '.cue'.length) === -1) {
+    					cmd += "playlistadd \""+playlist+"\"  \""+dir+fileEntry.file+"\"\n";
+    				}
+    			});
+    			cmd += "command_list_end";
+                this.createPromise(cmd)
+                .then(() => {
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+    		})
+            .catch((err) => {
+                reject(err);
+            });
+        });
+        return promise;
 	}
 
 	addDirectoryToPlayList(dir, cb, errorcb) {
-		this.listFiles(dir, function(filelist) {
-			var cmd = "command_list_begin\n";
-			filelist.files.forEach(function(fileEntry) {
-				if (fileEntry.file.indexOf('.cue', fileEntry.file.length - '.cue'.length) === -1) {
-					cmd += "add \""+dir+fileEntry.file+"\"\n";
-				}
-			});
-			cmd += "command_list_end";
-			this.queue.push({
-				cmd: cmd,
-				cb: cb,
-				errorcb: errorcb,
-				response: "",
-				state: INITIAL
-			});
-		}.bind(this));
+        const promise = new Promise((resolve, reject) => {
+    		this.listFiles(dir)
+            .then((filelist) => {
+    			let cmd = "command_list_begin\n";
+    			filelist.files.forEach((fileEntry) => {
+    				if (fileEntry.file.indexOf('.cue', fileEntry.file.length - '.cue'.length) === -1) {
+    					cmd += "add \""+dir+fileEntry.file+"\"\n";
+    				}
+    			});
+    			cmd += "command_list_end";
+                this.createPromise(cmd)
+                .then(() => {
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+    		});
+        });
+        return promise;
 	}
 
 	clearPlayList() {
@@ -839,114 +818,98 @@ class MPDConnection {
 	}
 
 	update() {
-		var cb = function() {
-		}.bind(this);
 		this.queue.push({
 			cmd: "update ",
-			cb: cb,
 			response: "",
 			state: INITIAL
 		});
 	}
 
-	login(password, cb, errorcb) {
-		this.queue.push({
-			cmd: "password "+password,
-			response: "",
-            cb: cb,
-			errorcb: errorcb,
-			state: INITIAL
-		});
+	login(password) {
+        return this.createPromise("password "+password);
 	}
 
-	runCommand(cmd, cb, errorcb) {
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			return lines;
-		}.bind(this);
-		this.queue.push({
-			cmd: cmd,
-			process: processor,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+	runCommand(cmd) {
+		const processor = (data) => {
+			return MPDConnection._lineSplit(data);
+		};
+        return this.createPromise(cmd, processor);
 	}
 
-	randomPlayList(type, typevalue, cb, errorcb) {
-		var callback = function(songs) {
-			var random = [];
-			if (songs.length > 60) {
-				var count = 0;
-				while (count < 50) {
-					var index = Math.floor((Math.random()*songs.length-1)+1);
-					if (random.indexOf(songs[index]) < 0) {
-						count++;
-						random.push(songs[index]);
-					}
-				}
-			} else {
-				for (var i = 0; songs.length > 50 ? i < 50 : i < songs.length; i++) {
-					random.push(songs[i]);
-				}
-			}
-			this.addSongsToPlayList(random, function() {
-				cb();
-			});
-		}.bind(this);
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			var songs = [];
-			var count = 0;
-			for (var i = 0; i < lines.length; i++) {
-				var line = lines[i];
+	randomPlayList(type, typevalue) {
+        const promise = new Promise((resolve, reject) => {
+    		const processor = (data) => {
+    			const lines = MPDConnection._lineSplit(data);
+    			let songs = [];
+    			let count = 0;
+                lines.forEach((line) => {
+    				if (line.indexOf(FILE_PREFIX) === 0) {
+    					songs.push(line.substring(FILE_PREFIX.length));
+    				}
+    			});
+    			return songs;
+    		};
+    		let cmd = "search ";
+    		if (type) {
+    			cmd += type;
+    			cmd += " \"";
+    			cmd += typevalue;
+    			cmd += "\"";
+    		} else {
+    			cmd += "title \"\"";
+    		}
+            this.createPromise(cmd, processor)
+            .then((songs) => {
+                let random = [];
+    			if (songs.length > 60) {
+    				let count = 0;
+    				while (count < 50) {
+    					let index = Math.floor((Math.random()*songs.length-1)+1);
+    					if (random.indexOf(songs[index]) < 0) {
+    						count++;
+    						random.push(songs[index]);
+    					}
+    				}
+    			} else {
+    				for (var i = 0; songs.length > 50 ? i < 50 : i < songs.length; i++) {
+    					random.push(songs[i]);
+    				}
+    			}
+    			this.addSongsToPlayList(random)
+                .then(() => {
+    				resolve();
+    			})
+                .catch((err) => {
+                    reject(err);
+                });
+            })
+            .catch((err) => {
+                reject(err);
+            })
+        });
+        return promise;
+	}
+
+	listFiles(uri) {
+		const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+			let dirs = [];
+			let files = [];
+            lines.forEach((line) => {
 				if (line.indexOf(FILE_PREFIX) === 0) {
-					songs.push(line.substring(FILE_PREFIX.length));
-				}
-			}
-			return songs;
-		}.bind(this);
-		var cmd = "search ";
-		if (type) {
-			cmd += type;
-			cmd += " \"";
-			cmd += typevalue;
-			cmd += "\"";
-		} else {
-			cmd += "title \"\"";
-		}
-		this.queue.push({
-			cmd: cmd,
-			process: processor,
-			cb: callback,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
-	}
-
-	listFiles(uri, cb, errorcb) {
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			var dirs = [];
-			var files = [];
-			for (var i = 0; i < lines.length; i++) {
-				var line = lines[i];
-				if (line.indexOf(FILE_PREFIX) === 0) {
-					var file = line.substring(FILE_PREFIX.length);
-					this.fileSuffixes.forEach(function(suffix) {
+					const file = line.substring(FILE_PREFIX.length);
+					this.fileSuffixes.forEach((suffix) => {
 						if (MPDConnection._endsWith(file, suffix)) {
-							var b64file = this.toBase64(file);
+							const b64file = this.toBase64(file);
 							files.push({file: file, b64file: b64file});
 						}
-					}.bind(this));
+					});
 				} else if (line.indexOf(DIR_PREFIX) === 0) {
-					var dir = line.substring(DIR_PREFIX.length);
-					var b64dir = this.toBase64(dir);
+					const dir = line.substring(DIR_PREFIX.length);
+					const b64dir = this.toBase64(dir);
 					dirs.push({dir: dir, b64dir: b64dir});
 				}
-			}
+			});
             files.sort((a,b) => {
 				if (a.file < b.file) {
 					return -1;
@@ -967,131 +930,115 @@ class MPDConnection {
 			});
 
 			return {files: files, dirs: dirs};
-		}.bind(this);
-		var cmd = "listfiles";
+		};
+		let cmd = "listfiles";
 		if (uri && uri !== "") {
 			cmd += " \""+this.decode(uri) + "\"";
 		}
-		this.queue.push({
-			cmd: cmd,
-			process: processor,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+        return this.createPromise(cmd, processor);
 	}
 
-	albumart(uri, cb, errorcb) {
-        if (this.version < 21) {
-            errorcb("Albumart is not supported");
-            return;
-        }
-        let offset = 0;
-        let b64 = "";
+	albumart(uri) {
+        const promise = new Promise((resolve, reject) => {
+            if (this.version < 21) {
+                reject("Albumart is not supported");
+                return;
+            }
+            let offset = 0;
+            let b64 = "";
 
-        let processor = (data, binary) => {
-            var lines = MPDConnection._lineSplit(data);
-            let meta = {b64: binary};
-            for (var i = 0; i < lines.length; i++) {
-                var line = lines[i];
-                if (line.indexOf(SIZE_PREFIX) === 0) {
-                    meta.size = parseInt(line.substring(SIZE_PREFIX.length));
-                } else if (line.indexOf(BINARY_PREFIX) === 0) {
-                    meta.binary = parseInt(line.substring(BINARY_PREFIX.length));
+            let processor = (data, binary) => {
+                const lines = MPDConnection._lineSplit(data);
+                let meta = {b64: binary};
+                lines.forEach((line) => {
+                    if (line.indexOf(SIZE_PREFIX) === 0) {
+                        meta.size = parseInt(line.substring(SIZE_PREFIX.length));
+                    } else if (line.indexOf(BINARY_PREFIX) === 0) {
+                        meta.binary = parseInt(line.substring(BINARY_PREFIX.length));
+                    }
+                });
+                return meta;
+            };
+
+            const addTask = () => {
+                let cmd = "albumart";
+                if (uri && uri !== "") {
+                    cmd += " \""+uri+"\" "+offset;
                 }
+                this.createPromise(cmd, processor)
+                .then((meta) => {
+                    offset += meta.binary;
+                    b64 += meta.b64;
+                    if (offset < meta.size) {
+                        addTask();
+                    } else {
+                        resolve(b64);
+                    }
+                })
+                .catch((err) => {
+                    reject(err);
+                });
             }
-            return meta;
-        };
-
-        let metaCheck = (meta) => {
-            offset += meta.binary;
-            b64 += meta.b64;
-            if (offset < meta.size) {
-                addTask();
-            } else {
-                cb(b64);
-            }
-        };
-
-        let addTask = () => {
-            let cmd = "albumart";
-            if (uri && uri !== "") {
-                cmd += " \""+uri+"\" "+offset;
-            }
-            this.queue.push({
-                cmd: cmd,
-                process: processor,
-                cb: metaCheck,
-                errorcb: errorcb,
-                response: "",
-                state: INITIAL
-            });
-        }
-        addTask();
+            addTask();
+        });
+        return promise;
 	}
 
-    albumArtForAlbum(artist, album, cb, errorcb) {
-        this.getSongsForAlbum(album, artist,
-            (songs) => {
+    albumArtForAlbum(artist, album) {
+        const promise = new Promise((resolve, reject) => {
+            this.getSongsForAlbum(album, artist)
+            .then((songs) => {
                 if (songs.length > 0) {
-                    this.albumart(songs[0].file, cb, errorcb);
+                    this.albumart(songs[0].file)
+                    .then(() => {
+                        resolve();
+                    })
+                    .catch((err) =>{
+                        reject(err);
+                    })
                 } else {
-                    errorcb("Songs for "+artist+" "+album+" not found");
+                    reject("Songs for "+artist+" "+album+" not found");
                 }
-            },
-            errorcb
-        );
+            })
+            .catch((err) => {
+                reject(err);
+            });
+        });
+        return promise;
     }
 
 	listMounts(cb, errorcb) {
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			for (var i = 0; i < lines.length; i++) {
-				var line = lines[i];
-				console.log(line);
-			}
+		const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+            lines.forEach((line) => {
+                console.log(line);
+            });
 			return {};
-		}.bind(this);
-		this.queue.push({
-			cmd: "listmounts",
-			process: processor,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+		};
+        return this.createPromise("listmounts", processor);
 	}
 
 	listNeighbors(cb, errorcb) {
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			for (var i = 0; i < lines.length; i++) {
-				var line = lines[i];
-				console.log(line);
-			}
+        const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+            lines.forEach((line) => {
+                console.log(line);
+            });
 			return {};
-		}.bind(this);
-		this.queue.push({
-			cmd: "listneighbors",
-			process: processor,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+		};
+        return this.createPromise("listneighbors", processor);
 	}
 
-	listPlayLists(cb, errorcb) {
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			var playlists = [];
+	listPlayLists() {
+		const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+			let playlists = [];
 			lines.forEach(function(line) {
 				if (line.indexOf(PLAYLIST_PREFIX) === 0) {
 					playlists.push(line.substring(PLAYLIST_PREFIX.length));
 				}
 			});
-            playlists.sort(function(a,b) {
+            playlists.sort((a,b) => {
                 if (a < b) {
                     return -1;
                 } else if (a > b) {
@@ -1102,75 +1049,52 @@ class MPDConnection {
             });
 
 			return playlists;
-		}.bind(this);
-		this.queue.push({
-			cmd: "listplaylists",
-			process: processor,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+		};
+        return this.createPromise("listplaylists", processor);
 	}
 
-	loadPlayList(name, cb, errorcb) {
-		this.queue.push({
-			cmd: "load \""+name+"\"",
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+	loadPlayList(name) {
+        return this.createPromise("load \""+name+"\"");
 	}
 
-	savePlayList(name, cb, errorcb) {
-		this.getPlayListInfo(
-			function(songs) {
-				var cmd = "command_list_begin\n";
-				songs.forEach(function(song) {
+	savePlayList(name) {
+        const promise = new Promise((resolve, reject) => {
+    		this.getPlayListInfo()
+    		.then((songs) => {
+				let cmd = "command_list_begin\n";
+				songs.forEach((song) => {
 					cmd += "playlistadd \""+name+"\" \""+song.file+"\"\n";
 				})
 				cmd += "command_list_end";
-				this.queue.push({
-					cmd: cmd,
-					cb: cb,
-					errorcb: errorcb,
-					response: "",
-					state: INITIAL
-				});
-			}.bind(this),
-			function(err) {
-				errorcb(err);
-			}
-		);
+                this.createPromise(cmd)
+                .then(() => {
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+			})
+    		.catch((err) => {
+                reject(err);
+    		});
+        });
+        return promise;
 	}
 
-	deletePlayList(name, cb, errorcb) {
-		this.queue.push({
-			cmd: "rm \""+name+"\"",
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+	deletePlayList(name) {
+        return this.createPromise("rm \""+name+"\"");
 	}
 
-    deletePlayListItem(name, pos, cb, errorcb) {
-        this.queue.push({
-			cmd: "playlistdelete \""+name+"\" "+pos,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+    deletePlayListItem(name, pos) {
+        return this.createPromise("playlistdelete \""+name+"\" "+pos);
     }
 
-	getOutputs(cb, errorcb) {
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			var outputs = [];
-			var output;
-			lines.forEach(function(line) {
+	getOutputs() {
+		const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+			let outputs = [];
+			let output;
+			lines.forEach((line) => {
 				if (line.indexOf(OUTPUTID_PREFIX) === 0) {
 					output = {};
 					output.id = line.substring(OUTPUTID_PREFIX.length);
@@ -1182,112 +1106,50 @@ class MPDConnection {
 				}
 			});
 			return outputs;
-		}.bind(this);
-		this.queue.push({
-			cmd: "outputs",
-			process: processor,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
-
+		};
+        return this.createPromise("outputs", processor);
 	}
 
-	enableOutput(id, cb, errorcb) {
-		this.queue.push({
-			cmd: "enableoutput "+id,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+	enableOutput(id) {
+        return this.createPromise("enableoutput "+id);
 	}
 
-	disableOutput(id, cb, errorcb) {
-		this.queue.push({
-			cmd: "disableoutput "+id,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+	disableOutput(id) {
+        return this.createPromise("disableoutput "+id);
 	}
 
-	shuffle(on, cb, errorcb) {
+	shuffle(on) {
 		var state = (on === true) ? 1 : 0;
-		this.queue.push({
-			cmd: "random "+state,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+        return this.createPromise("random "+state);
 	}
 
-	repeat(on, cb, errorcb) {
+	repeat(on) {
 		var state = (on === true) ? 1 : 0;
-		this.queue.push({
-			cmd: "repeat "+state,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+        return this.createPromise("repeat "+state);
 	}
 
-	consume(on, cb, errorcb) {
+	consume(on) {
 		var state = (on === true) ? 1 : 0;
-		this.queue.push({
-			cmd: "consume "+state,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+        return this.createPromise("consume "+state);
 	}
 
-	single(on, cb, errorcb) {
+	single(on) {
 		var state = (on === true) ? 1 : 0;
-		this.queue.push({
-			cmd: "single "+state,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+        return this.createPromise("single "+state);
 	}
 
-	crossfade(seconds, cb, errorcb) {
-		this.queue.push({
-			cmd: "crossfade "+seconds,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+	crossfade(seconds) {
+        return this.createPromise("crossfade "+seconds);
 	}
 
 	replayGainMode(mode, cb, errorcb) {
-		this.queue.push({
-			cmd: "replay_gain_mode "+mode,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+        return this.createPromise("replay_gain_mode "+mode);
 	}
 
-    seekCurrrent(value, cb, errorcb) {
-        this.queue.push({
-			cmd: "seekcur "+value,
-			cb: cb,
-			errorcb: errorcb,
-			response: "",
-			state: INITIAL
-		});
+    seekCurrrent(value) {
+        return this.createPromise("seekcur "+value);
     }
-
+/*
     createPlaylistsFromAlbums(cb, errorcb) {
         this.getAllAlbums(
             undefined,
@@ -1335,7 +1197,7 @@ class MPDConnection {
             }
         );
     }
-
+*/
     isRandomPlaylistByType() {
         return this.randomPlaylistByType;
     }
@@ -1354,16 +1216,15 @@ class MPDConnection {
 
 	_loadFileSuffixes() {
 		this.fileSuffixes = ['cue'];
-		var processor = function(data) {
-			var lines = MPDConnection._lineSplit(data);
-			lines.forEach(function(line) {
-				var suffix = line.substring(SUFFIX_PREFIX.length);
+		const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+			lines.forEach((line) => {
+				const suffix = line.substring(SUFFIX_PREFIX.length);
 				if (line.indexOf(SUFFIX_PREFIX) === 0 && this.fileSuffixes.indexOf(suffix) === -1) {
 					this.fileSuffixes.push(suffix);
 				}
-			}.bind(this));
-		}.bind(this);
-
+			});
+		};
 		this.queue.push({
 			cmd: "decoders",
 			process: processor,
@@ -1373,10 +1234,10 @@ class MPDConnection {
 	}
 
 	static _lineSplit(data) {
-		var lines = [];
-		var split = data.split(/\n\r|\n|\r/);
+		let lines = [];
+		let split = data.split(/\n\r|\n|\r/);
 		while(split.length) {
-			var line = split.shift().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+			const line = split.shift().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 			if (line !== "") {
 				lines.push(line);
 			}
@@ -1385,9 +1246,9 @@ class MPDConnection {
 	}
 
 	static _convertTime(rawTime) {
-		var time = Math.floor(parseInt(rawTime));
-		var minutes = Math.floor(time / 60);
-		var seconds = time - minutes * 60;
+		const time = Math.floor(parseInt(rawTime));
+		const minutes = Math.floor(time / 60);
+		let seconds = time - minutes * 60;
 		seconds = (seconds < 10 ? '0' : '') + seconds;
 		return minutes+":"+seconds;
 	}
@@ -1397,7 +1258,7 @@ class MPDConnection {
 			position = subjectString.length;
 		}
 		position -= searchString.length;
-		var lastIndex = subjectString.lastIndexOf(searchString, position);
+		const lastIndex = subjectString.lastIndexOf(searchString, position);
 		return lastIndex !== -1 && lastIndex === position;
 	}
 

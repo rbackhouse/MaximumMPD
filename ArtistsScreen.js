@@ -83,30 +83,27 @@ export default class ArtistsScreen extends React.Component {
 
     load() {
         this.setState({loading: true});
-
-        MPDConnection.current().getAllArtists(
-            undefined,
-            (artists) => {
-                this.setState({loading: false});
-                this.setState({artists: artists, fullset: artists});
-                AlbumArt.getAlbumArtForArtists(artists)
-                .then((artMap) => {
-                    artists.forEach((artist) => {
-                        if (artMap[artist.name]) {
-                            artist.base64Image = 'data:image/png;base64,'+artMap[artist.name];
-                        }
-                    })
-                    this.setState({artists: this.state.artists, fullset: this.state.fullset});
-                });
-            },
-            (err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            }
-        );
+        MPDConnection.current().getAllArtists()
+        .then((artists) => {
+            this.setState({loading: false});
+            this.setState({artists: artists, fullset: artists});
+            AlbumArt.getAlbumArtForArtists(artists)
+            .then((artMap) => {
+                artists.forEach((artist) => {
+                    if (artMap[artist.name]) {
+                        artist.base64Image = 'data:image/png;base64,'+artMap[artist.name];
+                    }
+                })
+                this.setState({artists: this.state.artists, fullset: this.state.fullset});
+            });
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     componentWillUnmount() {

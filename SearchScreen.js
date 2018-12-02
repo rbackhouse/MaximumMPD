@@ -86,69 +86,68 @@ export default class SearchScreen extends React.Component {
         let artists = [], albums = [], songs = [], artistCheck = [], albumCheck = [];
         if (text.length > 2) {
             this.setState({loading: true});
-            MPDConnection.current().search(text.toLowerCase(), 0, 49,
-                (results) => {
-                    this.setState({loading: false});
-                    results.forEach((result) => {
-                        let artist = {artist: result.artist, key: result.artist, traverse: true};
-                        let album = {album: result.album, key: result.album, artist: result.artist, traverse: true};
-                        if (!artistCheck.includes(result.artist) && artist.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
-                            artists.push(artist);
-                            artistCheck.push(result.artist);
-                            AlbumArt.getAlbumArt(artist.artist)
-                            .then((b64) => {
-                                if (b64) {
-                                    artist.base64Image = 'data:image/png;base64,'+b64;
-                                    this.setState({artists: artists});
-                                }
-                            });
-                        }
-                        if (!albumCheck.includes(result.album) && album.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
-                            albums.push(album);
-                            albumCheck.push(result.album);
-                            AlbumArt.getAlbumArt(artist.artist, album.album)
-                            .then((b64) => {
-                                if (b64) {
-                                    album.base64Image = 'data:image/png;base64,'+b64;
-                                    this.setState({albums: albums});
-                                }
-                            });
-                        }
-                        if (result.title && result.title.toLowerCase().indexOf(text.toLowerCase()) > -1) {
-                            let song = {
-                                title: result.title,
-                                time: result.time,
-                                key: result.b64file,
-                                artist: result.artist,
-                                album: result.album,
-                                b64file: result.b64file
+            MPDConnection.current().search(text.toLowerCase(), 0, 49)
+            .then((results) => {
+                this.setState({loading: false});
+                results.forEach((result) => {
+                    let artist = {artist: result.artist, key: result.artist, traverse: true};
+                    let album = {album: result.album, key: result.album, artist: result.artist, traverse: true};
+                    if (!artistCheck.includes(result.artist) && artist.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
+                        artists.push(artist);
+                        artistCheck.push(result.artist);
+                        AlbumArt.getAlbumArt(artist.artist)
+                        .then((b64) => {
+                            if (b64) {
+                                artist.base64Image = 'data:image/png;base64,'+b64;
+                                this.setState({artists: artists});
                             }
-                            songs.push(song);
-                            AlbumArt.getAlbumArt(artist.artist, album.album, result.file)
-                            .then((b64) => {
-                                if (b64) {
-                                    song.base64Image = 'data:image/png;base64,'+b64;
-                                    this.setState({songs: songs});
-                                }
-                            });
+                        });
+                    }
+                    if (!albumCheck.includes(result.album) && album.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
+                        albums.push(album);
+                        albumCheck.push(result.album);
+                        AlbumArt.getAlbumArt(artist.artist, album.album)
+                        .then((b64) => {
+                            if (b64) {
+                                album.base64Image = 'data:image/png;base64,'+b64;
+                                this.setState({albums: albums});
+                            }
+                        });
+                    }
+                    if (result.title && result.title.toLowerCase().indexOf(text.toLowerCase()) > -1) {
+                        let song = {
+                            title: result.title,
+                            time: result.time,
+                            key: result.b64file,
+                            artist: result.artist,
+                            album: result.album,
+                            b64file: result.b64file
                         }
-                    });
-                    this.setState({
-                        artists: artists,
-                        albums: albums,
-                        songs: songs,
-                        searchValue: text
-                    });
-                },
-                (err) => {
-                    this.setState({loading: false});
-                    console.log(err);
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
+                        songs.push(song);
+                        AlbumArt.getAlbumArt(artist.artist, album.album, result.file)
+                        .then((b64) => {
+                            if (b64) {
+                                song.base64Image = 'data:image/png;base64,'+b64;
+                                this.setState({songs: songs});
+                            }
+                        });
+                    }
+                });
+                this.setState({
+                    artists: artists,
+                    albums: albums,
+                    songs: songs,
+                    searchValue: text
+                });
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                console.log(err);
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         } else {
             this.setState({
                 artists: artists,
@@ -172,21 +171,17 @@ export default class SearchScreen extends React.Component {
 			rowMap[item.key].closeRow();
 		}
 
-        MPDConnection.current().addSongToPlayList(
-            decodeURIComponent(Base64.atob(item.b64file)),
-            () => {
-                this.setState({loading: false});
-            },
-            (err) => {
-                this.setState({loading: false});
-                console.log(err);
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            }
-        );
-
+        MPDConnection.current().addSongToPlayList(decodeURIComponent(Base64.atob(item.b64file)))
+        .then(() => {
+            this.setState({loading: false});
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     playlist(rowMap, item) {
@@ -197,20 +192,17 @@ export default class SearchScreen extends React.Component {
             this.setState({modalVisible: true, selectedItem: item.b64file});
             return;
         }
-        MPDConnection.current().addSongToNamedPlayList(
-            decodeURIComponent(Base64.atob(item.b64file)),
-            MPDConnection.current().getCurrentPlaylistName(),
-            () => {
-                this.setState({loading: false});
-            },
-            (err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            }
-        );
+        MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(Base64.atob(item.b64file)), MPDConnection.current().getCurrentPlaylistName())
+        .then(() => {
+            this.setState({loading: false});
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     finishAdd(name, selectedItem) {
@@ -219,20 +211,17 @@ export default class SearchScreen extends React.Component {
 
         this.setState({loading: true});
 
-        MPDConnection.current().addSongToNamedPlayList(
-            decodeURIComponent(Base64.atob(selectedItem)),
-            MPDConnection.current().getCurrentPlaylistName(),
-            () => {
-                this.setState({loading: false});
-            },
-            (err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            }
-        );
+        MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(Base64.atob(selectedItem)), MPDConnection.current().getCurrentPlaylistName())
+        .then(() => {
+            this.setState({loading: false});
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     renderSeparator = () => {

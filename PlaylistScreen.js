@@ -176,21 +176,18 @@ export default class PlaylistScreen extends React.Component {
         console.log("type "+ type+" value "+value);
         this.setState({loading: true, modalVisible: false});
         MPDConnection.current().clearPlayList();
-        MPDConnection.current().randomPlayList(
-            type,
-            value,
-            () => {
-                this.setState({loading: false});
-                this.load();
-            },
-            (err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            }
-        );
+        MPDConnection.current().randomPlayList(type, value)
+        .then(() => {
+            this.setState({loading: false});
+            this.load();
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     onClear() {
@@ -201,40 +198,39 @@ export default class PlaylistScreen extends React.Component {
     load() {
         this.setState({loading: true});
 
-        MPDConnection.current().getPlayListInfo(
-            (playlist) => {
-                this.setState({loading: false});
-                this.setState({playlist: playlist});
+        MPDConnection.current().getPlayListInfo()
+        .then((playlist) => {
+            this.setState({loading: false});
+            this.setState({playlist: playlist});
 
-                let totalTime = 0;
-                playlist.forEach((entry) => {
-                    totalTime += Math.floor(parseInt(entry.rawTime));
-                });
-                if (totalTime > 0) {
-                    const hours = Math.floor(totalTime / 3600)
-                    if (hours > 0) {
-                        totalTime %= 3600;
-                    }
-                    const minutes = Math.floor(totalTime / 60);
-            		let seconds = totalTime - minutes * 60;
-            		seconds = (seconds < 10 ? '0' : '') + seconds;
-                    if (hours > 0) {
-            		    this.setState({totalTime: hours+"h "+minutes+"m "+seconds+"s"});
-                    } else {
-                        this.setState({totalTime: minutes+"m "+seconds+"s"});
-                    }
-                } else {
-                    this.setState({totalTime: ""});
+            let totalTime = 0;
+            playlist.forEach((entry) => {
+                totalTime += Math.floor(parseInt(entry.rawTime));
+            });
+            if (totalTime > 0) {
+                const hours = Math.floor(totalTime / 3600)
+                if (hours > 0) {
+                    totalTime %= 3600;
                 }
-            },
-            (err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
+                const minutes = Math.floor(totalTime / 60);
+        		let seconds = totalTime - minutes * 60;
+        		seconds = (seconds < 10 ? '0' : '') + seconds;
+                if (hours > 0) {
+        		    this.setState({totalTime: hours+"h "+minutes+"m "+seconds+"s"});
+                } else {
+                    this.setState({totalTime: minutes+"m "+seconds+"s"});
+                }
+            } else {
+                this.setState({totalTime: ""});
             }
-        );
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     doRandom() {

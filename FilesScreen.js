@@ -123,38 +123,33 @@ export default class FilesScreen extends React.Component {
 
             this.setState({loading: true});
 
-            MPDConnection.current().addDirectoryToNamedPlayList(
-                decodeURIComponent(path),
-                MPDConnection.current().getCurrentPlaylistName(),
-                () => {
-                    this.setState({loading: false});
-                },
-                (err) => {
-                    this.setState({loading: false});
-                    console.log(err);
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
+            MPDConnection.current().addDirectoryToNamedPlayList(decodeURIComponent(path),MPDConnection.current().getCurrentPlaylistName())
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .then((err) => {
+                this.setState({loading: false});
+                console.log(err);
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         } else {
             this.setState({loading: true});
 
-            MPDConnection.current().addDirectoryToPlayList(
-                decodeURIComponent(path),
-                () => {
-                    this.setState({loading: false});
-                },
-                (err) => {
-                    this.setState({loading: false});
-                    console.log(err);
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
+            MPDConnection.current().addDirectoryToPlayList(decodeURIComponent(path))
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                console.log(err);
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         }
     }
 
@@ -173,26 +168,24 @@ export default class FilesScreen extends React.Component {
 			path += Base64.atob(uri);
 		}
         this.setState({loading: true});
-        MPDConnection.current().listFiles(
-            path,
-            (files) => {
-                this.setState({loading: false});
-                this.setState({files: [...files.files, ...files.dirs], fullset: [...files.files, ...files.dirs]});
-                if (this.state.dirs.length < 1) {
-                    this.props.navigation.setParams({ showBackbutton: false });
-                } else {
-                    this.props.navigation.setParams({ showBackbutton: true });
-                }
-            },
-            (err) => {
-                this.setState({loading: false});
-                console.log(err);
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
+        MPDConnection.current().listFiles(path)
+        .then((files) => {
+            this.setState({loading: false});
+            this.setState({files: [...files.files, ...files.dirs], fullset: [...files.files, ...files.dirs]});
+            if (this.state.dirs.length < 1) {
+                this.props.navigation.setParams({ showBackbutton: false });
+            } else {
+                this.props.navigation.setParams({ showBackbutton: true });
             }
-        );
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            console.log(err);
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     search = (text) => {
@@ -222,19 +215,17 @@ export default class FilesScreen extends React.Component {
         });
         path += Base64.atob(item.b64file);
 
-        MPDConnection.current().addSongToPlayList(
-            decodeURIComponent(path),
-            () => {
-                this.setState({loading: false});
-            },
-            (err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            }
-        );
+        MPDConnection.current().addSongToPlayList(decodeURIComponent(path))
+        .then(() => {
+            this.setState({loading: false});
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     playlist(rowMap, item) {
@@ -255,20 +246,17 @@ export default class FilesScreen extends React.Component {
 
         this.setState({loading: true});
 
-        MPDConnection.current().addSongToNamedPlayList(
-            decodeURIComponent(path),
-            MPDConnection.current().getCurrentPlaylistName(),
-            () => {
-                this.setState({loading: false});
-            },
-            (err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            }
-        );
+        MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(path), MPDConnection.current().getCurrentPlaylistName())
+        .then(() => {
+            this.setState({loading: false});
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     finishAdd(name, selectedItem) {
@@ -284,21 +272,18 @@ export default class FilesScreen extends React.Component {
                 path += "/";
             });
 
-            MPDConnection.current().addDirectoryToNamedPlayList(
-                decodeURIComponent(path),
-                MPDConnection.current().getCurrentPlaylistName(),
-                () => {
-                    this.setState({loading: false});
-                },
-                (err) => {
-                    this.setState({loading: false});
-                    console.log(err);
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
+            MPDConnection.current().addDirectoryToNamedPlayList(decodeURIComponent(path), MPDConnection.current().getCurrentPlaylistName())
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                console.log(err);
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         } else {
             let path = "";
 
@@ -308,20 +293,17 @@ export default class FilesScreen extends React.Component {
 			});
 			path += Base64.atob(selectedItem);
 
-            MPDConnection.current().addSongToNamedPlayList(
-                decodeURIComponent(path),
-                MPDConnection.current().getCurrentPlaylistName(),
-                () => {
-                    this.setState({loading: false});
-                },
-                (err) => {
-                    this.setState({loading: false});
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
+            MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(path), MPDConnection.current().getCurrentPlaylistName())
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         }
     }
 

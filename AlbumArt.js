@@ -99,32 +99,30 @@ export default {
                             }
                         } else if (songfile) {
                             console.log("getting b64 ["+artist+"] ["+album+"] ["+songfile+"]");
-                            MPDConnection.current().albumart(songfile,
-                                (b64) => {
-                                    console.log("writing b64 for ["+artist+"] ["+album+"] ["+b64.length+"]");
-                                    albumArtStorage.setAlbumArt(artist, album, b64);
-                                    resolve(b64);
-                                },
-                                (err) => {
-                                    console.log("error b64 for ["+artist+"] ["+album+"] ["+err+"]");
-                                    //albumArtStorage.setAlbumArt(artist, album, "Not Found");
-                                    resolve();
-                                }
-                            )
+                            MPDConnection.current().albumart(songfile)
+                            .then((b64) => {
+                                console.log("writing b64 for ["+artist+"] ["+album+"] ["+b64.length+"]");
+                                albumArtStorage.setAlbumArt(artist, album, b64);
+                                resolve(b64);
+                            })
+                            .catch((err) => {
+                                console.log("error b64 for ["+artist+"] ["+album+"] ["+err+"]");
+                                //albumArtStorage.setAlbumArt(artist, album, "Not Found");
+                                resolve();
+                            });
                         } else {
                             console.log("getting b64 ["+artist+"] ["+album+"]");
-                            MPDConnection.current().albumArtForAlbum(artist, album,
-                                (b64) => {
-                                    console.log("writing b64 for ["+artist+"] ["+album+"] ["+b64.length+"]");
-                                    albumArtStorage.setAlbumArt(artist, album, b64);
-                                    resolve(b64);
-                                },
-                                (err) => {
-                                    console.log("error b64 for ["+artist+"] ["+album+"] ["+err+"]");
-                                    //albumArtStorage.setAlbumArt(artist, album, "Not Found");
-                                    resolve();
-                                }
-                            )
+                            MPDConnection.current().albumArtForAlbum(artist, album)
+                            .then((b64) => {
+                                console.log("writing b64 for ["+artist+"] ["+album+"] ["+b64.length+"]");
+                                albumArtStorage.setAlbumArt(artist, album, b64);
+                                resolve(b64);
+                            })
+                            .catch((err) => {
+                                console.log("error b64 for ["+artist+"] ["+album+"] ["+err+"]");
+                                //albumArtStorage.setAlbumArt(artist, album, "Not Found");
+                                resolve();
+                            });
                         }
                     });
                 } else {

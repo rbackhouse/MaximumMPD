@@ -56,19 +56,18 @@ export default class PlaylistEditor extends React.Component {
     load() {
         this.setState({loading: true});
 
-        MPDConnection.current().listPlayLists(
-            (playlists) => {
-                this.setState({loading: false});
-                this.setState({playlists: playlists, fullset: playlists});
-            },
-            (err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            }
-        );
+        MPDConnection.current().listPlayLists()
+        .then((playlists) => {
+            this.setState({loading: false});
+            this.setState({playlists: playlists, fullset: playlists});
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     search = (text) => {
