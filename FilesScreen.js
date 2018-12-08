@@ -127,7 +127,7 @@ export default class FilesScreen extends React.Component {
             .then(() => {
                 this.setState({loading: false});
             })
-            .then((err) => {
+            .catch((err) => {
                 this.setState({loading: false});
                 console.log(err);
                 Alert.alert(
