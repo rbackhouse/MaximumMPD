@@ -34,7 +34,7 @@ class AlbumArtStorage {
         try {
             let artMap = {};
             let albumArtArtistsStr = await AsyncStorage.getItem('@MPD:albumart_artists');
-            console.log("albumArtArtistsStr = "+albumArtArtistsStr);
+            //console.log("albumArtArtistsStr = "+albumArtArtistsStr);
             if (albumArtArtistsStr !== null) {
                 let albumArtArtists = JSON.parse(albumArtArtistsStr);
 
