@@ -113,7 +113,7 @@ export default class ConnectionsScreen extends React.Component {
     componentDidMount() {
         const { navigation } = this.props;
         this.navigateOnConnect = navigation.getParam('navigateOnConnect', true);
-        MPDConnection.getEventEmitter().addListener(
+        this.onDiscover = MPDConnection.getEventEmitter().addListener(
             "OnDiscover",
             (discovered) => {
                 let discoveredList = MPDConnection.getDiscoveredList();
@@ -149,6 +149,7 @@ export default class ConnectionsScreen extends React.Component {
     }
     componentWillUnmount() {
         this.onDisconnect.remove();
+        this.onDiscover.remove();
     }
 
     keyExtractor = (item, index) => item.name+item.ipAddress+item.port;
@@ -167,18 +168,15 @@ export default class ConnectionsScreen extends React.Component {
             if (!Number.isInteger(port)) {
                 port = Number.parseInt(port);
             }
-            this.setState({loading: true});
 
             MPDConnection.connect(item.name, item.ipAddress, port, item.pwd, item.randomPlaylistByType).then(
                 () => {
-                    this.setState({loading: false});
                     if (this.navigateOnConnect) {
                         console.log("navigateOnConnect "+this.navigateOnConnect);
                         this.props.navigation.navigate('MainPage');
                     }
                 },
                 (err) => {
-                    this.setState({loading: false});
                     Alert.alert(
                         "MPD Error",
                         "Error : "+err

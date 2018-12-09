@@ -78,7 +78,7 @@ export default class PlayScreen extends React.Component {
             this.props.navigation.navigate('Settings');
             this.props.navigation.navigate('Connections');
         }
-        MPDConnection.getEventEmitter().addListener(
+        this.onStatus = MPDConnection.getEventEmitter().addListener(
             "OnStatus",
             (status) => {
                 let currentsong = -1;
@@ -123,6 +123,7 @@ export default class PlayScreen extends React.Component {
     componentWillUnmount() {
         this.didBlurSubscription.remove();
         this.didFocusSubscription.remove();
+        this.onStatus.remove();
     }
 
     onPrevious() {

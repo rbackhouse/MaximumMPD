@@ -67,6 +67,9 @@ export default class PlaylistDetails extends React.Component {
         MPDConnection.current().getNamedPlayListInfo(this.playlistName)
         .then((playlist) => {
                 this.setState({loading: false});
+                playlist.forEach((entry, index) => {
+                    entry.pos = index;
+                })
                 this.setState({playlist: playlist, fullset: playlist});
         })
         .catch((err) => {
@@ -203,7 +206,7 @@ export default class PlaylistDetails extends React.Component {
                     data={this.state.playlist}
                     renderItem={this.renderItem}
                     renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-                    keyExtractor={item => item.file}
+                    keyExtractor={item => ""+item.pos}
                     ItemSeparatorComponent={this.renderSeparator}
                 />
                 {this.state.loading &&

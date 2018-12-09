@@ -111,7 +111,7 @@ export default class PlaylistScreen extends React.Component {
 
     componentDidMount() {
         this.load();
-        MPDConnection.getEventEmitter().addListener(
+        this.onStatus = MPDConnection.getEventEmitter().addListener(
             "OnStatus",
             (status) => {
                 this.setState({status: status, isPlaying: status.state === "play"});
@@ -144,6 +144,7 @@ export default class PlaylistScreen extends React.Component {
 
     componentWillUnmount() {
         this.didFocusSubscription.remove();
+        this.onStatus.remove();
     }
 
     onPrevious() {
@@ -299,7 +300,7 @@ export default class PlaylistScreen extends React.Component {
                     data={this.state.playlist}
                     renderItem={this.renderItem}
                     renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-                    keyExtractor={item => item.file}
+                    keyExtractor={item => ""+item.id}
                     ItemSeparatorComponent={this.renderSeparator}
                     extraData={this.state.selected}
                 />
