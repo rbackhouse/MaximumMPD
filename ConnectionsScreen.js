@@ -229,6 +229,9 @@ export default class ConnectionsScreen extends React.Component {
                 .then(() => {
                     MPDConnection.getConnectionList()
                         .then((connections) => {
+                            connections.forEach((c) => {
+                                c.key = c.name+c.ipAddress+c.port;
+                            })
                             this.setState({configured: connections});
                             this.onCancel();
                         });
@@ -261,6 +264,9 @@ export default class ConnectionsScreen extends React.Component {
                     .then(() => {
                         MPDConnection.getConnectionList()
                             .then((connections) => {
+                                connections.forEach((c) => {
+                                    c.key = c.name+c.ipAddress+c.port;
+                                })
                                 this.setState({configured: connections});
                             });
                     });
