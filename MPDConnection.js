@@ -990,8 +990,8 @@ class MPDConnection {
             .then((songs) => {
                 if (songs.length > 0) {
                     this.albumart(songs[0].file)
-                    .then(() => {
-                        resolve();
+                    .then((b64) => {
+                        resolve(b64);
                     })
                     .catch((err) =>{
                         reject(err);
