@@ -77,6 +77,7 @@ export default class AlbumsScreen extends React.Component {
             "OnDisconnect",
             () => {
                 this.setState({albums: [], fullset: []});
+                this.props.navigation.popToTop();
             }
         );
     }

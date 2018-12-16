@@ -61,7 +61,6 @@ export default class ArtistsScreen extends React.Component {
             "OnDisconnect",
             () => {
                 this.setState({artists: [], fullset: []});
-                this.props.navigation.popToTop();
             }
         );
         this.didBlurSubscription = this.props.navigation.addListener(
