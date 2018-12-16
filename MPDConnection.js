@@ -136,7 +136,7 @@ class MPDConnection {
                     this.disconnect();
                     //connection = undefined;
     				//console.log("Disconnected");
-    				this.connect(undefined, undefined, true);
+    				this.connect(undefined, undefined, false);
     			}
             }
         )
@@ -246,6 +246,7 @@ class MPDConnection {
 	}
 
 	disconnect() {
+        mpdEventEmiiter.emit('OnDisconnect', {host: this.host, port: this.port});
         this.stateSubscription.remove();
         this.errorSubscription.remove();
         this.responseSubscription.remove();
