@@ -20,3 +20,5 @@ MaximumMPD is a MPD (Music Player Daemon) client providing remote control over a
 ### Requirements :
 
 An MPD Server running in your home network. See http://www.musicpd.org/ for more details
+
+Link to App in iTunes https://itunes.apple.com/gb/app/maximummpd/id1437096437?mt=8
