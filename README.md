@@ -5,6 +5,8 @@ Maximum MPD
 
 MaximumMPD is a MPD (Music Player Daemon) client providing remote control over all your MPD based songs
 
+[Help Page](http://rbackhouse.github.io/MaximumMPD.html)
+
 ### Features:
 
 * Random Playlist generation
