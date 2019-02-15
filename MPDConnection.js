@@ -43,6 +43,8 @@ const SUFFIX_PREFIX = "suffix: ";
 const REPLAY_GAIN_MODE = "replay_gain_mode: ";
 const SIZE_PREFIX = "size: ";
 const BINARY_PREFIX = "binary: ";
+const BITRATE_PREFIX = "bitrate: ";
+const AUDIO_PREFIX = "audio: ";
 
 const INITIAL = 0;
 const WRITTEN = 1;
@@ -256,14 +258,14 @@ class MPDConnection {
 		SocketConnection.disconnect();
 	}
 
-    startEmittingStatus() {
+    startEmittingStatus(timeout) {
         this.intervalId = setInterval(() => {
             if (this.isConnected) {
                 this.getStatus((status) => {
                     mpdEventEmiiter.emit('OnStatus', status);
                 });
             }
-        }, 1000);
+        }, timeout);
     }
 
     stopEmittingStatus() {
@@ -425,6 +427,10 @@ class MPDConnection {
 					currentsong.album = lines[i].substring(ALBUM_PREFIX.length);
 				} else if (line.indexOf(REPLAY_GAIN_MODE) === 0) {
 					status.replayGainStatus = (line.substring(REPLAY_GAIN_MODE.length));
+                } else if (line.indexOf(BITRATE_PREFIX) === 0) {
+                    status.bitrate = (line.substring(BITRATE_PREFIX.length));
+                } else if (line.indexOf(AUDIO_PREFIX) === 0) {
+                    status.audio = (line.substring(AUDIO_PREFIX.length));
                 } else if (line.indexOf(FILE_PREFIX) === 0) {
 					var file = line.substring(FILE_PREFIX.length);
 					currentsong.file = file;
@@ -614,9 +620,10 @@ class MPDConnection {
                     song.rawTime = time;
 					song.time = MPDConnection._convertTime(time);
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
-					song = {};
+					song = {artist: "", album: ""};
 					songs.push(song);
 					song.file = line.substring(FILE_PREFIX.length);
+                    song.title = song.file;
 				} else if (line.indexOf(ID_PREFIX) === 0) {
 					song.id = parseInt(line.substring(ID_PREFIX.length));
 				} else if (line.indexOf(POS_PREFIX) === 0) {
@@ -899,12 +906,13 @@ class MPDConnection {
             lines.forEach((line) => {
 				if (line.indexOf(FILE_PREFIX) === 0) {
 					const file = line.substring(FILE_PREFIX.length);
-					this.fileSuffixes.forEach((suffix) => {
+                    for (let suffix of this.fileSuffixes) {
 						if (MPDConnection._endsWith(file, suffix)) {
 							const b64file = this.toBase64(file);
 							files.push({file: file, b64file: b64file});
+                            break;
 						}
-					});
+					}
 				} else if (line.indexOf(DIR_PREFIX) === 0) {
 					const dir = line.substring(DIR_PREFIX.length);
 					const b64dir = this.toBase64(dir);
@@ -1368,8 +1376,10 @@ export default {
         }
         connection = new MPDConnection(name, host, port, randomPlaylistByType || false);
         let promise = new Promise((resolve, reject) => {
+            mpdEventEmiiter.emit('OnConnecting', {host: host, port: port});
             connection.connect(pwd, (error) => {
                 if (error) {
+                    mpdEventEmiiter.emit('OnDisconnect', {host: host, port: port});
                     reject(error);
                 } else {
                     resolve();
@@ -1385,7 +1395,7 @@ export default {
         }
     },
     isConnected: function() {
-        return connection !== undefined;
+        return connection !== undefined && connection.isConnected;
     },
     current: function() {
         return connection;

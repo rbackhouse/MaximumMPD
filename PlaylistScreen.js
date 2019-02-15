@@ -257,6 +257,8 @@ export default class PlaylistScreen extends React.Component {
 
     renderItem = ({item}) => {
         let timeTrack = "Time: "+item.time;
+        let bitrate;
+        let audio;
         const isSelected = this.state.selected.get(item.artist+item.album+item.title)
         const selected = isSelected ? "flex" : "none";
 
@@ -267,16 +269,28 @@ export default class PlaylistScreen extends React.Component {
             seconds = (seconds < 10 ? '0' : '') + seconds;
             let elapsed = minutes+":"+seconds;
             timeTrack = "Time: "+item.time+" Elapsed: "+elapsed;
+            bitrate = "Bitrate: "+this.state.status.bitrate +" kbps";
+            audio = "Format: "+this.state.status.audio;
         }
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                 <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
                     <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                     <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
-                        <Text style={styles.item}>{item.artist}</Text>
-                        <Text style={styles.item}>{item.album}</Text>
+                        {item.artist !== "" &&
+                            <Text style={styles.item}>{item.artist}</Text>
+                        }
+                        {item.album !== "" &&
+                            <Text style={styles.item}>{item.album}</Text>
+                        }
                         <Text style={styles.item}>{item.title}</Text>
                         <Text style={styles.item}>{timeTrack}</Text>
+                        {bitrate != undefined &&
+                            <Text style={styles.item}>{bitrate}</Text>
+                        }
+                        {audio != undefined &&
+                            <Text style={styles.item}>{audio}</Text>
+                        }
                     </View>
                     <Icon name="ios-checkmark" size={30} color="black" style={{ display: selected, paddingLeft: 20, paddingRight: 20 }}/>
                 </View>

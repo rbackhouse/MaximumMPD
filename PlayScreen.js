@@ -115,7 +115,7 @@ export default class PlayScreen extends React.Component {
         this.didFocusSubscription = this.props.navigation.addListener(
             'didFocus',
             payload => {
-                MPDConnection.current().startEmittingStatus();
+                MPDConnection.current().startEmittingStatus(1000);
             }
         );
     }
@@ -186,7 +186,7 @@ export default class PlayScreen extends React.Component {
               let dsecs = dur - dmins * 60;
               dsecs = (dsecs < 10 ? '0' : '') + dsecs;
               duration = dmins+":"+dsecs;
-              timeTrack = "Track: "+(parseInt(this.state.status.song)+1);
+              timeTrack = "Track: "+(parseInt(this.state.status.song)+1)+ " Format: "+this.state.status.audio;
           }
       }
 
