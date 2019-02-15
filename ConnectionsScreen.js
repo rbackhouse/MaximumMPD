@@ -157,34 +157,39 @@ export default class ConnectionsScreen extends React.Component {
     onPress(item) {
         this.setState((state) => {
             const selected = new Map(state.selected);
-            if (selected.get(item.name+item.ipAddress+item.port) === true) {
-                return {selected};
-            }
             for (let key of selected.keys()) {
                 selected.set(key, false);
             }
-            selected.set(item.name+item.ipAddress+item.port, true);
-            let port = item.port;
-            if (!Number.isInteger(port)) {
-                port = Number.parseInt(port);
-            }
-
-            MPDConnection.connect(item.name, item.ipAddress, port, item.pwd, item.randomPlaylistByType).then(
-                () => {
-                    if (this.navigateOnConnect) {
-                        console.log("navigateOnConnect "+this.navigateOnConnect);
-                        this.props.navigation.navigate('MainPage');
-                    }
-                },
-                (err) => {
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
             return {selected};
         });
+        let port = item.port;
+        if (!Number.isInteger(port)) {
+            port = Number.parseInt(port);
+        }
+        if (this.navigateOnConnect) {
+            this.setState({loading: true});
+        }
+        MPDConnection.connect(item.name, item.ipAddress, port, item.pwd, item.randomPlaylistByType).then(
+            () => {
+                this.setState((state) => {
+                    const selected = new Map(state.selected);
+                    selected.set(item.name+item.ipAddress+item.port, true);
+                    return {selected};
+                });
+
+                if (this.navigateOnConnect) {
+                    this.setState({loading: false});
+                    this.props.navigation.navigate('MainPage');
+                }
+            },
+            (err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            }
+        );
     }
 
     onCancel() {
@@ -303,7 +308,7 @@ export default class ConnectionsScreen extends React.Component {
                     renderItem={(data, map) => {
                         const openVal = data.section.title === "Discovered" ? -75 : -150;
                         const item = data.item;
-                        const selected = this.state.selected.get(item.name+item.ipAddress+item.port) ? "flex" : "none";
+                        const selected = this.state.selected.get(item.name+item.ipAddress+item.port) === true ? "flex" : "none";
                         return (
                         <SwipeRow rightOpenValue={openVal}>
                             <View style={styles.rowBack}>

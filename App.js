@@ -16,6 +16,7 @@
 */
 
 import React from 'react';
+import { StyleSheet, ActivityIndicator, View } from 'react-native';
 import Icon  from 'react-native-vector-icons/Ionicons';
 import FAIcon  from 'react-native-vector-icons/FontAwesome';
 import { createStackNavigator, createBottomTabNavigator, createSwitchNavigator } from 'react-navigation';
@@ -36,37 +37,69 @@ import MPDConnection from './MPDConnection';
 
 class Header extends React.Component {
     state = {
-        isConnected: false
+        connectionState: 0
     }
 
     componentDidMount() {
-        this.setState({isConnected: MPDConnection.isConnected()});
+        this.setState({connectionState: MPDConnection.isConnected() ? 2 : 0});
         this.onConnect = MPDConnection.getEventEmitter().addListener(
             "OnConnect",
             () => {
-                this.setState({isConnected: true});
+                this.setState({connectionState: 2});
+            }
+        );
+
+        this.onConnecting = MPDConnection.getEventEmitter().addListener(
+            "OnConnecting",
+            () => {
+                this.setState({connectionState: 1});
             }
         );
 
         this.onDisconnect = MPDConnection.getEventEmitter().addListener(
             "OnDisconnect",
             () => {
-                this.setState({isConnected: false});
-                //this.props.navigation.navigate('Connections');
+                this.setState({connectionState: 0});
             }
         );
     }
 
     componentWillUnmount() {
         this.onConnect.remove();
+        this.onConnecting.remove();
         this.onDisconnect.remove();
     }
 
     render() {
-        const color = this.state.isConnected ? "red" : "gray";
-        const icon = this.state.isConnected ? "link" : "unlink";
+        let color;
+        let icon;
+        let isConnecting = false;
+        switch (this.state.connectionState) {
+            case 0:
+                color = "gray";
+                icon = "unlink";
+                break;
+            case 1:
+                isConnecting = true;
+                break;
+            case 2:
+                color = "red";
+                icon = "link";
+                break;
+        }
+        this.state.connectionState === 2 ? "red" : "gray";
+        this.state.isConnected ? "link" : "unlink";
         return (
-            <FAIcon name={icon} size={15} color={color} style={{ paddingRight: 15 }}/>
+            <View>
+            {isConnecting &&
+                <View style={styles.connecting}>
+                    <ActivityIndicator size="small" color="#0000ff" style={{ paddingRight: 15 }}/>
+                </View>
+            }
+            {!isConnecting &&
+                <FAIcon name={icon} size={20} color={color} style={{ paddingRight: 15 }}/>
+            }
+            </View>
         );
     }
 }
@@ -198,6 +231,17 @@ const MainPage = createBottomTabNavigator(
     swipeEnabled: false
   }
 );
+
+const styles = StyleSheet.create({
+    connectiing: {
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center'
+    }
+});
 
 export default createSwitchNavigator(
     {
