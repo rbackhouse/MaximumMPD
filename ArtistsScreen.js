@@ -63,21 +63,6 @@ export default class ArtistsScreen extends React.Component {
                 this.setState({artists: [], fullset: []});
             }
         );
-        this.didBlurSubscription = this.props.navigation.addListener(
-            'didBlur',
-            payload => {
-                /*
-                this.setState({artists: []});
-                this.props.navigation.popToTop();
-                */
-            }
-        );
-        this.didFocusSubscription = this.props.navigation.addListener(
-            'didFocus',
-            payload => {
-                //this.load();
-            }
-        );
     }
 
     load() {
@@ -108,8 +93,6 @@ export default class ArtistsScreen extends React.Component {
     componentWillUnmount() {
         this.onConnect.remove();
         this.onDisconnect.remove();
-        this.didBlurSubscription.remove();
-        this.didFocusSubscription.remove();
     }
 
     search = (text) => {
