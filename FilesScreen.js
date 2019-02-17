@@ -103,18 +103,18 @@ export default class FilesScreen extends React.Component {
 
     backlinkHandler = () => {
         if (this.state.dirs.length > 0) {
-            this.state.dirs.pop();
-            this.load();
+            let dir = decodeURIComponent(Base64.atob(this.state.dirs.pop()));
+            if (dir.indexOf('/') !== -1) {
+                dir = dir.substring(0, dir.lastIndexOf('/'));
+            } else {
+                dir = "";
+            }
+            this.load(Base64.btoa(encodeURIComponent(dir)));
         }
     }
 
     addAll(toPlaylist) {
-        let path = "";
-        this.state.dirs.forEach(function(dir) {
-            path += Base64.atob(dir);
-            path += "/";
-        });
-
+        const path = Base64.atob(this.state.dirs[this.state.dirs.length-1]);
         if (toPlaylist) {
             if (!MPDConnection.current().getCurrentPlaylistName()) {
                 this.setState({modalVisible: true, selectedItem: "all"});
@@ -160,10 +160,6 @@ export default class FilesScreen extends React.Component {
 
     load(uri) {
         let path = "";
-		this.state.dirs.forEach((dir) => {
-			path += Base64.atob(dir);
-			path += "/";
-		});
 		if (uri) {
 			path += Base64.atob(uri);
 		}
@@ -207,13 +203,7 @@ export default class FilesScreen extends React.Component {
         if (rowMap[item.b64file]) {
 			rowMap[item.b64file].closeRow();
 		}
-        let path = "";
-
-        this.state.dirs.forEach((dir) => {
-            path += Base64.atob(dir);
-            path += "/";
-        });
-        path += Base64.atob(item.b64file);
+        const path = Base64.atob(item.b64file);
 
         MPDConnection.current().addSongToPlayList(decodeURIComponent(path))
         .then(() => {
@@ -236,13 +226,7 @@ export default class FilesScreen extends React.Component {
             this.setState({modalVisible: true, selectedItem: item.b64file});
             return;
         }
-        let path = "";
-
-        this.state.dirs.forEach((dir) => {
-            path += Base64.atob(dir);
-            path += "/";
-        });
-        path += Base64.atob(item.b64file);
+        const path = Base64.atob(item.b64file);
 
         this.setState({loading: true});
 
@@ -266,11 +250,7 @@ export default class FilesScreen extends React.Component {
         this.setState({loading: true});
 
         if (selectedItem === "all") {
-            let path = "";
-            this.state.dirs.forEach(function(dir) {
-                path += Base64.atob(dir);
-                path += "/";
-            });
+            const path = Base64.atob(this.state.dirs[this.state.dirs.length-1]);
 
             MPDConnection.current().addDirectoryToNamedPlayList(decodeURIComponent(path), MPDConnection.current().getCurrentPlaylistName())
             .then(() => {
@@ -285,13 +265,7 @@ export default class FilesScreen extends React.Component {
                 );
             });
         } else {
-            let path = "";
-
-            this.state.dirs.forEach((dir) => {
-				path += Base64.atob(dir);
-				path += "/";
-			});
-			path += Base64.atob(selectedItem);
+            const path = Base64.atob(selectedItem);
 
             MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(path), MPDConnection.current().getCurrentPlaylistName())
             .then(() => {
@@ -361,6 +335,11 @@ export default class FilesScreen extends React.Component {
                     renderItem={(data, map) => {
                         const item = data.item;
                         if (item.file) {
+                            let file = item.file;
+                            if (file.indexOf('/') !== -1) {
+                                file = file.substring(file.lastIndexOf('/')+1);
+                            }
+
                             return (
                                 <SwipeRow rightOpenValue={-150}>
                                     <View style={styles.rowBack}>
@@ -374,19 +353,23 @@ export default class FilesScreen extends React.Component {
                                     <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center'}, styles.rowFront]}>
                                         <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                                         <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
-                                            <Text style={styles.item}>{item.file}</Text>
+                                            <Text style={styles.item}>{file}</Text>
                                         </View>
                                         <Icon name="ios-swap" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                                     </View>
                                 </SwipeRow>
                             );
                         } else if (item.dir) {
+                            let dir = item.dir;
+                            if (dir.indexOf('/') !== -1) {
+                                dir = dir.substring(dir.lastIndexOf('/')+1);
+                            }
                             return (
                                 <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                                     <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
                                         <Icon name="ios-folder" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                                         <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
-                                            <Text style={styles.item}>{item.dir}</Text>
+                                            <Text style={styles.item}>{dir}</Text>
                                         </View>
                                         <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                                     </View>

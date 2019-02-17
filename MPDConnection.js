@@ -767,7 +767,7 @@ class MPDConnection {
     			let cmd = "command_list_begin\n";
     			filelist.files.forEach((fileEntry) => {
     				if (fileEntry.file.indexOf('.cue', fileEntry.file.length - '.cue'.length) === -1) {
-    					cmd += "playlistadd \""+playlist+"\"  \""+dir+fileEntry.file+"\"\n";
+    					cmd += "playlistadd \""+playlist+"\"  \""+fileEntry.file+"\"\n";
     				}
     			});
     			cmd += "command_list_end";
@@ -793,7 +793,7 @@ class MPDConnection {
     			let cmd = "command_list_begin\n";
     			filelist.files.forEach((fileEntry) => {
     				if (fileEntry.file.indexOf('.cue', fileEntry.file.length - '.cue'.length) === -1) {
-    					cmd += "add \""+dir+fileEntry.file+"\"\n";
+                        cmd += "add \""+fileEntry.file+"\"\n";
     				}
     			});
     			cmd += "command_list_end";
@@ -940,7 +940,7 @@ class MPDConnection {
 
 			return {files: files, dirs: dirs};
 		};
-		let cmd = "listfiles";
+		let cmd = "lsinfo";
 		if (uri && uri !== "") {
 			cmd += " \""+this.decode(uri) + "\"";
 		}
