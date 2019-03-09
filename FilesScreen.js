@@ -205,23 +205,43 @@ export default class FilesScreen extends React.Component {
 		}
         const path = Base64.atob(item.b64file);
 
-        MPDConnection.current().addSongToPlayList(decodeURIComponent(path))
-        .then(() => {
-            this.setState({loading: false});
-        })
-        .catch((err) => {
-            this.setState({loading: false});
-            Alert.alert(
-                "MPD Error",
-                "Error : "+err
-            );
-        });
+        this.setState({loading: true});
+
+        if (item.file.indexOf('.cue', item.file.length - '.cue'.length) !== -1) {
+            MPDConnection.current().loadPlayList(decodeURIComponent(path))
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
+        } else {
+            MPDConnection.current().addSongToPlayList(decodeURIComponent(path))
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
+        }
     }
 
     playlist(rowMap, item) {
+
         if (rowMap[item.b64file]) {
 			rowMap[item.b64file].closeRow();
 		}
+        if (item.file.indexOf('.cue', item.file.length - '.cue'.length) !== -1) {
+            return;
+        }
         if (!MPDConnection.current().getCurrentPlaylistName()) {
             this.setState({modalVisible: true, selectedItem: item.b64file});
             return;

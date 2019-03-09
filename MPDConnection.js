@@ -917,6 +917,12 @@ class MPDConnection {
 					const dir = line.substring(DIR_PREFIX.length);
 					const b64dir = this.toBase64(dir);
 					dirs.push({dir: dir, b64dir: b64dir});
+                } else if (line.indexOf(PLAYLIST_PREFIX) === 0) {
+                    const playlist = line.substring(PLAYLIST_PREFIX.length);
+                    if (playlist.indexOf('.cue', playlist.length - '.cue'.length) !== -1) {
+                        const b64file = this.toBase64(playlist);
+                        files.push({file: playlist, b64file: b64file});
+                    }
 				}
 			});
             files.sort((a,b) => {
