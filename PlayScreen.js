@@ -16,8 +16,8 @@
 */
 
 import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ProgressViewIOS, SegmentedControlIOS, Image, Alert } from 'react-native';
-import { Slider } from 'react-native-elements'
+import { Text, View, StyleSheet, TouchableOpacity, SegmentedControlIOS, Image, Alert, Platform } from 'react-native';
+import { Slider, ButtonGroup } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import HeaderButtons from 'react-navigation-header-buttons';
@@ -207,13 +207,25 @@ export default class PlayScreen extends React.Component {
               <View style={styles.container}>
                   <View style={styles.content}>
                       <View style={{flex: .1, width: "100%", padding: 5}}>
-                          <SegmentedControlIOS
-                              values={['Playing', 'Queue', 'Playlists']}
-                                selectedIndex={this.state.selectedTab}
-                                onChange={(event) => {
-                                  this.setState({selectedTab: event.nativeEvent.selectedSegmentIndex});
-                                }}
-                            />
+                            { Platform.OS === 'ios' &&
+                                <SegmentedControlIOS
+                                    values={['Playing', 'Queue', 'Playlists']}
+                                    selectedIndex={this.state.selectedTab}
+                                    onChange={(event) => {
+                                        this.setState({selectedTab: event.nativeEvent.selectedSegmentIndex});
+                                    }}
+                                />
+                            }
+                            { Platform.OS === 'android' &&
+                                <ButtonGroup
+                                    onPress={(index) => {
+                                        this.setState({selectedTab:index});
+                                    }}
+                                    selectedIndex={this.state.selectedTab}
+                                    buttons={['Playing', 'Queue', 'Playlists']}
+                                    containerStyle={{height: 25}}
+                                />
+                            }
                         </View>
                       <View style={{flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center', paddingLeft: 5, paddingRight: 5}}>
                             <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
@@ -304,13 +316,25 @@ export default class PlayScreen extends React.Component {
             return (
                 <View style={{flex:1}}>
                     <View style={{flex:.07, width: "100%", alignItems: 'stretch', justifyContent: 'center', padding: 5}}>
-                        <SegmentedControlIOS
-                            values={['Playing', 'Queue', 'Playlists']}
-                              selectedIndex={this.state.selectedTab}
-                              onChange={(event) => {
-                                this.setState({selectedTab: event.nativeEvent.selectedSegmentIndex});
-                              }}
-                          />
+                        { Platform.OS === 'ios' &&
+                            <SegmentedControlIOS
+                                values={['Playing', 'Queue', 'Playlists']}
+                                selectedIndex={this.state.selectedTab}
+                                onChange={(event) => {
+                                    this.setState({selectedTab: event.nativeEvent.selectedSegmentIndex});
+                                }}
+                            />
+                        }
+                        { Platform.OS === 'android' &&
+                            <ButtonGroup
+                                onPress={(index) => {
+                                    this.setState({selectedTab:index});
+                                }}
+                                selectedIndex={this.state.selectedTab}
+                                buttons={['Playing', 'Queue', 'Playlists']}
+                                containerStyle={{height: 25}}
+                            />
+                        }
                       </View>
                       <PlaylistScreen navigation={this.props.navigation}/>
                   </View>
@@ -319,13 +343,25 @@ export default class PlayScreen extends React.Component {
             return (
                 <View style={{flex:1}}>
                     <View style={{flex:.07, width: "100%", alignItems: 'stretch', justifyContent: 'center', padding: 5}}>
-                        <SegmentedControlIOS
-                            values={['Playing', 'Queue', 'Playlists']}
-                              selectedIndex={this.state.selectedTab}
-                              onChange={(event) => {
-                                this.setState({selectedTab: event.nativeEvent.selectedSegmentIndex});
-                              }}
-                          />
+                        { Platform.OS === 'ios' &&
+                            <SegmentedControlIOS
+                                values={['Playing', 'Queue', 'Playlists']}
+                                selectedIndex={this.state.selectedTab}
+                                onChange={(event) => {
+                                    this.setState({selectedTab: event.nativeEvent.selectedSegmentIndex});
+                                }}
+                            />
+                        }
+                        { Platform.OS === 'android' &&
+                            <ButtonGroup
+                                onPress={(index) => {
+                                    this.setState({selectedTab:index});
+                                }}
+                                selectedIndex={this.state.selectedTab}
+                                buttons={['Playing', 'Queue', 'Playlists']}
+                                containerStyle={{height: 25}}
+                            />
+                        }
                       </View>
                       <PlaylistEditor navigation={this.props.navigation}/>
                   </View>
