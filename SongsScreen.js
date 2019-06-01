@@ -46,7 +46,7 @@ export default class SongsScreen extends React.Component {
           loading: false,
           modalVisible: false,
           selectedItem: "",
-          base64Image: ""
+          imagePath: ""
         };
     }
 
@@ -61,10 +61,10 @@ export default class SongsScreen extends React.Component {
         .then((songs) => {
             this.setState({loading: false});
             this.setState({songs: songs});
-            AlbumArt.getAlbumArt(artist, album, songs[0].file)
-            .then((b64) => {
-                if (b64) {
-                    this.setState({base64Image: 'data:image/png;base64,'+b64});
+            AlbumArt.getAlbumArt(artist, album)
+            .then((path) => {
+                if (path) {
+                    this.setState({imagePath: "file://"+path});
                 }
             });
         })
@@ -261,11 +261,11 @@ export default class SongsScreen extends React.Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}, styles.rowFront]}>
-                                {this.state.base64Image.length < 1 &&
+                                {this.state.imagePath.length < 1 &&
                                     <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
                                 }
-                                {this.state.base64Image.length > 0 &&
-                                    <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: this.state.base64Image}}/>
+                                {this.state.imagePath.length > 0 &&
+                                    <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: this.state.imagePath}}/>
                                 }
                                 <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                                     <Text style={styles.item}>{item.title}</Text>

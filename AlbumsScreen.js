@@ -57,11 +57,10 @@ export default class AlbumsScreen extends React.Component {
             this.setState({loading: false});
             this.setState({albums: albums, fullset: albums});
             albums.forEach((album) => {
-                AlbumArt.getAlbumArt(artist, album.name)
-                .then((b64) => {
-                    if (b64) {
-                        album.base64Image = 'data:image/png;base64,'+b64;
-                        this.setState({albums: this.state.albums, fullset: this.state.fullset});
+                AlbumArt.getAlbumArt(artist, album.name).then((path) => {
+                    if (path) {
+                        album.imagePath = "file://"+path;
+                        this.setState({albums: this.state.fullset, fullset: this.state.fullset});
                     }
                 });
             });
@@ -171,11 +170,11 @@ export default class AlbumsScreen extends React.Component {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                 <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}}>
-                    {item.base64Image === undefined &&
+                    {item.imagePath === undefined &&
                         <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
                     }
-                    {item.base64Image !== undefined &&
-                        <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.base64Image}}/>
+                    {item.imagePath !== undefined &&
+                        <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
                     }
                     <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                         <Text style={styles.item}>{item.name}</Text>

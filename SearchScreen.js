@@ -82,10 +82,10 @@ export default class SearchScreen extends React.Component {
                     if (!artistCheck.includes(result.artist) && artist.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
                         artists.push(artist);
                         artistCheck.push(result.artist);
-                        AlbumArt.getAlbumArt(artist.artist)
-                        .then((b64) => {
-                            if (b64) {
-                                artist.base64Image = 'data:image/png;base64,'+b64;
+                        AlbumArt.getAlbumArtForArtists()
+                        .then((artistArt) => {
+                            if (artistArt[artist.artist]) {
+                                artist.imagePath = "file://"+artistArt[artist.artist];
                                 this.setState({artists: artists});
                             }
                         });
@@ -94,9 +94,9 @@ export default class SearchScreen extends React.Component {
                         albums.push(album);
                         albumCheck.push(result.album);
                         AlbumArt.getAlbumArt(artist.artist, album.album)
-                        .then((b64) => {
-                            if (b64) {
-                                album.base64Image = 'data:image/png;base64,'+b64;
+                        .then((path) => {
+                            if (path) {
+                                album.imagePath = "file://"+path;
                                 this.setState({albums: albums});
                             }
                         });
@@ -111,10 +111,10 @@ export default class SearchScreen extends React.Component {
                             b64file: result.b64file
                         }
                         songs.push(song);
-                        AlbumArt.getAlbumArt(artist.artist, album.album, result.file)
-                        .then((b64) => {
-                            if (b64) {
-                                song.base64Image = 'data:image/png;base64,'+b64;
+                        AlbumArt.getAlbumArt(artist.artist, album.album)
+                        .then((path) => {
+                            if (path) {
+                                song.imagePath = "file://"+path;
                                 this.setState({songs: songs});
                             }
                         });
@@ -264,11 +264,11 @@ export default class SearchScreen extends React.Component {
                                         </TouchableOpacity>
                                     </View>
                                     <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center'}, styles.rowFront]}>
-                                        {item.base64Image === undefined &&
+                                        {item.imagePath === undefined &&
                                             <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
                                         }
-                                        {item.base64Image !== undefined &&
-                                            <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.base64Image}}/>
+                                        {item.imagePath !== undefined &&
+                                            <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
                                         }
                                         <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                                             {item.title && <Text style={styles.item}>{item.title}</Text>}
@@ -284,11 +284,11 @@ export default class SearchScreen extends React.Component {
                             return (
                                 <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                                     <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                                        {item.base64Image === undefined &&
+                                        {item.imagePath === undefined &&
                                             <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
                                         }
-                                        {item.base64Image !== undefined &&
-                                            <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.base64Image}}/>
+                                        {item.imagePath !== undefined &&
+                                            <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
                                         }
                                         <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                                             {item.artist && <Text style={styles.item}>{item.artist}</Text>}

@@ -19,112 +19,164 @@ import { AsyncStorage } from 'react-native';
 
 import Base64 from './Base64';
 import MPDConnection from './MPDConnection';
+import EventEmitter from 'EventEmitter';
+
+const albumArtEventEmiiter = new EventEmitter();
+
+let albums;
+let albumArt = {};
+let artistArt = {};
+
+const processor = () => {
+    if (albums !== undefined && albums.length < 1) {
+        albumArtEventEmiiter.emit('OnAlbumArtComplete', albumArt);
+        return Promise.resolve(false);
+    }
+
+    if (MPDConnection.isConnected() && MPDConnection.isIdle() && MPDConnection.current().isAlbumArtSupported()) {
+        const promise = new Promise((resolve, reject) => {
+            if (albums === undefined) {
+                albums = [];
+                MPDConnection.current().getAllAlbums()
+                .then((results) => {
+                    MPDConnection.current().listAlbumArtDir()
+                    .then((files) => {
+                        results.forEach((album) => {
+                            const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
+                            const filename = 'albumart_'+key+".png";
+                            if (files.includes(filename)) {
+                                const full = MPDConnection.current().getAlbumArtDir()+'/'+filename;
+                                console.log("albumart found for ["+album.artist+"] ["+album.name+"] ["+full+"]");
+                                albumArt[key] = full;
+                                if (!artistArt[album.artist]) {
+                                    artistArt[album.artist] = full;
+                                }
+                            } else {
+                                console.log("albumart missing for ["+album.artist+"] ["+album.name+"]");
+                                albums.push(album);
+                                albumArtEventEmiiter.emit('OnAlbumArtQueue', album);
+                            }
+                        });
+                        resolve(true);
+                    });
+                });
+            } else {
+                const album = albums.shift();
+                MPDConnection.current().getSongsForAlbum(album.name, album.artist)
+                .then((songs) => {
+                    if (songs.length > 0) {
+                        albumArtEventEmiiter.emit('OnAlbumArtStart', album);
+                        console.log("getting path for ["+album.artist+"] ["+album.name+"] ["+songs[0].file+"]");
+                        MPDConnection.current().albumart(songs[0].file, album.artist, album.name)
+                        .then((path) => {
+                            const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
+                            console.log("saving path for ["+album.artist+"] ["+album.name+"] ["+path.path+"]");
+                            albumArt[key] = path.path;
+                            if (!artistArt[album.artist]) {
+                                artistArt[album.artist] = path.path;
+                            }
+                            albumArtEventEmiiter.emit('OnAlbumArtEnd', album);
+                            resolve(true);
+                        })
+                        .catch((err) => {
+                            console.log("error getting path for ["+album.artist+"] ["+album.name+"] ["+err+"]");
+                            albumArtEventEmiiter.emit('OnAlbumArtError', {album:album, err: err});
+                            resolve(true);
+                        });
+                    } else {
+                        console.log("error no songs found for path for ["+album.artist+"] ["+album.name+"]");
+                        resolve(true);
+                    }
+                })
+                .catch((err) => {
+                    console.log("error getting path for ["+album.artist+"] ["+album.name+"] ["+err+"]");
+                    resolve(false);
+                });
+            }
+        });
+        return promise;
+    } else {
+        //albumArtEventEmiiter.emit('OnAlbumArtComplete', albumArt);
+        return Promise.resolve(true);
+    }
+}
+
+const poller = () => {
+    processor().then((poll) => {
+        if (poll) {
+            setTimeout(poller, 3000);
+        }
+    });
+};
+
+const onConnect = MPDConnection.getEventEmitter().addListener(
+    "OnConnect",
+    () => {
+        albumArtStorage.isEnabled().then((enabled) => {
+            if (enabled === "true") {
+                albums = undefined;
+                console.log("Starting albumart poller");
+                poller();
+            }
+        });
+    }
+);
+
+const onInternalConnect = MPDConnection.getEventEmitter().addListener(
+    "OnInternalConnect",
+    () => {
+        /*
+        albumArtStorage.isEnabled().then((enabled) => {
+            if (enabled === "true") {
+                console.log("Starting albumart poller");
+                poller();
+            }
+        });
+        */
+    }
+);
+
+const onDisconnect = MPDConnection.getEventEmitter().addListener(
+    "OnDisconnect",
+    () => {
+        console.log("Stopping albumart poller");
+        albums = [];
+    }
+);
 
 class AlbumArtStorage {
-    async getAlbumArt(artist, album) {
-        try {
-            return await AsyncStorage.getItem('@MPD:albumart_'+encodeURIComponent(artist+album));
-        } catch (err) {
-            console.log(err);
-            return null;
-        }
-    }
-
-    async getAlbumArtForArtists(artists) {
-        try {
-            let artMap = {};
-            let albumArtArtistsStr = await AsyncStorage.getItem('@MPD:albumart_artists');
-            //console.log("albumArtArtistsStr = "+albumArtArtistsStr);
-            if (albumArtArtistsStr !== null) {
-                let albumArtArtists = JSON.parse(albumArtArtistsStr);
-
-                for (let i = 0; i < artists.length; i++) {
-                    const artist = artists[i];
-                    if (albumArtArtists[artist.name]) {
-                        let b64 = await AsyncStorage.getItem('@MPD:albumart_'+albumArtArtists[artist.name]);
-                        artMap[artist.name] = b64;
-                    }
-                }
-            }
-            return artMap;
-        } catch (err) {
-            console.log(err);
-            return null;
-        }
-    }
-
-    async setAlbumArt(artist, album, b64) {
-        AsyncStorage.setItem('@MPD:albumart_'+encodeURIComponent(artist+album), b64);
-        let albumArtArtistsStr = await AsyncStorage.getItem('@MPD:albumart_artists');
-        let albumArtArtists;
-        if (albumArtArtistsStr === null) {
-            albumArtArtists = {};
-        } else {
-            albumArtArtists = JSON.parse(albumArtArtistsStr);
-        }
-        if (!albumArtArtists[artist]) {
-            albumArtArtists[artist] = encodeURIComponent(artist+album);
-            AsyncStorage.setItem('@MPD:albumart_artists', JSON.stringify(albumArtArtists));
-        }
-    }
-
     async enable() {
-        AsyncStorage.setItem('@MPD:albumart', "true");
+        AsyncStorage.setItem('@MPD:albumart_enabled', "true");
     }
 
     async disable() {
-        AsyncStorage.setItem('@MPD:albumart', "false");
+        AsyncStorage.setItem('@MPD:albumart_enabled', "false");
     }
 
     async isEnabled() {
-        return await AsyncStorage.getItem('@MPD:albumart');
+        let enabled = await AsyncStorage.getItem('@MPD:albumart_enabled');
+        if (enabled === null) {
+            return "false";
+        }
+        return enabled;
     }
 }
 
 let albumArtStorage = new AlbumArtStorage();
 
 export default {
-    getAlbumArt: function(artist, album, songfile) {
+    getAlbumArt: (artist, album) => {
         let promise = new Promise((resolve, reject) => {
             albumArtStorage.isEnabled().then((enabled) => {
                 if (enabled === "true") {
-                    albumArtStorage.getAlbumArt(artist, album)
-                    .then((b64) => {
-                        if (b64 !== undefined && b64 !== null) {
-                            console.log("b64 found for ["+artist+"] ["+album+"] ["+b64.length+"]");
-                            if (b64 === "Not Found") {
-                                resolve()
-                            } else {
-                                resolve(b64);
-                            }
-                        } else if (songfile) {
-                            console.log("getting b64 ["+artist+"] ["+album+"] ["+songfile+"]");
-                            MPDConnection.current().albumart(songfile)
-                            .then((b64) => {
-                                console.log("writing b64 for ["+artist+"] ["+album+"] ["+b64.length+"]");
-                                albumArtStorage.setAlbumArt(artist, album, b64);
-                                resolve(b64);
-                            })
-                            .catch((err) => {
-                                console.log("error b64 for ["+artist+"] ["+album+"] ["+err+"]");
-                                //albumArtStorage.setAlbumArt(artist, album, "Not Found");
-                                resolve();
-                            });
-                        } else {
-                            console.log("getting b64 ["+artist+"] ["+album+"]");
-                            MPDConnection.current().albumArtForAlbum(artist, album)
-                            .then((b64) => {
-                                console.log("writing b64 for ["+artist+"] ["+album+"] ["+b64.length+"]");
-                                albumArtStorage.setAlbumArt(artist, album, b64);
-                                resolve(b64);
-                            })
-                            .catch((err) => {
-                                console.log("error b64 for ["+artist+"] ["+album+"] ["+err+"]");
-                                //albumArtStorage.setAlbumArt(artist, album, "Not Found");
-                                resolve();
-                            });
-                        }
-                    });
+                    const key = MPDConnection.current().toAlbumArtFilename(artist, album);
+                    if (albumArt[key]) {
+                        console.log("path found for ["+artist+"] ["+album+"] ["+albumArt[key]+"]");
+                        resolve(albumArt[key]);
+                    } else {
+                        console.log("path not found for ["+artist+"] ["+album+"]");
+                        resolve();
+                    }
                 } else {
                     resolve();
                 }
@@ -132,26 +184,38 @@ export default {
         });
         return promise;
     },
-    clearCache: function() {
-        AsyncStorage.getAllKeys((err, keys) => {
-            keys.forEach((key) => {
-                if (key.indexOf('@MPD:albumart_') !== -1) {
-                    console.log("deleting b64 for ["+key+"]");
-                    AsyncStorage.removeItem(key);
+    clearCache: () => {
+        albumArtStorage.isEnabled().then((enabled) => {
+            if (enabled === "true") {
+                for (let key in albumArt) {
+                    const path = albumArt[key];
+                    console.log("deleting path for ["+key+"] ["+path+"]");
+                    MPDConnection.current().deleteAlbumArt(path);
                 }
-            });
+            }
         });
     },
-    enable: function() {
+    enable: () => {
+        poller();
         albumArtStorage.enable();
     },
-    disable: function() {
+    disable: () => {
+        albums = [];
         albumArtStorage.disable();
     },
-    isEnabled: function() {
+    isEnabled: () => {
         return albumArtStorage.isEnabled();
     },
-    getAlbumArtForArtists: function(artists) {
-        return albumArtStorage.getAlbumArtForArtists(artists);
+    getAlbumArtForArtists: () => {
+        let promise = new Promise((resolve, reject) => {
+            resolve(artistArt);
+        });
+        return promise;
+    },
+    getEventEmitter: () => {
+        return albumArtEventEmiiter;
+    },
+    getQueue: () => {
+        return albums || [];
     }
 }

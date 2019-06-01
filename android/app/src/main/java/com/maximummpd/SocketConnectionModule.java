@@ -16,6 +16,7 @@
  */
 package com.maximummpd;
 
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -23,22 +24,33 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.core.PermissionAwareActivity;
+import com.facebook.react.modules.core.PermissionListener;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.File;
 import java.net.Socket;
 import javax.annotation.Nullable;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
+import android.os.Environment;
+import android.os.AsyncTask;
 
-public class SocketConnectionModule extends ReactContextBaseJavaModule {
+public class SocketConnectionModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
     private static final byte[] errPrefix = new byte[] {0x41, 0x43, 0x4b, 0x20, 0x5b};
     private static final byte[] initPrefix = new byte[] {0x4f, 0x4b, 0x20, 0x4d, 0x50, 0x44, 0x20};
     private static final byte[] binaryPrefix = new byte[] {0x62, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x3a, 0x20};
@@ -47,9 +59,40 @@ public class SocketConnectionModule extends ReactContextBaseJavaModule {
     private ReadThread readThread = null;
     private Socket socket = null;
     private PrintWriter pw = null;
+    private String albumArtFilename = null;
+    private File documentDir = null;
 
     public SocketConnectionModule(ReactApplicationContext reactContext) {
         super(reactContext);
+
+        if (!isPermissionGranted()) {
+            String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE};
+            if (getCurrentActivity() != null) {
+                ((PermissionAwareActivity) getCurrentActivity()).requestPermissions(PERMISSIONS, 1, new PermissionListener() {
+                    public boolean onRequestPermissionsResult(final int requestCode,
+                                                              @NonNull final String[] permissions,
+                                                              @NonNull final int[] grantResults) {
+                        boolean permissionsGranted = true;
+                        for (int i = 0; i < permissions.length; i++) {
+                            final boolean granted = grantResults[i] == PackageManager.PERMISSION_GRANTED;
+                            permissionsGranted = permissionsGranted && granted;
+                        }
+                        Log.d("SockectConnection", "permissionsGranted "+permissionsGranted);
+                        return permissionsGranted;
+                    }
+                });
+            }
+        }
+        reactContext.addLifecycleEventListener(this);
+
+        File dir = getReactApplicationContext().getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        documentDir = new File(dir, "mpd_album_art");
+        if (!documentDir.exists()) {
+            boolean created = documentDir.mkdirs();
+            if (!created) {
+                Log.d("SockectConnection", "failed to create mpd_album_art directory");
+            }
+        }
     }
 
     @Override
@@ -61,19 +104,66 @@ public class SocketConnectionModule extends ReactContextBaseJavaModule {
     public void connect(String host, int port) {
         this.host = host;
         this.port = port;
-        mpdConnect();
+        mpdConnect(false);
     }
 
     @ReactMethod
     public void disconnect() {
         mpdDisconnect();
+        host = null;
+        port = 0;
     }
 
     @ReactMethod
-    public void writeMessage(String message) {
+    public void writeMessage(String message, String filename) {
         //Log.d("SockectConnection", "writeMessage : "+message);
+        if (filename != null) {
+            albumArtFilename = filename;
+        }
         pw.print(message);
         pw.flush();
+    }
+
+    @ReactMethod
+    public void deleteAlbumArtFile(String filename) {
+        File f = new File(documentDir, filename);
+        //Log.d("SockectConnection", "attempting to delete mpd_album_art file : "+f.getAbsolutePath());
+        boolean deleted = f.delete();
+        if (!deleted) {
+            Log.d("SockectConnection", "failed to delete mpd_album_art file : "+f.getAbsolutePath());
+        }
+    }
+
+    @ReactMethod
+    public void listAlbumArtDir(Promise promise) {
+        File[] files = documentDir.listFiles();
+        WritableArray array = Arguments.createArray();
+        for (File f: files) {
+            array.pushString(f.getName());
+        }
+        promise.resolve(array);
+    }
+
+    @Override
+    public void onHostResume() {
+        if (host != null) {
+            Log.d("SockectConnection", "resumed");
+            sendEvent("OnPauseResume", "msg", "resumed");
+            mpdConnect(true);
+        }
+    }
+
+    @Override
+    public void onHostPause() {
+        if (socket != null) {
+            Log.d("SockectConnection", "paused");
+            sendEvent("OnPauseResume", "msg", "paused");
+            mpdDisconnect();
+        }
+    }
+
+    @Override
+    public void onHostDestroy() {
     }
 
     private void sendEvent(String eventName, String id, Exception e) {
@@ -92,32 +182,30 @@ public class SocketConnectionModule extends ReactContextBaseJavaModule {
         getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
     }
 
-    private void mpdConnect() {
+    private void mpdConnect(boolean internalConnect) {
         Log.d("SockectConnection", "mpdConnect");
-        try {
-            socket = new Socket(host, port);
-            BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-            pw = new PrintWriter(bos);
-            readThread = new ReadThread(socket.getInputStream());
-            new Thread(readThread).start();
-            sendEvent("OnStateChange", "msg", "connected");
-        } catch (IOException e) {
-            Log.d("SockectConnection", "error1 : "+e.getLocalizedMessage());
-            sendEvent("OnError", "error", e);
+        readThread = new ReadThread();
+        new Thread(readThread).start();
+        WritableMap params = Arguments.createMap();
+        params.putString("albumArtDir", documentDir.getAbsolutePath());
+
+        if (internalConnect) {
+            params.putString("msg", "internalConnected");
+        } else {
+            params.putString("msg", "connected");
         }
+        sendEvent("OnStateChange", params);
     }
 
     private void mpdDisconnect() {
         Log.d("SockectConnection", "mpdDisconnect");
-        try {
-            readThread.shutdown();
-            pw.close();
-            socket.close();
-            socket = null;
-        } catch (IOException e) {
-            Log.d("SockectConnection", "error2 : "+e.getLocalizedMessage());
-            sendEvent("OnError", "error", e);
-        }
+        readThread.shutdown();
+    }
+
+    private boolean isPermissionGranted() {
+        String permission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        int res = getReactApplicationContext().checkCallingOrSelfPermission(permission);
+        return res == PackageManager.PERMISSION_GRANTED;
     }
 
     public class ReadThread implements Runnable {
@@ -129,11 +217,19 @@ public class SocketConnectionModule extends ReactContextBaseJavaModule {
         private String binaryText = null;
         private ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        public ReadThread(InputStream is) {
-            this.is = new BufferedInputStream(is);
-        }
+        public ReadThread() {}
 
         public void run() {
+            try {
+                socket = new Socket(host, port);
+                BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+                pw = new PrintWriter(bos);
+
+                is = new BufferedInputStream(socket.getInputStream());
+            } catch (Exception e) {
+                Log.d("SockectConnection", "error : "+e.toString());
+                sendEvent("OnError", "error", e);
+            }
             byte[] bytes = new byte[8192];
             int len;
 
@@ -150,10 +246,11 @@ public class SocketConnectionModule extends ReactContextBaseJavaModule {
                                 byte[] b = baos.toByteArray();
                                 byte[] binaryData = new byte[(int)binarySize];
                                 System.arraycopy(b, binaryOffset+1, binaryData, 0, binarySize);
+                                String path = writeAlbumArt(binaryData);
                                 WritableMap results = Arguments.createMap();
                                 binaryText += "\nOK\n";
                                 results.putString("data", binaryText);
-                                results.putString("binary", Base64.encodeToString(binaryData, Base64.NO_WRAP));
+                                results.putString("filename", path);
                                 sendEvent("OnResponse", results);
                                 baos.reset();
                                 //Log.d("SockectConnection", "binary out ["+binaryData.length+"] ["+binaryText+"]");
@@ -205,6 +302,14 @@ public class SocketConnectionModule extends ReactContextBaseJavaModule {
 
         public void shutdown() {
             Log.d("SockectConnection", "shutdown request");
+            try {
+                pw.close();
+                socket.close();
+                socket = null;
+            } catch (IOException e) {
+                Log.d("SockectConnection", "error2 : "+e.getLocalizedMessage());
+                sendEvent("OnError", "error", e);
+            }
             shutdown = true;
         }
 
@@ -303,6 +408,34 @@ public class SocketConnectionModule extends ReactContextBaseJavaModule {
                 if (found) return i;
             }
             return -1;
+        }
+
+        private String writeAlbumArt(byte[] binaryData) {
+            File albumArtFile = new File(documentDir, albumArtFilename);
+            if (!albumArtFile.exists()) {
+                try {
+                    albumArtFile.createNewFile();
+                } catch (IOException e) {
+                    Log.d("SockectConnection", "failed to create mpd_album_art file "+albumArtFile.getAbsolutePath());
+                    return albumArtFile.getAbsolutePath();
+                }
+            }
+
+            BufferedOutputStream os = null;
+            try {
+                os = new BufferedOutputStream(new FileOutputStream(albumArtFile, true));
+                os.write(binaryData);
+                //Log.d("SockectConnection", "written "+binaryData.length+" to "+albumArtFile.getAbsolutePath());
+            } catch(IOException e) {
+                Log.d("SockectConnection", "exception while writing album art data to : "+albumArtFile.getAbsolutePath()+" "+e.getLocalizedMessage());
+            } finally {
+                if (os != null) {
+                    try {
+                        os.close();
+                    } catch (IOException e) {}
+                }
+            }
+            return albumArtFile.getAbsolutePath();
         }
     }
 }

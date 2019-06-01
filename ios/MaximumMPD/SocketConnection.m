@@ -31,6 +31,22 @@ static NSData *crdata;
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onPause) name:UIApplicationDidEnterBackgroundNotification object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onResume) name:UIApplicationWillEnterForegroundNotification object:nil];
   self._data = [NSMutableData data];
+  
+  NSString *path;
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"mpd_album_art"];
+  NSError *error;
+  if (![[NSFileManager defaultManager] fileExistsAtPath:path])  {
+    if (![[NSFileManager defaultManager] createDirectoryAtPath:path
+                                   withIntermediateDirectories:NO
+                                                    attributes:nil
+                                                         error:&error]) {
+      NSLog(@"create albumart directory error: %@", error);
+    } else {
+      NSLog(@"created albumart directory [%@]", path);
+    }
+  }
+  self.albumArtDir = path;
   return self;
 }
 
@@ -49,10 +65,48 @@ RCT_EXPORT_METHOD(disconnect) {
   self.port = 0;
 }
 
-RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
+RCT_EXPORT_METHOD(writeMessage:(NSString *)message filename:(NSString *)filename) {
+  if (filename != nil) {
+    NSString *path;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"mpd_album_art"];
+    path = [path stringByAppendingPathComponent:filename];
+
+    self.albumArtFilename = path;
+  }
   NSData *data = [[NSData alloc] initWithData:[message dataUsingEncoding:NSUTF8StringEncoding]];
   //NSLog(@"writeMessage [%@]", message);
   [self.outputStream write:[data bytes] maxLength:[data length]];
+}
+
+RCT_EXPORT_METHOD(deleteAlbumArtFile:(NSString *)filename) {
+  NSString *path;
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"mpd_album_art"];
+  path = [path stringByAppendingPathComponent:filename];
+  NSError *error;
+  if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+    if (![[NSFileManager defaultManager] removeItemAtPath:path error:&error]) {
+      NSLog(@"Delete file error: %@", error);
+    } else {
+      NSLog(@"deleted albumart file [%@]", path);
+    }
+  }
+}
+
+RCT_EXPORT_METHOD(listAlbumArtDir:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+  NSString *path;
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"mpd_album_art"];
+  NSError *error;
+
+  NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:&error];
+  if (error != nil) {
+    reject(@"albumart", @"Album Art error", error);
+  } else {
+    NSLog(@"albumart files [%@]", files);
+    resolve(files);
+  }
 }
 
 - (NSArray<NSString *> *)supportedEvents {
@@ -80,7 +134,7 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
           self.internalConnect = false;
         }
         NSLog(@"stream open [%@]", statusMsg);
-        [self sendEventWithName:@"OnStateChange" body:@{@"msg": statusMsg}];
+        [self sendEventWithName:@"OnStateChange" body:@{@"msg": statusMsg, @"albumArtDir": self.albumArtDir}];
       }
       break;
     }
@@ -102,11 +156,13 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
             if ([self findBufferEnd] == TRUE) {
               if (self.binaryFound == TRUE) {
                 NSString *out = [NSString stringWithFormat:@"%@%@", self.binaryTxt, @"\nOK\n"];
-                NSData *binaryData = [self._data subdataWithRange:NSMakeRange(self.binaryOffset+1, self.binarySize)];
-                [self sendEventWithName:@"OnResponse" body:@{@"data": out, @"binary": [binaryData base64EncodedStringWithOptions:0]}];
+                NSMutableData *albumArtData = [NSMutableData data];
+                [albumArtData appendData:[self._data subdataWithRange:NSMakeRange(self.binaryOffset+1, self.binarySize)]];
+                [self writeAlbumArt:albumArtData];
+                [self sendEventWithName:@"OnResponse" body:@{@"data": out, @"filename":self.albumArtFilename}];
                 self._data = [NSMutableData data];
                 self.binaryFound = FALSE;
-                //NSLog(@"binary out [%ld] [%@]", [binaryData length], out);
+                //NSLog(@"binary out [%ld] [%@]", [albumArtData length], out);
               } else {
                 NSString *out = [[NSString alloc] initWithBytes:[self._data bytes] length:[self._data length] encoding:NSUTF8StringEncoding];
                 [self sendEventWithName:@"OnResponse" body:@{@"data": out}];
@@ -307,5 +363,18 @@ RCT_EXPORT_METHOD(writeMessage:(NSString *)message) {
 
     return TRUE;
   }
+  
+}
+
+- (void)writeAlbumArt:(NSData *)albumArtData {
+  if (![[NSFileManager defaultManager] fileExistsAtPath:self.albumArtFilename]) {
+    [[NSFileManager defaultManager] createFileAtPath:self.albumArtFilename
+                                            contents:nil
+                                          attributes:nil];
+  }
+  NSFileHandle *handle = [NSFileHandle fileHandleForUpdatingAtPath:self.albumArtFilename];
+  [handle seekToEndOfFile];
+  [handle writeData: albumArtData];
+  [handle closeFile];
 }
 @end

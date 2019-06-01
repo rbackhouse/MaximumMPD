@@ -61,7 +61,7 @@ export default class PlayScreen extends React.Component {
             postion: 0,
             status: undefined,
             selectedTab: 0,
-            base64Image: "",
+            imagePath: "",
             searchedForAlbumArt: false
         }
     }
@@ -88,20 +88,20 @@ export default class PlayScreen extends React.Component {
                 this.setState({status: status, volume: parseInt(status.volume), isPlaying: status.state === "play"});
                 if (status.song) {
                     if (currentsong !== status.song) {
-                        this.setState({base64Image: '', searchedForAlbumArt: false});
+                        this.setState({imagePath: '', searchedForAlbumArt: false});
                     }
-                    if (!this.state.searchedForAlbumArt && this.state.base64Image.length < 1) {
-                        AlbumArt.getAlbumArt(status.currentsong.artist, status.currentsong.album, status.currentsong.file)
-                        .then((b64) => {
-                            if (b64) {
-                                this.setState({base64Image: 'data:image/png;base64,'+b64, searchedForAlbumArt: true});
+                    if (!this.state.searchedForAlbumArt && this.state.imagePath.length < 1) {
+                        AlbumArt.getAlbumArt(status.currentsong.artist, status.currentsong.album)
+                        .then((path) => {
+                            if (path) {
+                                this.setState({imagePath: "file://"+path, searchedForAlbumArt: true});
                             } else {
                                 this.setState({searchedForAlbumArt: true});
                             }
                         });
                     }
                 } else {
-                    this.setState({base64Image: '', searchedForAlbumArt: false});
+                    this.setState({imagePath: '', searchedForAlbumArt: false});
                 }
             }
         );
@@ -109,7 +109,8 @@ export default class PlayScreen extends React.Component {
         this.didBlurSubscription = this.props.navigation.addListener(
             'didBlur',
             payload => {
-                MPDConnection.current().stopEmittingStatus();
+                //MPDConnection.current().stopEmittingStatus();
+                MPDConnection.current().startEmittingStatus(30000);
             }
         );
         this.didFocusSubscription = this.props.navigation.addListener(
@@ -242,11 +243,11 @@ export default class PlayScreen extends React.Component {
                             </View>
                       </View>
                       <View style={{flex: .4, width: "60%", alignItems: 'center', justifyContent: 'center'}} >
-                          {this.state.base64Image.length < 1 &&
+                          {this.state.imagePath.length < 1 &&
                               <Image style={{width: albumArtSize, height: albumArtSize}} source={require('./images/icons8-cd-filled-100.png')}/>
                           }
-                          {this.state.base64Image.length > 0 &&
-                              <Image style={{width: albumArtSize, height: albumArtSize, resizeMode: 'contain'}} source={{uri: this.state.base64Image}}/>
+                          {this.state.imagePath.length > 0 &&
+                              <Image style={{width: albumArtSize, height: albumArtSize, resizeMode: 'contain'}} source={{uri: this.state.imagePath}}/>
                           }
                       </View>
                       <View style={{flex: .2, width: "80%", height: "15%", padding: 15, alignItems: 'center', justifyContent: 'center'}}>

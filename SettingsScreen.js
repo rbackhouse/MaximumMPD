@@ -22,6 +22,126 @@ import { FormLabel, FormInput, Button } from 'react-native-elements'
 import MPDConnection from './MPDConnection';
 import AlbumArt from './AlbumArt';
 
+class AlbumArtModal extends React.Component {
+    state = {
+        albumart: false,
+        status: 'Idle',
+        count: ''
+    }
+
+    onOk() {
+        this.props.onOk();
+    }
+
+    componentDidMount() {
+        this.setState({count: ""+AlbumArt.getQueue().length});
+        this.onAlbumArtStart = AlbumArt.getEventEmitter().addListener(
+            "OnAlbumArtStart",
+            (album) => {
+                this.setState({status: "Downloading albumart for "+album.artist+" : "+album.name, count: ""+AlbumArt.getQueue().length});
+            }
+        );
+
+        this.onAlbumArtEnd = AlbumArt.getEventEmitter().addListener(
+            "OnAlbumArtEnd",
+            (album) => {
+                this.setState({status: "Downloaded albumart for "+album.artist+" : "+album.name, count: ""+AlbumArt.getQueue().length});
+            }
+        );
+        this.onAlbumArtError = AlbumArt.getEventEmitter().addListener(
+            "OnAlbumArtError",
+            (details) => {
+                this.setState({status: details.album.artist+" : "+details.album.name+" "+details.err, count: ""+AlbumArt.getQueue().length});
+            }
+        );
+        this.onAlbumArtComplete = AlbumArt.getEventEmitter().addListener(
+            "OnAlbumArtComplete",
+            (details) => {
+                this.setState({status: "Complete", count: ""+AlbumArt.getQueue().length});
+            }
+        );
+        AlbumArt.isEnabled()
+        .then((enabled) => {
+            if (enabled === "true") {
+                this.setState({albumart: true});
+            } else {
+                this.setState({albumart: false});
+            }
+        });
+    }
+
+    componentWillUnmount() {
+        this.onAlbumArtStart.remove();
+        this.onAlbumArtEnd.remove();
+        this.onAlbumArtError.remove();
+        this.onAlbumArtComplete.remove();
+    }
+
+    clearAlbumArt() {
+        Alert.alert(
+            "Clear Album Art",
+            "Are you sure you want to clear the Album Art Cache?",
+            [
+                {text: 'OK', onPress: () => {
+                    AlbumArt.clearCache();
+                }},
+                {text: 'Cancel'}
+            ]
+        );
+    }
+
+    onAlbumArtChange(value) {
+        this.setState({albumart: value});
+        if (value === true) {
+            AlbumArt.enable();
+        } else {
+
+            AlbumArt.disable();
+        }
+    }
+
+    render() {
+        const visible = this.props.visible;
+        const queueText = "Queue : "+this.state.count;
+        return (
+            <Modal
+                animationType="fade"
+                transparent={false}
+                visible={visible}
+                onRequestClose={() => {
+            }}>
+            <View style={{marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'}}>
+                <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Album Art</Text>
+                </View>
+                <View style={{backgroundColor:'#EFEFF4',flex:1}}>
+                    <SettingsList borderColor='#c8c7cc' defaultItemSize={50}>
+                        <SettingsList.Item
+                                    hasNavArrow={false}
+                                    switchState={this.state.albumart}
+                                    hasSwitch={true}
+                                    switchOnValueChange={(value) => this.onAlbumArtChange(value)}
+                                    title='Enable'/>
+                        <SettingsList.Item title={queueText} hasNavArrow={false}/>
+                        <SettingsList.Item title={this.state.status} titleStyle={styles.status} hasNavArrow={false}/>
+                    </SettingsList>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                        <Button
+                            onPress={() => {this.onOk();}}
+                            title="Ok"
+                            icon={{name: 'check', type: 'font-awesome'}}
+                            raised={true}
+                            rounded
+                            backgroundColor={'#3396FF'}
+                        />
+                    </View>
+                </View>
+            </View>
+            </Modal>
+        );
+    }
+}
+
 class CrossfadeModal extends React.Component {
     state = {
         crossFade: 3
@@ -186,7 +306,7 @@ export default class SettingsScreen extends React.Component {
         stopAftetSongPlayed: false,
         removeSongAfterPlay: false,
         randomPlaylistByType: false,
-        albumart: false,
+        albumartVisible: false,
         aboutVisible: false
     }
 
@@ -261,19 +381,6 @@ export default class SettingsScreen extends React.Component {
         }
     }
 
-    clearAlbumArt() {
-        Alert.alert(
-            "Clear Album Art",
-            "Are you sure you want to clear the Album Art Cache?",
-            [
-                {text: 'OK', onPress: () => {
-                    AlbumArt.clearCache();
-                }},
-                {text: 'Cancel'}
-            ]
-        );
-    }
-
     onShuffleChange(value) {
         this.setState({shuffle: value});
         if (MPDConnection.isConnected()) {
@@ -311,16 +418,6 @@ export default class SettingsScreen extends React.Component {
                 .then(() => {
                     console.log("connection updated");
                 });
-        }
-    }
-
-    onAlbumArtChange(value) {
-        this.setState({albumart: value});
-        if (value === true) {
-            AlbumArt.enable();
-        } else {
-
-            AlbumArt.disable();
         }
     }
 
@@ -368,15 +465,9 @@ export default class SettingsScreen extends React.Component {
                       onPress={() => this.updateDB()}
                     />
                     <SettingsList.Item
-                                hasNavArrow={false}
-                                switchState={this.state.albumart}
-                                hasSwitch={true}
-                                switchOnValueChange={(value) => this.onAlbumArtChange(value)}
-                                title='Album Art'/>
-                    <SettingsList.Item
                       hasNavArrow={true}
-                      title='Clear Album Art Cache'
-                      onPress={() => this.clearAlbumArt()}
+                      title='Album Art'
+                      onPress={() => this.setState({albumartVisible: true})}
                     />
                     <SettingsList.Header headerStyle={{marginTop:15}} headerText="Playing Configuration"/>
                     <SettingsList.Item
@@ -427,6 +518,7 @@ export default class SettingsScreen extends React.Component {
                 <ReplayGainModal replayGain={this.state.replayGain} visible={this.state.replayGainVisible} onSet={(value) => {this.setReplayGain(value)}} onCancel={() => this.setState({replayGainVisible: false})}></ReplayGainModal>
                 <CrossfadeModal value={this.state.crossfade} visible={this.state.crossfadeVisible} onSet={(value) => {this.setCrossfade(value)}} onCancel={() => this.setState({crossfadeVisible: false})}></CrossfadeModal>
                 <AboutModal visible={this.state.aboutVisible} onOk={() => this.setState({aboutVisible: false})}></AboutModal>
+                <AlbumArtModal visible={this.state.albumartVisible} onOk={() => this.setState({albumartVisible: false})}></AlbumArtModal>
             </View>
         );
     }
@@ -439,5 +531,8 @@ const styles = StyleSheet.create({
         margin: 15,
         borderColor: '#e3e5e5',
         borderWidth: 1
+    },
+    status: {
+        fontSize: 12
     }
 });

@@ -110,6 +110,7 @@ class MPDConnection {
             (status) => {
                 let state = status.msg;
                 if (state == "connected") {
+                    this.albumArtDir = status.albumArtDir;
     				this.queue = [];
     				this.isConnected = true;
                     if (pwd) {
@@ -120,7 +121,7 @@ class MPDConnection {
                             callback(err);
                         });
                     }
-                    //this.startEmittingStatus();
+                    this.startEmittingStatus(30000);
                     if (!noemit) {
                         mpdEventEmiiter.emit('OnConnect', {host: this.host, port: this.port});
                         console.log("Connected");
@@ -129,9 +130,11 @@ class MPDConnection {
     					callback();
     				}
     			} else if (state == "internalConnected") {
+                    this.albumArtDir = status.albumArtDir;
     				this.queue = [];
     				this.isConnected = true;
                     console.log("Internal Connected");
+                    mpdEventEmiiter.emit('OnInternalConnect', {host: this.host, port: this.port});
     			} else if (state == "disconnected") {
                     //mpdEventEmiiter.emit('OnDisconnect', {host: this.host, port: this.port});
                     this.stopEmittingStatus();
@@ -175,7 +178,7 @@ class MPDConnection {
                     var result;
                     if (task.process) {
                         try {
-                            result = task.process(task.response, response.binary);
+                            result = task.process(task.response, response.filename);
                         } catch(err) {
                             if (task.errorcb) {
                                 task.errorcb(err);
@@ -195,6 +198,7 @@ class MPDConnection {
             "OnInit",
             (init) => {
                 let versionString = init.data.substring("OK MPD ".length);
+                console.log(versionString);
                 let split = versionString.split(".");
                 this.version = parseInt(split[1]);
                 this._loadFileSuffixes();
@@ -224,7 +228,11 @@ class MPDConnection {
 			if (this.isConnected && this.queue.length > 0) {
 				if (this.queue[0].state === MPDConnection.INITIAL) {
 					//console.log("cmd ["+this.queue[0].cmd+"] started");
-					SocketConnection.writeMessage(this.queue[0].cmd+"\n");
+                    if (this.queue[0].filename) {
+                        SocketConnection.writeMessage(this.queue[0].cmd+"\n", this.queue[0].filename);
+                    } else {
+                        SocketConnection.writeMessage(this.queue[0].cmd+"\n", null);
+                    }
 					this.queue[0].state = MPDConnection.WRITTEN;
 					this.queue[0].count = 0;
 				}
@@ -259,6 +267,7 @@ class MPDConnection {
 	}
 
     startEmittingStatus(timeout) {
+        this.stopEmittingStatus();
         this.intervalId = setInterval(() => {
             if (this.isConnected) {
                 this.getStatus((status) => {
@@ -288,7 +297,7 @@ class MPDConnection {
 		return decodeURIComponent(uri);
 	}
 
-    createPromise(cmd, processor) {
+    createPromise(cmd, processor, filename) {
         const promise = new Promise((resolve, reject) => {
             this.queue.push({
                 cmd: cmd,
@@ -300,7 +309,8 @@ class MPDConnection {
                     reject(err);
                 },
     			response: "",
-    			state: INITIAL
+    			state: INITIAL,
+                filename: filename
     		});
         });
         return promise;
@@ -374,23 +384,21 @@ class MPDConnection {
 			const lines = MPDConnection._lineSplit(data);
 			let albums = [];
 			let line;
-			let album;
+            let currentArtist;
             lines.forEach((line) => {
 				if (line.indexOf(ARTIST_PREFIX) === 0) {
 					let artist = line.substring(ARTIST_PREFIX.length);
-					if (artist && artist.trim().length > 0 && album) {
-						album.artist = artist;
+					if (artist && artist.trim().length > 0) {
+                        currentArtist = artist;
 					}
 				} else if (line.indexOf(ALBUM_PREFIX) === 0) {
 					let name = line.substring(ALBUM_PREFIX.length);
 					if (name && name.trim().length > 0) {
-						album = {name: name};
+                        const album = {name: name, artist: currentArtist};
 						if (filter) {
-							if (name.toLowerCase().indexOf(filter.toLowerCase()) === 0) {
-								albums.push(album);
-							} else {
-								album = undefined;
-							}
+                            if (name.toLowerCase().indexOf(filter.toLowerCase()) === 0) {
+                                albums.push(album);
+                            }
 						} else {
 							albums.push(album);
 						}
@@ -532,7 +540,7 @@ class MPDConnection {
         return this.createPromise("list album artist \""+artist+"\"", processor);
 	}
 
-	getSongsForAlbum(album, artist) {
+	getSongsForAlbum(album, artist, addArtistAlbum) {
 		const processor = (data) => {
 			const lines = MPDConnection._lineSplit(data);
 			let songs = [];
@@ -546,6 +554,10 @@ class MPDConnection {
 					song.time = MPDConnection._convertTime(line.substring(TIME_PREFIX.length));
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
 					song = {};
+                    if (addArtistAlbum) {
+                        song.artist = artist;
+                        song.album = album;
+                    }
 					songs.push(song);
 					var file = line.substring(FILE_PREFIX.length);
 					song.file = file;
@@ -953,18 +965,17 @@ class MPDConnection {
         return this.createPromise(cmd, processor);
 	}
 
-	albumart(uri) {
+	albumart(uri, artist, album) {
+        const filename = 'albumart_'+this.toAlbumArtFilename(artist, album)+".png";
         const promise = new Promise((resolve, reject) => {
             if (this.version < 21) {
                 reject("Albumart is not supported");
                 return;
             }
             let offset = 0;
-            let b64 = "";
-
-            let processor = (data, binary) => {
+            let processor = (data, filename) => {
                 const lines = MPDConnection._lineSplit(data);
-                let meta = {b64: binary};
+                let meta = {filename: filename};
                 lines.forEach((line) => {
                     if (line.indexOf(SIZE_PREFIX) === 0) {
                         meta.size = parseInt(line.substring(SIZE_PREFIX.length));
@@ -980,14 +991,13 @@ class MPDConnection {
                 if (uri && uri !== "") {
                     cmd += " \""+uri+"\" "+offset;
                 }
-                this.createPromise(cmd, processor)
+                this.createPromise(cmd, processor, filename)
                 .then((meta) => {
                     offset += meta.binary;
-                    b64 += meta.b64;
                     if (offset < meta.size) {
                         addTask();
                     } else {
-                        resolve(b64);
+                        resolve({artist: artist, album: album, song: uri, path: meta.filename});
                     }
                 })
                 .catch((err) => {
@@ -999,14 +1009,18 @@ class MPDConnection {
         return promise;
 	}
 
+    deleteAlbumArt(filename) {
+        SocketConnection.deleteAlbumArtFile(filename);
+    }
+
     albumArtForAlbum(artist, album) {
         const promise = new Promise((resolve, reject) => {
             this.getSongsForAlbum(album, artist)
             .then((songs) => {
                 if (songs.length > 0) {
-                    this.albumart(songs[0].file)
-                    .then((b64) => {
-                        resolve(b64);
+                    this.albumart(songs[0].file, artist, album)
+                    .then((path) => {
+                        resolve(path);
                     })
                     .catch((err) =>{
                         reject(err);
@@ -1020,6 +1034,18 @@ class MPDConnection {
             });
         });
         return promise;
+    }
+
+    listAlbumArtDir() {
+        return SocketConnection.listAlbumArtDir();
+    }
+
+    getAlbumArtDir() {
+        return this.albumArtDir;
+    }
+
+    isAlbumArtSupported() {
+        return this.version > 20;
     }
 
 	listMounts(cb, errorcb) {
@@ -1229,6 +1255,12 @@ class MPDConnection {
         this.currentPlaylistName = name;
     }
 
+    toAlbumArtFilename(artist, album) {
+        let filename = artist+"_"+album;
+        filename = filename.replace(/[^a-z0-9]/gi, '_');
+        return filename;
+    }
+
 	_loadFileSuffixes() {
 		this.fileSuffixes = ['cue'];
 		const processor = (data) => {
@@ -1402,6 +1434,9 @@ export default {
     },
     isConnected: function() {
         return connection !== undefined && connection.isConnected;
+    },
+    isIdle: function() {
+        return connection !== undefined && connection.queue.length < 1;
     },
     current: function() {
         return connection;
