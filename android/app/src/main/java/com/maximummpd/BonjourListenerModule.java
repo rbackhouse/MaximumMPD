@@ -50,30 +50,12 @@ public class BonjourListenerModule extends ReactContextBaseJavaModule {
 
             @Override
             public void onServiceFound(NsdServiceInfo service) {
-                Log.d("BonjourListener", "Service found : "+service.getServiceName()+" "+service.getServiceType()+" "+service.getHost()+":"+service.getPort());
+                Log.d("BonjourListener", "Service found : ["+service.getServiceName()+"] ["+service.getServiceType()+"]");
                 WritableMap params = Arguments.createMap();
                 params.putString("type", "discover");
                 params.putString("name", service.getServiceName());
                 getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("OnDiscover", params);
-
-                nsdManager.resolveService(service, new NsdManager.ResolveListener() {
-                    @Override
-                    public void onServiceResolved(NsdServiceInfo s) {
-                        WritableMap params = Arguments.createMap();
-                        params.putString("type", "add");
-                        params.putString("name", s.getServiceName());
-                        params.putString("hostname", s.getHost().getHostName());
-                        params.putInt("port", s.getPort());
-                        params.putString("ipAddress", s.getHost().getHostAddress());
-
-                        getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("OnDiscover", params);
-                    }
-
-                    @Override
-                    public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
-
-                    }
-                });
+                startResolveListener(service);
             }
 
             @Override
@@ -104,5 +86,34 @@ public class BonjourListenerModule extends ReactContextBaseJavaModule {
         nsdManager = (NsdManager)getReactApplicationContext().getSystemService(getReactApplicationContext().NSD_SERVICE);
 
         nsdManager.discoverServices("_mpd._tcp.", NsdManager.PROTOCOL_DNS_SD, discoveryListener);
+    }
+
+    private void startResolveListener(NsdServiceInfo service) {
+        final NsdServiceInfo _service = service;
+        nsdManager.resolveService(service, new NsdManager.ResolveListener() {
+            @Override
+            public void onServiceResolved(NsdServiceInfo s) {
+                Log.d("BonjourListener", "Service resolved : ["+s.getServiceName()+"] ["+s.getServiceType()+"] ["+s.getHost().getHostName()+"] ["+s.getPort()+"] ["+s.getHost().getHostAddress()+"]");
+                WritableMap params = Arguments.createMap();
+                params.putString("type", "add");
+                params.putString("name", s.getServiceName());
+                params.putString("hostname", s.getHost().getHostName());
+                params.putInt("port", s.getPort());
+                params.putString("ipAddress", s.getHost().getHostAddress());
+
+                getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("OnDiscover", params);
+            }
+
+            @Override
+            public void onResolveFailed(NsdServiceInfo service, int errorCode) {
+                Log.d("BonjourListener", "Service resolve error : ["+service.getServiceName()+"] ["+service.getServiceType()+"] "+errorCode);
+                if (errorCode == NsdManager.FAILURE_ALREADY_ACTIVE) {
+                    try {
+                        Thread.currentThread().sleep(500);
+                    } catch (InterruptedException e) {}
+                    startResolveListener(_service);
+                }
+            }
+        });
     }
 }

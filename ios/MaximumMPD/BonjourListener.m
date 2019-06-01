@@ -52,13 +52,7 @@ RCT_EXPORT_METHOD(listen:(NSString *)type port:(NSString *)domain) {
 - (void)netServiceBrowser:(NSNetServiceBrowser *)browser didNotSearch:(NSDictionary *)errorDict {}
 
 - (void)netServiceBrowser:(NSNetServiceBrowser *)browser didFindService:(NSNetService *)aNetService moreComing:(BOOL)moreComing {
-
-  [aNetService setDelegate:self];
-  [aNetService resolveWithTimeout:5.0];
-  [self.services addObject:aNetService];
-  [aNetService scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-
-  [self sendEventWithName:@"OnDiscover" body:@{@"type": @"discover", @"name": [aNetService name]}];
+  [self resolveSerivce:aNetService];
 }
 
 - (void)netServiceBrowser:(NSNetServiceBrowser *)browser didRemoveService:(NSNetService *)aNetService moreComing:(BOOL)moreComing {
@@ -68,6 +62,8 @@ RCT_EXPORT_METHOD(listen:(NSString *)type port:(NSString *)domain) {
 - (void)netServiceDidResolveAddress:(NSNetService *)aNetService {
     NSString * ipAddress = [self findIPAddress:[aNetService addresses]];
     if (ipAddress != nil) {
+      NSLog(@"didResolve  %@ %@ %@ %@", [aNetService name], [aNetService hostName], [NSNumber numberWithInteger:aNetService.port], ipAddress);
+
       [self sendEventWithName:@"OnDiscover" body:@{@"type": @"add", @"name": [aNetService name], @"hostname": [aNetService hostName], @"port": [NSNumber numberWithInteger:aNetService.port], @"ipAddress": ipAddress}];
     }
     [self.services removeObject:aNetService];
@@ -75,7 +71,14 @@ RCT_EXPORT_METHOD(listen:(NSString *)type port:(NSString *)domain) {
     [aNetService stop];
 }
 
-- (void)netService:(NSNetService *)netService didNotResolve:(NSDictionary *)errorDict {}
+- (void)netService:(NSNetService *)aNetService didNotResolve:(NSDictionary *)errorDict {
+  NSLog(@"didNotResolve  %@ error: %@", [aNetService name], errorDict);
+  NSNumber *errorCode = errorDict[NSNetServicesErrorCode];
+  NSInteger error = [errorCode integerValue];
+  if (error == NSNetServicesTimeoutError) {
+    [self resolveSerivce:aNetService];
+  }
+}
 
 - (NSString*)findIPAddress:(NSArray<NSData *> *)addresses {
   char addressBuffer[INET6_ADDRSTRLEN];
@@ -100,6 +103,16 @@ RCT_EXPORT_METHOD(listen:(NSString *)type port:(NSString *)domain) {
     }
   }
   return nil;
+}
+
+- (void)resolveSerivce:(NSNetService *)aNetService {
+  [aNetService setDelegate:self];
+  [aNetService resolveWithTimeout:5.0];
+  [self.services addObject:aNetService];
+  [aNetService scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+  NSLog(@"didDiscover  %@", [aNetService name]);
+  
+  [self sendEventWithName:@"OnDiscover" body:@{@"type": @"discover", @"name": [aNetService name]}];
 }
 
 @end
