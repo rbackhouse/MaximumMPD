@@ -37,29 +37,35 @@ const processor = () => {
         const promise = new Promise((resolve, reject) => {
             if (albums === undefined) {
                 albums = [];
-                MPDConnection.current().getAllAlbums()
-                .then((results) => {
-                    MPDConnection.current().listAlbumArtDir()
-                    .then((files) => {
-                        results.forEach((album) => {
-                            const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
-                            const filename = 'albumart_'+key+".png";
-                            if (files.includes(filename)) {
-                                const full = MPDConnection.current().getAlbumArtDir()+'/'+filename;
-                                console.log("albumart found for ["+album.artist+"] ["+album.name+"] ["+full+"]");
-                                albumArt[key] = full;
-                                if (!artistArt[album.artist]) {
-                                    artistArt[album.artist] = full;
+                albumArtStorage.getMissing()
+                .then((missing) => {
+                    MPDConnection.current().getAllAlbums()
+                    .then((results) => {
+                        MPDConnection.current().listAlbumArtDir()
+                        .then((files) => {
+                            results.forEach((album) => {
+                                const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
+                                const filename = 'albumart_'+key+".png";
+                                if (files.includes(filename)) {
+                                    const full = MPDConnection.current().getAlbumArtDir()+'/'+filename;
+                                    //console.log("albumart found for ["+album.artist+"] ["+album.name+"] ["+full+"]");
+                                    albumArt[key] = full;
+                                    if (!artistArt[album.artist]) {
+                                        artistArt[album.artist] = full;
+                                    }
+                                } else {
+                                    if (!missing.includes(key)) {
+                                        console.log("albumart missing for ["+album.artist+"] ["+album.name+"]");
+                                        albums.push(album);
+                                        albumArtEventEmiiter.emit('OnAlbumArtQueue', album);
+                                    }
                                 }
-                            } else {
-                                console.log("albumart missing for ["+album.artist+"] ["+album.name+"]");
-                                albums.push(album);
-                                albumArtEventEmiiter.emit('OnAlbumArtQueue', album);
-                            }
+                            });
+                            albumArtEventEmiiter.emit('OnAlbumArtComplete', albumArt);
+                            resolve(true);
                         });
-                        resolve(true);
                     });
-                });
+                })
             } else {
                 const album = albums.shift();
                 MPDConnection.current().getSongsForAlbum(album.name, album.artist)
@@ -67,9 +73,9 @@ const processor = () => {
                     if (songs.length > 0) {
                         albumArtEventEmiiter.emit('OnAlbumArtStart', album);
                         console.log("getting path for ["+album.artist+"] ["+album.name+"] ["+songs[0].file+"]");
+                        const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
                         MPDConnection.current().albumart(songs[0].file, album.artist, album.name)
                         .then((path) => {
-                            const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
                             console.log("saving path for ["+album.artist+"] ["+album.name+"] ["+path.path+"]");
                             albumArt[key] = path.path;
                             if (!artistArt[album.artist]) {
@@ -81,7 +87,14 @@ const processor = () => {
                         .catch((err) => {
                             console.log("error getting path for ["+album.artist+"] ["+album.name+"] ["+err+"]");
                             albumArtEventEmiiter.emit('OnAlbumArtError', {album:album, err: err});
-                            resolve(true);
+                            if (err === "ACK [50@0] {albumart} No file exists") {
+                                albumArtStorage.addMissing(key)
+                                .then(() => {
+                                    resolve(true);
+                                })
+                            } else {
+                                resolve(true);
+                            }
                         });
                     } else {
                         console.log("error no songs found for path for ["+album.artist+"] ["+album.name+"]");
@@ -151,6 +164,32 @@ class AlbumArtStorage {
 
     async disable() {
         AsyncStorage.setItem('@MPD:albumart_enabled', "false");
+        AsyncStorage.setItem('@MPD:albumart_missing', "[]");
+    }
+
+    async getMissing() {
+        let missing;
+        try {
+            let missingStr = await AsyncStorage.getItem('@MPD:albumart_missing');
+            missing = JSON.parse(missingStr);
+            if (missing === null) {
+                missing = [];
+                AsyncStorage.setItem('@MPD:albumart_missing', JSON.stringify(missing));
+            }
+            console.log(missing);
+        } catch(err) {
+            console.log("missing is not found");
+            console.log(err);
+            missing = [];
+            AsyncStorage.setItem('@MPD:albumart_missing', JSON.stringify(missing));
+        }
+        return missing;
+    }
+
+    async addMissing(missingEntry) {
+        let missing = await this.getMissing();
+        missing.push(missingEntry);
+        return AsyncStorage.setItem('@MPD:albumart_missing', JSON.stringify(missing));
     }
 
     async isEnabled() {

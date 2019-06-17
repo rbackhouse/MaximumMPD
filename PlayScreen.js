@@ -119,12 +119,45 @@ export default class PlayScreen extends React.Component {
                 MPDConnection.current().startEmittingStatus(1000);
             }
         );
+        this.onAlbumArtEnd = AlbumArt.getEventEmitter().addListener(
+            "OnAlbumArtEnd",
+            () => {
+                this.updateAlbumArt();
+            }
+        );
+        this.onAlbumArtError = AlbumArt.getEventEmitter().addListener(
+            "OnAlbumArtError",
+            () => {
+                this.updateAlbumArt();
+            }
+        );
+        this.onAlbumArtComplete = AlbumArt.getEventEmitter().addListener(
+            "OnAlbumArtComplete",
+            () => {
+                this.updateAlbumArt();
+            }
+        );
     }
 
     componentWillUnmount() {
         this.didBlurSubscription.remove();
         this.didFocusSubscription.remove();
         this.onStatus.remove();
+        this.onAlbumArtEnd.remove();
+        this.onAlbumArtComplete.remove();
+        this.onAlbumArtError.remove();
+    }
+
+    updateAlbumArt() {
+        if (this.state.status) {
+            const currentsong = this.state.status.currentsong;
+            AlbumArt.getAlbumArt(currentsong.artist, currentsong.album)
+            .then((path) => {
+                if (path) {
+                    this.setState({imagePath: "file://"+path});
+                }
+            });
+        }
     }
 
     onPrevious() {
