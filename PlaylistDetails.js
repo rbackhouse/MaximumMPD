@@ -95,19 +95,28 @@ export default class PlaylistDetails extends React.Component {
     }
 
     onPress(item, index) {
-        this.setState({loading: true});
-        MPDConnection.current().deletePlayListItem(this.playlistName, index)
-        .then(() => {
-            this.setState({loading: false});
-            this.load();
-        })
-        .catch((err) => {
-            this.setState({loading: false});
-            Alert.alert(
-                "MPD Error",
-                "Error : "+err
-            );
-        });
+        Alert.alert(
+            "Delete Playlist Entry",
+            "Are you sure you want to delete ''"+item.title+"'' ?",
+            [
+                {text: 'OK', onPress: () => {
+                    this.setState({loading: true});
+                    MPDConnection.current().deletePlayListItem(this.playlistName, index)
+                    .then(() => {
+                        this.setState({loading: false});
+                        this.load();
+                    })
+                    .catch((err) => {
+                        this.setState({loading: false});
+                        Alert.alert(
+                            "MPD Error",
+                            "Error : "+err
+                        );
+                    });
+                }},
+                {text: 'Cancel'}
+            ]
+        );
     }
 
     onDelete() {
@@ -175,7 +184,7 @@ export default class PlaylistDetails extends React.Component {
                         <Text style={styles.item}>{item.artist}</Text>
                         <Text style={styles.item}>{item.album}</Text>
                     </View>
-                    <Icon name="ios-trash" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                    <Icon name="ios-trash" size={28} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                 </View>
             </TouchableOpacity>
         );
