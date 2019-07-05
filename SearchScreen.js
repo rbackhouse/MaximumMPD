@@ -70,6 +70,7 @@ export default class SearchScreen extends React.Component {
     }
 
     search = (text) => {
+        this.setState({searchValue: text});
         let artists = [], albums = [], songs = [], artistCheck = [], albumCheck = [];
         if (text.length > 2) {
             this.setState({loading: true});
@@ -123,8 +124,7 @@ export default class SearchScreen extends React.Component {
                 this.setState({
                     artists: artists,
                     albums: albums,
-                    songs: songs,
-                    searchValue: text
+                    songs: songs
                 });
             })
             .catch((err) => {
@@ -136,12 +136,12 @@ export default class SearchScreen extends React.Component {
                 );
             });
         } else {
-            this.setState({
+            let state = {
                 artists: artists,
                 albums: albums,
-                songs: songs,
-                searchValue: text
-            });
+                songs: songs
+            };
+            this.setState(state);
         }
     };
 
@@ -233,7 +233,6 @@ export default class SearchScreen extends React.Component {
                             clearIcon
                             lightTheme
                             round
-                            platform="ios"
                             cancelButtonTitle="Cancel"
                             placeholder='Search'
                             onChangeText={this.search}
