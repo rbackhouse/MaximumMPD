@@ -366,9 +366,21 @@ class MPDConnection {
 				}
 			});
 			artists.sort((a,b) => {
-				if (a.name < b.name) {
+                let artist1 = a.name;
+                let artist2 = b.name;
+                let split = artist1.split(' ');
+                if (split.length > 1 && split[0].toLowerCase() === "the" && split[1].toLowerCase() !== "the") {
+                    split.shift();
+                    artist1 = split.join(' ');
+                }
+                split = artist2.split(' ');
+                if (split.length > 1 && split[0].toLowerCase() === "the" && split[1].toLowerCase() !== "the") {
+                    split.shift();
+                    artist2 = split.join(' ');
+                }
+				if (artist1 < artist2) {
 					return -1;
-				} else if (a.name > b.name) {
+				} else if (artist1 > artist2) {
 					return 1;
 				} else {
 					return 0;
