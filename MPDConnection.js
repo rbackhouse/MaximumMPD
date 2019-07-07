@@ -45,6 +45,7 @@ const SIZE_PREFIX = "size: ";
 const BINARY_PREFIX = "binary: ";
 const BITRATE_PREFIX = "bitrate: ";
 const AUDIO_PREFIX = "audio: ";
+const GENRE_PREFIX = "Genre: ";
 
 const INITIAL = 0;
 const WRITTEN = 1;
@@ -1271,6 +1272,51 @@ class MPDConnection {
         let filename = artist+"_"+album;
         filename = filename.replace(/[^a-z0-9]/gi, '_');
         return filename;
+    }
+
+    getAllGenres() {
+        const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+			let genres = [];
+            lines.forEach((line) => {
+                const genre = line.substring(GENRE_PREFIX.length);
+                if (genre !== "") {
+                    genres.push(genre);
+                }
+			});
+			return genres;
+		};
+        return this.createPromise("list genre", processor);
+    }
+
+    getSongsForGenre(genre) {
+        const processor = (data) => {
+			const lines = MPDConnection._lineSplit(data);
+			let songs = [];
+			let song;
+            lines.forEach((line) => {
+				if (line.indexOf(TITLE_PREFIX) === 0) {
+					song.title = line.substring(TITLE_PREFIX.length);
+				} else if (line.indexOf(TRACK_PREFIX) === 0) {
+					song.track = line.substring(TRACK_PREFIX.length);
+				} else if (line.indexOf(TIME_PREFIX) === 0) {
+					song.time = MPDConnection._convertTime(line.substring(TIME_PREFIX.length));
+                } else if (line.indexOf(ARTIST_PREFIX) === 0) {
+					song.artist = line.substring(ARTIST_PREFIX.length);
+				} else if (line.indexOf(ALBUM_PREFIX) === 0) {
+					song.album = line.substring(ALBUM_PREFIX.length);
+				} else if (line.indexOf(FILE_PREFIX) === 0) {
+					song = {};
+					var file = line.substring(FILE_PREFIX.length);
+					song.file = file;
+					song.b64file = this.toBase64(file);
+                    songs.push(song);
+				}
+			});
+			return songs;
+		};
+		var cmd = "find genre \""+genre.replace(/"/g, "\\\"")+"\"";
+        return this.createPromise(cmd, processor);
     }
 
 	_loadFileSuffixes() {

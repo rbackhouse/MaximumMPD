@@ -34,8 +34,12 @@ import NewPlaylistModal from './NewPlaylistModal';
 
 export default class SongsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
+        let type = navigation.getParam('album');
+        if (!type) {
+            type = navigation.getParam('genre');
+        }
         return {
-            title: "Songs ("+navigation.getParam('album')+")"
+            title: "Songs ("+type+")"
         };
     };
 
@@ -54,27 +58,43 @@ export default class SongsScreen extends React.Component {
         const { navigation } = this.props;
         const artist = navigation.getParam('artist');
         const album = navigation.getParam('album');
+        const genre = navigation.getParam('genre');
 
         this.setState({loading: true});
 
-        MPDConnection.current().getSongsForAlbum(album, artist)
-        .then((songs) => {
-            this.setState({loading: false});
-            this.setState({songs: songs});
-            AlbumArt.getAlbumArt(artist, album)
-            .then((path) => {
-                if (path) {
-                    this.setState({imagePath: "file://"+path});
-                }
+        if (artist && album) {
+            MPDConnection.current().getSongsForAlbum(album, artist)
+            .then((songs) => {
+                this.setState({loading: false});
+                this.setState({songs: songs});
+                AlbumArt.getAlbumArt(artist, album)
+                .then((path) => {
+                    if (path) {
+                        this.setState({imagePath: "file://"+path});
+                    }
+                });
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
             });
-        })
-        .catch((err) => {
-            this.setState({loading: false});
-            Alert.alert(
-                "MPD Error",
-                "Error : "+err
-            );
-        });
+        } else if (genre) {
+            MPDConnection.current().getSongsForGenre(genre)
+            .then((songs) => {
+                this.setState({loading: false});
+                this.setState({songs: songs});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
+        }
         this.onDisconnect = MPDConnection.getEventEmitter().addListener(
             "OnDisconnect",
             () => {
@@ -269,6 +289,12 @@ export default class SongsScreen extends React.Component {
                                 }
                                 <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                                     <Text style={styles.item}>{item.title}</Text>
+                                    {item.artist !== undefined &&
+                                        <Text style={styles.item}>{item.artist}</Text>
+                                    }
+                                    {item.album !== undefined &&
+                                        <Text style={styles.item}>{item.album}</Text>
+                                    }
                                     <Text style={styles.item}>Track: {item.track} Time: {item.time}</Text>
                                 </View>
                                 <Icon name="ios-swap" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>

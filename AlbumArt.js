@@ -256,5 +256,21 @@ export default {
     },
     getQueue: () => {
         return albums || [];
+    },
+    getAlbumArtForAlbums: (albums) => {
+        let promise = new Promise((resolve, reject) => {
+            albumArtStorage.isEnabled().then((enabled) => {
+                if (enabled === "true") {
+                    albums.forEach((album) => {
+                        const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
+                        if (albumArt[key]) {
+                            album.imagePath = "file://"+albumArt[key];
+                        }
+                    });
+                }
+                resolve(albums);
+            });
+        });
+        return promise;
     }
 }

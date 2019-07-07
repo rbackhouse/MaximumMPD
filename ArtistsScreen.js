@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, InteractionManager } from 'react-native';
-import { SearchBar } from "react-native-elements";
+import { SearchBar, ButtonGroup } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import MPDConnection from './MPDConnection';
@@ -27,7 +27,7 @@ import AlbumArt from './AlbumArt';
 export default class ArtistsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
         return {
-            title: "Artists"
+            title: "Browse"
         };
     };
 
@@ -35,8 +35,15 @@ export default class ArtistsScreen extends React.Component {
         super(props);
         this.state = {
           searchValue: "",
+          searchGenreValue: "",
+          searchAlbumValue: "",
           artists: [],
           fullset: [],
+          genres: [],
+          genresFullset: [],
+          albums: [],
+          albumsFullset: [],
+          selectedTab: 0,
           loading: false
         };
     }
@@ -93,6 +100,10 @@ export default class ArtistsScreen extends React.Component {
             })
             this.setState({artists: this.state.artists, fullset: this.state.fullset});
         });
+
+        AlbumArt.getAlbumArtForAlbums(this.state.albumsFullset).then((albums) => {
+            this.setState({albums: albums, albumsFullset: albums});
+        });
     }
 
     load() {
@@ -121,6 +132,44 @@ export default class ArtistsScreen extends React.Component {
                 "Error : "+err
             );
         });
+
+        MPDConnection.current().getAllAlbums()
+        .then((albums) => {
+            albums.forEach((album, index) => {
+                album.key = ""+(index+1);
+                AlbumArt.getAlbumArt(album.artist, album.name).then((path) => {
+                    if (path) {
+                        album.imagePath = "file://"+path;
+                    }
+                });
+            });
+            this.setState({albums: albums, albumsFullset: albums});
+        })
+        .catch((err) => {
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
+
+
+        MPDConnection.current().getAllGenres()
+        .then((genres) => {
+            let genreList = [];
+            genres.forEach((genre, index) => {
+                genreList.push({
+                    key: ""+(index+1),
+                    name: genre
+                });
+            });
+            this.setState({genres: genreList, genresFullset: genreList});
+        })
+        .catch((err) => {
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     componentWillUnmount() {
@@ -142,9 +191,41 @@ export default class ArtistsScreen extends React.Component {
         }
     }
 
+    searchGenres = (text) => {
+        if (text.length > 0) {
+            let filtered = this.state.genresFullset.filter((genre) => {
+                return genre.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+            });
+            this.setState({genres: filtered, searchGenreValue: text});
+        } else {
+            this.setState({genres: this.state.genresFullset, searchGenreValue: text});
+        }
+    }
+
+    searchAlbums = (text) => {
+        if (text.length > 0) {
+            let filtered = this.state.albumsFullset.filter((album) => {
+                return album.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+            });
+            this.setState({albums: filtered, searchAlbumValue: text});
+        } else {
+            this.setState({albums: this.state.albumsFullset, searchAlbumValue: text});
+        }
+    }
+
     onPress(item) {
         const { navigation } = this.props;
         navigation.navigate('Albums', {artist: item.name});
+    }
+
+    onGenrePress(item) {
+        const { navigation } = this.props;
+        navigation.navigate('Songs', {genre: item.name});
+    }
+
+    onAlbumPress(item) {
+        const { navigation } = this.props;
+        navigation.navigate('Songs', {artist: item.artist, album: item.name});
     }
 
     renderSeparator = () => {
@@ -179,42 +260,184 @@ export default class ArtistsScreen extends React.Component {
         );
     };
 
-    render() {
+    renderGenreItem = ({item}) => {
         return (
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
-                    <View style={{flex: .75}}>
-                        <SearchBar
-                            clearIcon
-                            lightTheme
-                            round
-                            cancelButtonTitle="Cancel"
-                            placeholder='Search'
-                            onChangeText={this.search}
-                            value={this.state.searchValue}
+            <TouchableOpacity onPress={this.onGenrePress.bind(this, item)}>
+                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+                    <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                        <Text style={styles.item}>{item.name}</Text>
+                    </View>
+                    <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+
+    renderAlbumItem = ({item}) => {
+        return (
+            <TouchableOpacity onPress={this.onAlbumPress.bind(this, item)}>
+                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+                    {item.imagePath === undefined &&
+                        <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
+                    }
+                    {item.imagePath !== undefined &&
+                        <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
+                    }
+                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                        <Text style={styles.albumItem}>{item.name}</Text>
+                        <Text style={styles.albumItem}>{item.artist}</Text>
+                    </View>
+                    <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+
+    render() {
+        if (this.state.selectedTab === 0) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
+                    <View style={{flex: .06, width: "100%"}}>
+                        <ButtonGroup
+                            onPress={(index) => {
+                                this.setState({selectedTab:index});
+                            }}
+                            selectedIndex={this.state.selectedTab}
+                            buttons={['Artists', 'Albums', 'Genres']}
+                            containerStyle={{height: 25}}
                         />
                     </View>
-                    <View style={{flex: .25}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
-                            Total : {this.state.artists.length}
-                        </Text>
+                    <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
+                        <View style={{flex: .75}}>
+                            <SearchBar
+                                clearIcon
+                                lightTheme
+                                round
+                                cancelButtonTitle="Cancel"
+                                placeholder='Search'
+                                onChangeText={this.search}
+                                value={this.state.searchValue}
+                            />
+                        </View>
+                        <View style={{flex: .25}}>
+                            <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                                Total : {this.state.artists.length}
+                            </Text>
+                        </View>
                     </View>
-                </View>
 
-                <FlatList
-                    data={this.state.artists}
-                    renderItem={this.renderItem}
-                    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-                    keyExtractor={item => item.key}
-                    ItemSeparatorComponent={this.renderSeparator}
-                />
-                {this.state.loading &&
-                    <View style={styles.loading}>
-                        <ActivityIndicator size="large" color="#0000ff"/>
+                    <View style={{flex: .84, width: "100%"}}>
+                        <FlatList
+                            data={this.state.artists}
+                            renderItem={this.renderItem}
+                            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                            keyExtractor={item => item.key}
+                            ItemSeparatorComponent={this.renderSeparator}
+                        />
                     </View>
-                }
-            </View>
-        );
+                    {this.state.loading &&
+                        <View style={styles.loading}>
+                            <ActivityIndicator size="large" color="#0000ff"/>
+                        </View>
+                    }
+                </View>
+            );
+        } else if (this.state.selectedTab === 1) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
+                    <View style={{flex: .06, width: "100%"}}>
+                        <ButtonGroup
+                            onPress={(index) => {
+                                this.setState({selectedTab:index});
+                            }}
+                            selectedIndex={this.state.selectedTab}
+                            buttons={['Artists', 'Albums', 'Genres']}
+                            containerStyle={{height: 25}}
+                        />
+                    </View>
+                    <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
+                        <View style={{flex: .75}}>
+                            <SearchBar
+                                clearIcon
+                                lightTheme
+                                round
+                                cancelButtonTitle="Cancel"
+                                placeholder='Search'
+                                onChangeText={this.searchAlbums}
+                                value={this.state.searchAlbumValue}
+                            />
+                        </View>
+                        <View style={{flex: .25}}>
+                            <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                                Total : {this.state.albums.length}
+                            </Text>
+                        </View>
+                    </View>
+                    <View style={{flex: .84, width: "100%"}}>
+                        <FlatList
+                            data={this.state.albums}
+                            renderItem={this.renderAlbumItem}
+                            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                            keyExtractor={item => item.key}
+                            ItemSeparatorComponent={this.renderSeparator}
+                        />
+                    </View>
+                    {this.state.loading &&
+                        <View style={styles.loading}>
+                            <ActivityIndicator size="large" color="#0000ff"/>
+                        </View>
+                    }
+                </View>
+            );
+        } else if (this.state.selectedTab === 2) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
+                    <View style={{flex: .06, width: "100%"}}>
+                        <ButtonGroup
+                            onPress={(index) => {
+                                this.setState({selectedTab:index});
+                            }}
+                            selectedIndex={this.state.selectedTab}
+                            buttons={['Artists', 'Albums', 'Genres']}
+                            containerStyle={{height: 25}}
+                        />
+                    </View>
+                    <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
+                        <View style={{flex: .75}}>
+                            <SearchBar
+                                clearIcon
+                                lightTheme
+                                round
+                                cancelButtonTitle="Cancel"
+                                placeholder='Search'
+                                onChangeText={this.searchGenres}
+                                value={this.state.searchGenreValue}
+                            />
+                        </View>
+                        <View style={{flex: .25}}>
+                            <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                                Total : {this.state.genres.length}
+                            </Text>
+                        </View>
+                    </View>
+                    <View style={{flex: .84, width: "100%"}}>
+                        <FlatList
+                            data={this.state.genres}
+                            renderItem={this.renderGenreItem}
+                            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                            keyExtractor={item => item.key}
+                            ItemSeparatorComponent={this.renderSeparator}
+                        />
+                    </View>
+                    {this.state.loading &&
+                        <View style={styles.loading}>
+                            <ActivityIndicator size="large" color="#0000ff"/>
+                        </View>
+                    }
+                </View>
+            );
+        }
     }
 }
 
@@ -223,6 +446,11 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontFamily: 'GillSans-Italic',
         padding: 10
+    },
+    albumItem: {
+        fontSize: 17,
+        fontFamily: 'GillSans-Italic',
+        padding: 3
     },
     sectionHeader: {
         paddingTop: 2,
