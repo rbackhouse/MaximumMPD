@@ -392,29 +392,41 @@ class MPDConnection {
         return this.createPromise("list artist", processor);
 	}
 
-	getAllAlbums(filter) {
+	getAllAlbums() {
 		const processor = (data) => {
 			const lines = MPDConnection._lineSplit(data);
 			let albums = [];
 			let line;
+            let album = {};
             let currentArtist;
+
             lines.forEach((line) => {
+                console.log(line);
 				if (line.indexOf(ARTIST_PREFIX) === 0) {
 					let artist = line.substring(ARTIST_PREFIX.length);
 					if (artist && artist.trim().length > 0) {
-                        currentArtist = artist;
+                        if (this.version < 20) {
+                            album.artist = artist;
+                            if (album.name && album.artist) {
+        						albums.push({artist: album.artist, name: album.name});
+                                album = {};
+                            }
+                        } else {
+                            currentArtist = artist;
+                        }
 					}
 				} else if (line.indexOf(ALBUM_PREFIX) === 0) {
 					let name = line.substring(ALBUM_PREFIX.length);
 					if (name && name.trim().length > 0) {
-                        const album = {name: name, artist: currentArtist};
-						if (filter) {
-                            if (name.toLowerCase().indexOf(filter.toLowerCase()) === 0) {
-                                albums.push(album);
+                        if (this.version < 20) {
+                            album.name = name;
+                            if (album.name && album.artist) {
+        						albums.push({artist: album.artist, name: album.name});
+                                album = {};
                             }
-						} else {
-							albums.push(album);
-						}
+                        } else {
+                            albums.push({name: name, artist: currentArtist});
+                        }
 					}
 				}
 			});
