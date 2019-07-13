@@ -248,6 +248,8 @@ export default class PlayScreen extends React.Component {
                                 selectedIndex={this.state.selectedTab}
                                 buttons={['Playing', 'Queue', 'Playlists']}
                                 containerStyle={{height: 25}}
+                                selectedButtonStyle={{backgroundColor: '#3396FF'}}
+                                selectedTextStyle={{color: 'white'}}
                             />
                         </View>
                       <View style={{flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center', paddingLeft: 5, paddingRight: 5}}>
@@ -346,6 +348,8 @@ export default class PlayScreen extends React.Component {
                             selectedIndex={this.state.selectedTab}
                             buttons={['Playing', 'Queue', 'Playlists']}
                             containerStyle={{height: 25}}
+                            selectedButtonStyle={{backgroundColor: '#3396FF'}}
+                            selectedTextStyle={{color: 'white'}}
                         />
                       </View>
                       <PlaylistScreen navigation={this.props.navigation}/>
@@ -362,6 +366,8 @@ export default class PlayScreen extends React.Component {
                             selectedIndex={this.state.selectedTab}
                             buttons={['Playing', 'Queue', 'Playlists']}
                             containerStyle={{height: 25}}
+                            selectedButtonStyle={{backgroundColor: '#3396FF'}}
+                            selectedTextStyle={{color: 'white'}}
                         />
                       </View>
                       <PlaylistEditor navigation={this.props.navigation}/>
