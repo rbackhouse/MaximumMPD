@@ -107,13 +107,23 @@ export default class ArtistsScreen extends React.Component {
     }
 
     load() {
+        const allArtist = MPDConnection.current().getAllArtists();
+        const allAlbums = MPDConnection.current().getAllAlbums();
+        const allGenres = MPDConnection.current().getAllGenres();
+
         this.setState({loading: true});
-        MPDConnection.current().getAllArtists()
-        .then((artists) => {
+
+        Promise.all([allArtist, allAlbums, allGenres])
+        .then((results) => {
+            this.setState({loading: false});
+            let artists = results[0];
+            let albums = results[1];
+            let genres = results[2];
+
             artists.forEach((artist, index) => {
                 artist.key = ""+(index+1);
             });
-            this.setState({loading: false});
+
             this.setState({artists: artists, fullset: artists});
             AlbumArt.getAlbumArtForArtists()
             .then((artMap) => {
@@ -124,17 +134,6 @@ export default class ArtistsScreen extends React.Component {
                 })
                 this.setState({artists: this.state.artists, fullset: this.state.fullset});
             });
-        })
-        .catch((err) => {
-            this.setState({loading: false});
-            Alert.alert(
-                "MPD Error",
-                "Error : "+err
-            );
-        });
-
-        MPDConnection.current().getAllAlbums()
-        .then((albums) => {
             albums.forEach((album, index) => {
                 album.key = ""+(index+1);
                 AlbumArt.getAlbumArt(album.artist, album.name).then((path) => {
@@ -144,17 +143,6 @@ export default class ArtistsScreen extends React.Component {
                 });
             });
             this.setState({albums: albums, albumsFullset: albums});
-        })
-        .catch((err) => {
-            Alert.alert(
-                "MPD Error",
-                "Error : "+err
-            );
-        });
-
-
-        MPDConnection.current().getAllGenres()
-        .then((genres) => {
             let genreList = [];
             genres.forEach((genre, index) => {
                 genreList.push({
@@ -165,6 +153,7 @@ export default class ArtistsScreen extends React.Component {
             this.setState({genres: genreList, genresFullset: genreList});
         })
         .catch((err) => {
+            this.setState({loading: false});
             Alert.alert(
                 "MPD Error",
                 "Error : "+err
@@ -306,6 +295,8 @@ export default class ArtistsScreen extends React.Component {
                             selectedIndex={this.state.selectedTab}
                             buttons={['Artists', 'Albums', 'Genres']}
                             containerStyle={{height: 25}}
+                            selectedButtonStyle={{backgroundColor: '#3396FF'}}
+                            selectedTextStyle={{color: 'white'}}
                         />
                     </View>
                     <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
@@ -354,6 +345,8 @@ export default class ArtistsScreen extends React.Component {
                             selectedIndex={this.state.selectedTab}
                             buttons={['Artists', 'Albums', 'Genres']}
                             containerStyle={{height: 25}}
+                            selectedButtonStyle={{backgroundColor: '#3396FF'}}
+                            selectedTextStyle={{color: 'white'}}
                         />
                     </View>
                     <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
@@ -401,6 +394,8 @@ export default class ArtistsScreen extends React.Component {
                             selectedIndex={this.state.selectedTab}
                             buttons={['Artists', 'Albums', 'Genres']}
                             containerStyle={{height: 25}}
+                            selectedButtonStyle={{backgroundColor: '#3396FF'}}
+                            selectedTextStyle={{color: 'white'}}
                         />
                     </View>
                     <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
