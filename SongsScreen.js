@@ -47,10 +47,12 @@ export default class SongsScreen extends React.Component {
         super(props);
         this.state = {
           songs: [],
+          fullset: [],
           loading: false,
           modalVisible: false,
           selectedItem: "",
-          imagePath: ""
+          imagePath: "",
+          searchValue: ""
         };
     }
 
@@ -66,7 +68,7 @@ export default class SongsScreen extends React.Component {
             MPDConnection.current().getSongsForAlbum(album, artist)
             .then((songs) => {
                 this.setState({loading: false});
-                this.setState({songs: songs});
+                this.setState({songs: songs, fullset: songs});
                 AlbumArt.getAlbumArt(artist, album)
                 .then((path) => {
                     if (path) {
@@ -85,7 +87,7 @@ export default class SongsScreen extends React.Component {
             MPDConnection.current().getSongsForGenre(genre)
             .then((songs) => {
                 this.setState({loading: false});
-                this.setState({songs: songs});
+                this.setState({songs: songs, fullset: songs});
             })
             .catch((err) => {
                 this.setState({loading: false});
@@ -98,7 +100,7 @@ export default class SongsScreen extends React.Component {
         this.onDisconnect = MPDConnection.getEventEmitter().addListener(
             "OnDisconnect",
             () => {
-                this.setState({songs: []});
+                this.setState({songs: [], fullset: []});
                 this.props.navigation.popToTop();
             }
         );
@@ -106,6 +108,17 @@ export default class SongsScreen extends React.Component {
 
     componentWillUnmount() {
         this.onDisconnect.remove();
+    }
+
+    search = (text) => {
+        if (text.length > 0) {
+            let filtered = this.state.fullset.filter((song) => {
+                return song.title.toLowerCase().indexOf(text.toLowerCase()) > -1;
+            });
+            this.setState({songs: filtered, searchValue: text});
+        } else {
+            this.setState({songs: this.state.fullset, searchValue: text});
+        }
     }
 
     addAll(toPlaylist) {
@@ -146,9 +159,6 @@ export default class SongsScreen extends React.Component {
                 );
             });
         }
-    }
-
-    search = (text) => {
     }
 
     onPress(item, toPlaylist) {
@@ -257,10 +267,21 @@ export default class SongsScreen extends React.Component {
     render() {
         return (
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{flex: 1, justifyContent: 'center'}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic', paddingLeft: 10}}>
-                            Songs : {this.state.songs.length}
+                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
+                    <View style={{flex: .75}}>
+                        <SearchBar
+                            clearIcon
+                            lightTheme
+                            round
+                            cancelButtonTitle="Cancel"
+                            placeholder='Search'
+                            onChangeText={this.search}
+                            value={this.state.searchValue}
+                        />
+                    </View>
+                    <View style={{flex: .25}}>
+                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                            Total : {this.state.songs.length}
                         </Text>
                     </View>
                 </View>
