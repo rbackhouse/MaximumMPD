@@ -169,7 +169,7 @@ export default class ConnectionsScreen extends React.Component {
         if (this.navigateOnConnect) {
             this.setState({loading: true});
         }
-        MPDConnection.connect(item.name, item.ipAddress, port, item.pwd, item.randomPlaylistByType).then(
+        MPDConnection.connect(item.name, item.ipAddress, port, item.pwd, item.randomPlaylistByType, item.maxListSize).then(
             () => {
                 this.setState((state) => {
                     const selected = new Map(state.selected);
@@ -230,7 +230,7 @@ export default class ConnectionsScreen extends React.Component {
                 "Port value must be a number"
             );
         } else {
-            MPDConnection.addConnection(name, host, parsedPort, password, false)
+            MPDConnection.addConnection(name, host, parsedPort, password, false, 0)
                 .then(() => {
                     MPDConnection.getConnectionList()
                         .then((connections) => {

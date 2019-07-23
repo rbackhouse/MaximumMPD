@@ -291,6 +291,60 @@ class AboutModal extends React.Component {
     }
 }
 
+class MaxListSizeModal extends React.Component {
+    state = {
+        maxListSize: 0
+    }
+
+    onOk() {
+        this.props.onSet(this.state.maxListSize);
+    }
+
+    onCancel(visible) {
+        this.props.onCancel();
+    }
+
+    render() {
+        const visible = this.props.visible;
+        const value = this.props.value;
+        return (
+            <Modal
+                animationType="fade"
+                transparent={false}
+                visible={visible}
+                onRequestClose={() => {
+            }}>
+                <View style={{marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'}}>
+                    <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                        <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Set Crossfade</Text>
+                    </View>
+                    <FormLabel>Max List Size</FormLabel>
+                    <FormInput value={value} keyboardType='numeric' maxLength={5} onChangeText={(maxListSize) => this.setState({maxListSize})} style={styles.entryField}></FormInput>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                        <Button
+                            onPress={() => {this.onOk();}}
+                            title="Ok"
+                            icon={{name: 'check', type: 'font-awesome'}}
+                            raised={true}
+                            rounded
+                            backgroundColor={'#3396FF'}
+                        />
+                        <Button
+                            onPress={() => {this.onCancel();}}
+                            title="Cancel"
+                            icon={{name: 'times-circle', type: 'font-awesome'}}
+                            raised={true}
+                            rounded
+                            backgroundColor={'#3396FF'}
+                        />
+                    </View>
+
+                </View>
+            </Modal>
+        );
+    }
+}
+
 export default class SettingsScreen extends React.Component {
     static navigationOptions = {
         title: 'Settings'
@@ -301,6 +355,8 @@ export default class SettingsScreen extends React.Component {
         replayGainVisible: false,
         crossfade: 3,
         crossfadeVisible: false,
+        maxListSize: 0,
+        maxListSizeVisible: false,
         shuffle: false,
         repeat: false,
         stopAftetSongPlayed: false,
@@ -437,9 +493,18 @@ export default class SettingsScreen extends React.Component {
         }
     }
 
+    setMaxListSize(value) {
+        this.setState({maxListSize: value});
+        this.setState({maxListSizeVisible: false});
+        if (MPDConnection.isConnected()) {
+            MPDConnection.current().setMaxListSize(value);
+        }
+    }
+
     render() {
         const replayGainValue = this.state.replayGain;
         const crossfadeValue = this.state.crossfade + " seconds";
+        const maxListSize = ""+this.state.maxListSize;
         return (
             <View style={{backgroundColor:'#EFEFF4',flex:1}}>
                 <SettingsList borderColor='#c8c7cc' defaultItemSize={50}>
@@ -519,6 +584,7 @@ export default class SettingsScreen extends React.Component {
                 <CrossfadeModal value={this.state.crossfade} visible={this.state.crossfadeVisible} onSet={(value) => {this.setCrossfade(value)}} onCancel={() => this.setState({crossfadeVisible: false})}></CrossfadeModal>
                 <AboutModal visible={this.state.aboutVisible} onOk={() => this.setState({aboutVisible: false})}></AboutModal>
                 <AlbumArtModal visible={this.state.albumartVisible} onOk={() => this.setState({albumartVisible: false})}></AlbumArtModal>
+                <MaxListSizeModal value={this.state.maxListSize} visible={this.state.maxListSizeVisible} onSet={(value) => {this.setMaxListSize(value)}} onCancel={() => this.setState({maxListSizeVisible: false})}></MaxListSizeModal>
             </View>
         );
     }
@@ -536,3 +602,13 @@ const styles = StyleSheet.create({
         fontSize: 12
     }
 });
+
+/*
+<SettingsList.Item
+  hasNavArrow={true}
+  title='Max List Size'
+  titleInfo={maxListSize}
+  titleInfoStyle={{fontFamily: 'GillSans-Italic'}}
+  onPress={() => this.setState({maxListSizeVisible: true})}
+/>
+*/

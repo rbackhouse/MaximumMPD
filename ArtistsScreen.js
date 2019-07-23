@@ -44,7 +44,8 @@ export default class ArtistsScreen extends React.Component {
           albums: [],
           albumsFullset: [],
           selectedTab: 0,
-          loading: false
+          loading: false,
+          realTotal: 0
         };
     }
 
@@ -102,7 +103,7 @@ export default class ArtistsScreen extends React.Component {
         });
 
         AlbumArt.getAlbumArtForAlbums(this.state.albumsFullset).then((albums) => {
-            this.setState({albums: albums, albumsFullset: albums});
+            this.setState({albums: this.subset(albums), albumsFullset: albums});
         });
     }
 
@@ -142,7 +143,7 @@ export default class ArtistsScreen extends React.Component {
                     }
                 });
             });
-            this.setState({albums: albums, albumsFullset: albums});
+            this.setState({albums: this.subset(albums), albumsFullset: albums});
             let genreList = [];
             genres.forEach((genre, index) => {
                 genreList.push({
@@ -196,9 +197,9 @@ export default class ArtistsScreen extends React.Component {
             let filtered = this.state.albumsFullset.filter((album) => {
                 return album.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
             });
-            this.setState({albums: filtered, searchAlbumValue: text});
+            this.setState({albums: this.subset(filtered), searchAlbumValue: text});
         } else {
-            this.setState({albums: this.state.albumsFullset, searchAlbumValue: text});
+            this.setState({albums: this.subset(this.state.albumsFullset), searchAlbumValue: text});
         }
     }
 
@@ -215,6 +216,19 @@ export default class ArtistsScreen extends React.Component {
     onAlbumPress(item) {
         const { navigation } = this.props;
         navigation.navigate('Songs', {artist: item.artist, album: item.name});
+    }
+
+    subset(albums) {
+        this.setState({realTotal: albums.length});
+        const maxListSize = MPDConnection.current().getMaxListSize();
+        if (maxListSize === 0) {
+            return albums;
+        }
+        if (albums.length > maxListSize) {
+            return albums.slice(0, maxListSize);
+        } else {
+            return albums;
+        }
     }
 
     renderSeparator = () => {
@@ -363,7 +377,7 @@ export default class ArtistsScreen extends React.Component {
                         </View>
                         <View style={{flex: .25}}>
                             <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
-                                Total : {this.state.albums.length}
+                                Total : {this.state.realTotal}
                             </Text>
                         </View>
                     </View>
