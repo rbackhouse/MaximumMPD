@@ -158,6 +158,7 @@ export default class SearchScreen extends React.Component {
 			rowMap[item.key].closeRow();
 		}
 
+        this.setState({loading: true});
         MPDConnection.current().addSongToPlayList(decodeURIComponent(Base64.atob(item.b64file)))
         .then(() => {
             this.setState({loading: false});
@@ -179,6 +180,7 @@ export default class SearchScreen extends React.Component {
             this.setState({modalVisible: true, selectedItem: item.b64file});
             return;
         }
+        this.setState({loading: true});
         MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(Base64.atob(item.b64file)), MPDConnection.current().getCurrentPlaylistName())
         .then(() => {
             this.setState({loading: false});
