@@ -221,21 +221,17 @@ export default class SongsScreen extends React.Component {
             const artist = navigation.getParam('artist');
             const album = navigation.getParam('album');
 
-            MPDConnection.current().addAlbumToNamedPlayList(
-                album,
-                artist,
-                MPDConnection.current().getCurrentPlaylistName(),
-                () => {
-                    this.setState({loading: false});
-                },
-                (err) => {
-                    this.setState({loading: false});
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                }
-            );
+            MPDConnection.current().addAlbumToNamedPlayList(album, artist, MPDConnection.current().getCurrentPlaylistName())
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         } else {
             MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(Base64.atob(selectedItem)), MPDConnection.current().getCurrentPlaylistName())
             .then(() => {
