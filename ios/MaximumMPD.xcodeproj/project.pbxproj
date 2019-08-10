@@ -53,6 +53,7 @@
 		F17D7B0BEC2A4192B7B33212 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 703A43EF1E5346278E4A38C9 /* Ionicons.ttf */; };
 		F6736300214BE4DA00CEFEEA /* SocketConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = F67362FD214BE4DA00CEFEEA /* SocketConnection.m */; };
 		F6736301214BE4DA00CEFEEA /* BonjourListener.m in Sources */ = {isa = PBXBuildFile; fileRef = F67362FF214BE4DA00CEFEEA /* BonjourListener.m */; };
+		F6930E0B22EDAFD500918027 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6930E0A22EDAFD500918027 /* libRCTLinking.a */; };
 		F7DCF6FF318E491CA8BC5437 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F23DBEC7E68F44AF8382B091 /* Zocial.ttf */; };
 		F9DD0FFE4B954114B41A14D2 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 978CCDF7CD4F41EA902F02B2 /* FontAwesome5_Regular.ttf */; };
 /* End PBXBuildFile section */
@@ -338,6 +339,20 @@
 			remoteGlobalIDString = 5DBEB1501B18CEA900B34395;
 			remoteInfo = RNVectorIcons;
 		};
+		F6930E0622EDAF1000918027 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F6930E0122EDAF1000918027 /* RCTLinking.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTLinking;
+		};
+		F6930E0822EDAF1000918027 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F6930E0122EDAF1000918027 /* RCTLinking.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2D2A28471D9B043800D4039D;
+			remoteInfo = "RCTLinking-tvOS";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -385,6 +400,9 @@
 		F67362FD214BE4DA00CEFEEA /* SocketConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SocketConnection.m; path = MaximumMPD/SocketConnection.m; sourceTree = "<group>"; };
 		F67362FE214BE4DA00CEFEEA /* BonjourListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BonjourListener.h; path = MaximumMPD/BonjourListener.h; sourceTree = "<group>"; };
 		F67362FF214BE4DA00CEFEEA /* BonjourListener.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BonjourListener.m; path = MaximumMPD/BonjourListener.m; sourceTree = "<group>"; };
+		F6930E0022EDAB9100918027 /* MaximumMPD.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MaximumMPD.entitlements; path = MaximumMPD/MaximumMPD.entitlements; sourceTree = "<group>"; };
+		F6930E0122EDAF1000918027 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
+		F6930E0A22EDAFD500918027 /* libRCTLinking.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRCTLinking.a; path = "../../../../Library/Developer/Xcode/DerivedData/MaximumMPD-gkcsojzgceeuxceofndwejndpwhr/Build/Products/Debug-iphonesimulator/libRCTLinking.a"; sourceTree = "<group>"; };
 		F767E9F878644B6296303F7F /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
 		FE53C038FE2642449A152CE2 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -402,6 +420,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F6930E0B22EDAFD500918027 /* libRCTLinking.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
@@ -527,6 +546,7 @@
 		13B07FAE1A68108700A75B9A /* MaximumMPD */ = {
 			isa = PBXGroup;
 			children = (
+				F6930E0022EDAB9100918027 /* MaximumMPD.entitlements */,
 				F67362FE214BE4DA00CEFEEA /* BonjourListener.h */,
 				F67362FF214BE4DA00CEFEEA /* BonjourListener.m */,
 				F67362D6214BE4DA00CEFEEA /* SocketConnection.h */,
@@ -568,6 +588,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F6930E0A22EDAFD500918027 /* libRCTLinking.a */,
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
 			);
 			name = Frameworks;
@@ -594,6 +615,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				F6930E0122EDAF1000918027 /* RCTLinking.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -693,6 +715,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		F6930E0222EDAF1000918027 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F6930E0722EDAF1000918027 /* libRCTLinking.a */,
+				F6930E0922EDAF1000918027 /* libRCTLinking-tvOS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -784,6 +815,11 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = P9NAZG5MLK;
+						SystemCapabilities = {
+							com.apple.SafariKeychain = {
+								enabled = 1;
+							};
+						};
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -828,6 +864,10 @@
 				{
 					ProductGroup = 00C302BC1ABCB91800DB3ED1 /* Products */;
 					ProjectRef = 00C302BB1ABCB91800DB3ED1 /* RCTImage.xcodeproj */;
+				},
+				{
+					ProductGroup = F6930E0222EDAF1000918027 /* Products */;
+					ProjectRef = F6930E0122EDAF1000918027 /* RCTLinking.xcodeproj */;
 				},
 				{
 					ProductGroup = 78C398B11ACF4ADC00677621 /* Products */;
@@ -1139,6 +1179,20 @@
 			remoteRef = F67362C7214BDEFF00CEFEEA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		F6930E0722EDAF1000918027 /* libRCTLinking.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTLinking.a;
+			remoteRef = F6930E0622EDAF1000918027 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F6930E0922EDAF1000918027 /* libRCTLinking-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libRCTLinking-tvOS.a";
+			remoteRef = F6930E0822EDAF1000918027 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -1344,12 +1398,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MaximumMPD/MaximumMPD.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = P9NAZG5MLK;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS",
 				);
 				INFOPLIST_FILE = MaximumMPD/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1369,11 +1425,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MaximumMPD/MaximumMPD.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = P9NAZG5MLK;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS",
 				);
 				INFOPLIST_FILE = MaximumMPD/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Image, Alert, Platform } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Image, Alert, Platform, Linking } from 'react-native';
 import { Slider, ButtonGroup } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -62,7 +62,8 @@ export default class PlayScreen extends React.Component {
             status: undefined,
             selectedTab: 0,
             imagePath: "",
-            searchedForAlbumArt: false
+            searchedForAlbumArt: false,
+            urlCommand: ""
         }
     }
 
@@ -74,10 +75,17 @@ export default class PlayScreen extends React.Component {
             "Height: "+height+" Width : "+width
         );
         */
+        const { navigation } = this.props;
         if (!MPDConnection.isConnected()) {
-            this.props.navigation.navigate('Settings');
-            this.props.navigation.navigate('Connections');
+            navigation.navigate('Settings');
+            navigation.navigate('Connections');
         }
+        this.navigateOnConnect = navigation.getParam('navigateOnConnect', true);
+        const urlCommand = navigation.getParam('urlCommand', "");
+        if (urlCommand !== "") {
+            this.setState({urlCommand: urlCommand});
+        }
+
         this.onStatus = MPDConnection.getEventEmitter().addListener(
             "OnStatus",
             (status) => {
@@ -102,6 +110,24 @@ export default class PlayScreen extends React.Component {
                     }
                 } else {
                     this.setState({imagePath: '', searchedForAlbumArt: false});
+                }
+                if (this.state.urlCommand !== '') {
+                    console.log("running urlCommand "+this.state.urlCommand);
+                    switch (this.state.urlCommand) {
+                        case 'playpause':
+                            this.onPlayPause();
+                            break;
+                        case 'stop':
+                            this.onStop();
+                            break;
+                        case 'next':
+                            this.onNext();
+                            break;
+                        case 'previous':
+                            this.onPrevious();
+                            break;
+                    }
+                    this.setState({urlCommand: ''});
                 }
             }
         );
@@ -137,6 +163,8 @@ export default class PlayScreen extends React.Component {
                 this.updateAlbumArt();
             }
         );
+
+        Linking.addEventListener('url', this.handleOpenURL);
     }
 
     componentWillUnmount() {
@@ -146,7 +174,16 @@ export default class PlayScreen extends React.Component {
         this.onAlbumArtEnd.remove();
         this.onAlbumArtComplete.remove();
         this.onAlbumArtError.remove();
+        Linking.removeEventListener('url', this.handleOpenURL);
     }
+
+
+    handleOpenURL = (event) => {
+        if (event.url.indexOf('maximummpd://') === 0) {
+            const command = event.url.substring('maximummpd://'.length);
+            this.setState({urlCommand: command});
+        }
+    };
 
     updateAlbumArt() {
         if (this.state.status) {

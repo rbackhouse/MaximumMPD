@@ -46,6 +46,7 @@ const BINARY_PREFIX = "binary: ";
 const BITRATE_PREFIX = "bitrate: ";
 const AUDIO_PREFIX = "audio: ";
 const GENRE_PREFIX = "Genre: ";
+const ALBUMARTIST_PREFIX = "AlbumArtist: ";
 
 const INITIAL = 0;
 const WRITTEN = 1;
@@ -403,8 +404,8 @@ class MPDConnection {
 
             lines.forEach((line) => {
                 console.log(line);
-				if (line.indexOf(ARTIST_PREFIX) === 0) {
-					let artist = line.substring(ARTIST_PREFIX.length);
+				if (line.indexOf(ALBUMARTIST_PREFIX) === 0) {
+					let artist = line.substring(ALBUMARTIST_PREFIX.length);
 					if (artist && artist.trim().length > 0) {
                         if (this.version < 20) {
                             album.artist = artist;
@@ -442,7 +443,7 @@ class MPDConnection {
 			});
 			return albums;
 		};
-        return this.createPromise("list album group artist", processor);
+        return this.createPromise("list album group albumartist", processor);
 	}
 
 	getStatus(cb, errorcb) {
