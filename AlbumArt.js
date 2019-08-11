@@ -55,7 +55,7 @@ const processor = () => {
                                     }
                                 } else {
                                     if (!missing.includes(key)) {
-                                        console.log("albumart missing for ["+album.artist+"] ["+album.name+"]");
+                                        //console.log("albumart missing for ["+album.artist+"] ["+album.name+"]");
                                         albums.push(album);
                                         albumArtEventEmiiter.emit('OnAlbumArtQueue', album);
                                     }
@@ -72,11 +72,11 @@ const processor = () => {
                 .then((songs) => {
                     if (songs.length > 0) {
                         albumArtEventEmiiter.emit('OnAlbumArtStart', album);
-                        console.log("getting path for ["+album.artist+"] ["+album.name+"] ["+songs[0].file+"]");
+                        //console.log("getting path for ["+album.artist+"] ["+album.name+"] ["+songs[0].file+"]");
                         const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
                         MPDConnection.current().albumart(songs[0].file, album.artist, album.name)
                         .then((path) => {
-                            console.log("saving path for ["+album.artist+"] ["+album.name+"] ["+path.path+"]");
+                            //console.log("saving path for ["+album.artist+"] ["+album.name+"] ["+path.path+"]");
                             albumArt[key] = path.path;
                             if (!artistArt[album.artist]) {
                                 artistArt[album.artist] = path.path;
@@ -85,7 +85,7 @@ const processor = () => {
                             resolve(true);
                         })
                         .catch((err) => {
-                            console.log("error getting path for ["+album.artist+"] ["+album.name+"] ["+err+"]");
+                            //console.log("error getting path for ["+album.artist+"] ["+album.name+"] ["+err+"]");
                             albumArtEventEmiiter.emit('OnAlbumArtError', {album:album, err: err});
                             if (err === "ACK [50@0] {albumart} No file exists") {
                                 albumArtStorage.addMissing(key)
@@ -97,12 +97,12 @@ const processor = () => {
                             }
                         });
                     } else {
-                        console.log("error no songs found for path for ["+album.artist+"] ["+album.name+"]");
+                        //console.log("error no songs found for path for ["+album.artist+"] ["+album.name+"]");
                         resolve(true);
                     }
                 })
                 .catch((err) => {
-                    console.log("error getting path for ["+album.artist+"] ["+album.name+"] ["+err+"]");
+                    //console.log("error getting path for ["+album.artist+"] ["+album.name+"] ["+err+"]");
                     resolve(false);
                 });
             }
@@ -128,7 +128,7 @@ const onConnect = MPDConnection.getEventEmitter().addListener(
         albumArtStorage.isEnabled().then((enabled) => {
             if (enabled === "true") {
                 albums = undefined;
-                console.log("Starting albumart poller");
+                //console.log("Starting albumart poller");
                 poller();
             }
         });
@@ -152,7 +152,7 @@ const onInternalConnect = MPDConnection.getEventEmitter().addListener(
 const onDisconnect = MPDConnection.getEventEmitter().addListener(
     "OnDisconnect",
     () => {
-        console.log("Stopping albumart poller");
+        //console.log("Stopping albumart poller");
         albums = [];
     }
 );
@@ -176,9 +176,9 @@ class AlbumArtStorage {
                 missing = [];
                 AsyncStorage.setItem('@MPD:albumart_missing', JSON.stringify(missing));
             }
-            console.log(missing);
+            //console.log(missing);
         } catch(err) {
-            console.log("missing is not found");
+            //console.log("missing is not found");
             console.log(err);
             missing = [];
             AsyncStorage.setItem('@MPD:albumart_missing', JSON.stringify(missing));
@@ -210,10 +210,10 @@ export default {
                 if (enabled === "true") {
                     const key = MPDConnection.current().toAlbumArtFilename(artist, album);
                     if (albumArt[key]) {
-                        console.log("path found for ["+artist+"] ["+album+"] ["+albumArt[key]+"]");
+                        //console.log("path found for ["+artist+"] ["+album+"] ["+albumArt[key]+"]");
                         resolve(albumArt[key]);
                     } else {
-                        console.log("path not found for ["+artist+"] ["+album+"]");
+                        //console.log("path not found for ["+artist+"] ["+album+"]");
                         resolve();
                     }
                 } else {
@@ -228,7 +228,7 @@ export default {
             if (enabled === "true") {
                 for (let key in albumArt) {
                     const path = albumArt[key];
-                    console.log("deleting path for ["+key+"] ["+path+"]");
+                    //console.log("deleting path for ["+key+"] ["+path+"]");
                     MPDConnection.current().deleteAlbumArt(path);
                 }
             }
