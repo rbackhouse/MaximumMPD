@@ -18,6 +18,7 @@
 import React from 'react';
 import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, InteractionManager } from 'react-native';
 import { SearchBar, ButtonGroup } from "react-native-elements";
+import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import MPDConnection from './MPDConnection';
@@ -41,6 +42,7 @@ export default class ArtistsScreen extends React.Component {
           fullset: [],
           genres: [],
           genresFullset: [],
+          genreMap: {},
           albums: [],
           albumsFullset: [],
           selectedTab: 0,
@@ -145,13 +147,15 @@ export default class ArtistsScreen extends React.Component {
             });
             this.setState({albums: this.subset(albums), albumsFullset: albums});
             let genreList = [];
-            genres.forEach((genre, index) => {
+            let index = 0;
+            for (let genre in genres) {
                 genreList.push({
-                    key: ""+(index+1),
+                    key: ""+(++index),
                     name: genre
                 });
-            });
-            this.setState({genres: genreList, genresFullset: genreList});
+            }
+
+            this.setState({genres: genreList, genresFullset: genreList, genreMap: genres});
         })
         .catch((err) => {
             this.setState({loading: false});
@@ -208,11 +212,6 @@ export default class ArtistsScreen extends React.Component {
         navigation.navigate('Albums', {artist: item.name});
     }
 
-    onGenrePress(item) {
-        const { navigation } = this.props;
-        navigation.navigate('Songs', {genre: item.name});
-    }
-
     onAlbumPress(item) {
         const { navigation } = this.props;
         navigation.navigate('Songs', {artist: item.artist, album: item.name});
@@ -229,6 +228,35 @@ export default class ArtistsScreen extends React.Component {
         } else {
             return albums;
         }
+    }
+
+    genreAlbums(rowMap, item) {
+        if (rowMap[item.key]) {
+			rowMap[item.key].closeRow();
+		}
+        const albumNames = this.state.genreMap[item.name];
+
+        let albums = [];
+        albumNames.forEach((albumName) => {
+            let artist;
+            this.state.albumsFullset.forEach((album) => {
+                if (album.name === albumName) {
+                    artist = album.artist;
+                }
+            })
+            albums.push({name: albumName, artist: artist});
+        });
+
+        const { navigation } = this.props;
+        navigation.navigate('Albums', {albums: albums, genre: item.name});
+    }
+
+    genreSongs(rowMap, item) {
+        if (rowMap[item.key]) {
+			rowMap[item.key].closeRow();
+		}
+        const { navigation } = this.props;
+        navigation.navigate('Songs', {genre: item.name});
     }
 
     renderSeparator = () => {
@@ -263,17 +291,26 @@ export default class ArtistsScreen extends React.Component {
         );
     };
 
-    renderGenreItem = ({item}) => {
+    renderGenreItem = (data, map) => {
+        const item = data.item;
         return (
-            <TouchableOpacity onPress={this.onGenrePress.bind(this, item)}>
-                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                    <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+            <SwipeRow rightOpenValue={-150}>
+                <View style={styles.rowBack}>
+                    <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.genreAlbums(map, item) }>
+                        <Text style={styles.backTextWhite}>Albums</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.genreSongs(map, item) }>
+                        <Text style={styles.backTextWhite}>Songs</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}, styles.rowFront]}>
+                    <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
                     <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                    <Icon name="ios-swap" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                 </View>
-            </TouchableOpacity>
+            </SwipeRow>
         );
     }
 
@@ -431,13 +468,14 @@ export default class ArtistsScreen extends React.Component {
                         </View>
                     </View>
                     <View style={{flex: .84, width: "100%"}}>
-                        <FlatList
+                        <SwipeListView
+        					useFlatList
                             data={this.state.genres}
+                            keyExtractor={item => item.key}
                             renderItem={this.renderGenreItem}
                             renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-                            keyExtractor={item => item.key}
                             ItemSeparatorComponent={this.renderSeparator}
-                        />
+        				/>
                     </View>
                     {this.state.loading &&
                         <View style={styles.loading}>
@@ -478,5 +516,37 @@ const styles = StyleSheet.create({
         bottom: 0,
         justifyContent: 'center',
         alignItems: 'center'
-    }
+    },
+    backTextWhite: {
+		color: '#FFF'
+	},
+    rowFront: {
+		alignItems: 'center',
+		backgroundColor: '#FFFFFF',
+		justifyContent: 'center',
+	},
+	rowBack: {
+		alignItems: 'center',
+		backgroundColor: '#DDD',
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		paddingLeft: 15,
+	},
+	backRightBtn: {
+		alignItems: 'center',
+		bottom: 0,
+		justifyContent: 'center',
+		position: 'absolute',
+		top: 0,
+		width: 75
+	},
+	backRightBtnLeft: {
+		backgroundColor: 'grey',
+		right: 75
+	},
+	backRightBtnRight: {
+		backgroundColor: 'darkgray',
+		right: 0
+	}
 });

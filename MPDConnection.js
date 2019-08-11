@@ -403,7 +403,6 @@ class MPDConnection {
             let currentArtist;
 
             lines.forEach((line) => {
-                console.log(line);
 				if (line.indexOf(ALBUMARTIST_PREFIX) === 0) {
 					let artist = line.substring(ALBUMARTIST_PREFIX.length);
 					if (artist && artist.trim().length > 0) {
@@ -1299,16 +1298,27 @@ class MPDConnection {
     getAllGenres() {
         const processor = (data) => {
 			const lines = MPDConnection._lineSplit(data);
-			let genres = [];
+			let genres = {};
+            let currentAlbum;
             lines.forEach((line) => {
-                const genre = line.substring(GENRE_PREFIX.length);
-                if (genre !== "") {
-                    genres.push(genre);
+                console.log(line);
+                if (line.indexOf(GENRE_PREFIX) === 0) {
+                    const genre = line.substring(GENRE_PREFIX.length);
+                    if (genre !== "") {
+                        if (!genres[genre]) {
+                            genres[genre] = [];
+                        }
+                        if (currentAlbum !== "") {
+                            genres[genre].push(currentAlbum);
+                        }
+                    }
+                } else if (line.indexOf(ALBUM_PREFIX) === 0) {
+                    currentAlbum = line.substring(ALBUM_PREFIX.length);
                 }
 			});
 			return genres;
 		};
-        return this.createPromise("list genre", processor);
+        return this.createPromise("list genre group album", processor);
     }
 
     getSongsForGenre(genre) {

@@ -30,8 +30,16 @@ import NewPlaylistModal from './NewPlaylistModal';
 
 export default class AlbumsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
+        const artist = navigation.getParam('artist');
+        const genre = navigation.getParam('genre');
+        let title;
+        if (!artist) {
+            title = "Albums ("+genre+")";
+        } else {
+            title = "Albums ("+artist+")";
+        }
         return {
-            title: "Albums ("+navigation.getParam('artist')+")"
+            title: title
         };
     };
 
@@ -49,29 +57,33 @@ export default class AlbumsScreen extends React.Component {
     componentDidMount() {
         const { navigation } = this.props;
         const artist = navigation.getParam('artist');
+        const albums = navigation.getParam('albums');
+        if (artist) {
+            this.setState({loading: true});
 
-        this.setState({loading: true});
-
-        MPDConnection.current().getAlbumsForArtist(artist)
-        .then((albums) => {
-            this.setState({loading: false});
-            this.setState({albums: albums, fullset: albums});
-            albums.forEach((album) => {
-                AlbumArt.getAlbumArt(artist, album.name).then((path) => {
-                    if (path) {
-                        album.imagePath = "file://"+path;
-                        this.setState({albums: this.state.fullset, fullset: this.state.fullset});
-                    }
+            MPDConnection.current().getAlbumsForArtist(artist)
+            .then((albums) => {
+                this.setState({loading: false});
+                this.setState({albums: albums, fullset: albums});
+                albums.forEach((album) => {
+                    AlbumArt.getAlbumArt(artist, album.name).then((path) => {
+                        if (path) {
+                            album.imagePath = "file://"+path;
+                            this.setState({albums: this.state.fullset, fullset: this.state.fullset});
+                        }
+                    });
                 });
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
             });
-        })
-        .catch((err) => {
-            this.setState({loading: false});
-            Alert.alert(
-                "MPD Error",
-                "Error : "+err
-            );
-        });
+        } else {
+            this.setState({albums: albums, fullset: albums});
+        }
         this.onDisconnect = MPDConnection.getEventEmitter().addListener(
             "OnDisconnect",
             () => {
@@ -142,8 +154,10 @@ export default class AlbumsScreen extends React.Component {
 
     onPress(item) {
         const { navigation } = this.props;
-        const artist = navigation.getParam('artist');
-
+        let artist = navigation.getParam('artist');
+        if (!artist) {
+            artist = item.artist;
+        }
         navigation.navigate('Songs', {artist: artist, album: item.name});
     }
 
