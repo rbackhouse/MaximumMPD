@@ -403,8 +403,8 @@ class MPDConnection {
             let currentArtist;
 
             lines.forEach((line) => {
-				if (line.indexOf(ALBUMARTIST_PREFIX) === 0) {
-					let artist = line.substring(ALBUMARTIST_PREFIX.length);
+				if (line.indexOf(ARTIST_PREFIX) === 0) {
+					let artist = line.substring(ARTIST_PREFIX.length);
 					if (artist && artist.trim().length > 0) {
                         if (this.version < 20) {
                             album.artist = artist;
@@ -442,7 +442,7 @@ class MPDConnection {
 			});
 			return albums;
 		};
-        return this.createPromise("list album group albumartist", processor);
+        return this.createPromise("list album group artist", processor);
 	}
 
 	getStatus(cb, errorcb) {
@@ -878,6 +878,19 @@ class MPDConnection {
 	runCommand(cmd) {
 		const processor = (data) => {
 			return MPDConnection._lineSplit(data);
+		};
+        return this.createPromise(cmd, processor);
+	}
+
+    runCommandWithDebug(cmd) {
+		const processor = (data) => {
+            const lines = MPDConnection._lineSplit(data);
+            const debugData = {
+                cmd: cmd,
+                debug: lines
+            }
+            SocketConnection.saveDebugData(JSON.stringify(debugData, ' ', '\t'));
+			return lines;
 		};
         return this.createPromise(cmd, processor);
 	}

@@ -109,6 +109,30 @@ RCT_EXPORT_METHOD(listAlbumArtDir:(RCTPromiseResolveBlock)resolve rejecter:(RCTP
   }
 }
 
+RCT_EXPORT_METHOD(saveDebugData:(NSString *)data) {
+  NSString *path;
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"mpddebug.json"];
+  NSError *error;
+
+  if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+    if (![[NSFileManager defaultManager] removeItemAtPath:path error:&error]) {
+      NSLog(@"Delete mpddebug.json file error: %@", error);
+    } else {
+      NSLog(@"deleted mpddebug.json file [%@]", path);
+    }
+  }
+  NSLog(@"writing %@ to %@", data, path);
+
+  if (![data writeToFile:path
+            atomically:NO
+              encoding:NSUTF8StringEncoding
+                   error:&error]) {
+    NSLog(@"Failed to write mpddebug.json file error: %@", error);
+  }
+}
+
+
 - (NSArray<NSString *> *)supportedEvents {
   return @[@"OnStateChange", @"OnError", @"OnPauseResume", @"OnResponse", @"OnInit", @"OnResponseError"];
 }

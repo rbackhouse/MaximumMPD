@@ -33,6 +33,8 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -142,6 +144,28 @@ public class SocketConnectionModule extends ReactContextBaseJavaModule implement
             array.pushString(f.getName());
         }
         promise.resolve(array);
+    }
+
+    @ReactMethod
+    public void saveDebugData(String data) {
+        File f = new File(documentDir, "mpddebug.json");
+        boolean deleted = f.delete();
+        if (!deleted) {
+            Log.d("SockectConnection", "failed to delete mpddebug.json file : "+f.getAbsolutePath());
+        }
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(f));
+            writer.write(data);
+        } catch(IOException e) {
+            Log.d("SockectConnection", "exception while writing mpddebug data to : "+f.getAbsolutePath()+" "+e.getLocalizedMessage());
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {}
+            }
+        }
     }
 
     @Override

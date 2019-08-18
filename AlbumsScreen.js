@@ -83,6 +83,14 @@ export default class AlbumsScreen extends React.Component {
             });
         } else {
             this.setState({albums: albums, fullset: albums});
+            albums.forEach((album) => {
+                AlbumArt.getAlbumArt(album.artist, album.name).then((path) => {
+                    if (path) {
+                        album.imagePath = "file://"+path;
+                        this.setState({albums: this.state.fullset, fullset: this.state.fullset});
+                    }
+                });
+            });
         }
         this.onDisconnect = MPDConnection.getEventEmitter().addListener(
             "OnDisconnect",

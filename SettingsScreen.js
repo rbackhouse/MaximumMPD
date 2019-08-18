@@ -579,6 +579,12 @@ export default class SettingsScreen extends React.Component {
                                   titleInfoStyle={{fontFamily: 'GillSans-Italic'}}
                                   onPress={() => this.setState({crossfadeVisible: true})}
                                 />
+                    <SettingsList.Header headerStyle={{marginTop:15}} headerText="Debug Options"/>
+                    <SettingsList.Item
+                      hasNavArrow={true}
+                      title='Debug'
+                      onPress={() => this.props.navigation.navigate('Debug')}
+                    />
                 </SettingsList>
                 <ReplayGainModal replayGain={this.state.replayGain} visible={this.state.replayGainVisible} onSet={(value) => {this.setReplayGain(value)}} onCancel={() => this.setState({replayGainVisible: false})}></ReplayGainModal>
                 <CrossfadeModal value={this.state.crossfade} visible={this.state.crossfadeVisible} onSet={(value) => {this.setCrossfade(value)}} onCancel={() => this.setState({crossfadeVisible: false})}></CrossfadeModal>
