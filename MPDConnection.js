@@ -856,11 +856,7 @@ class MPDConnection {
 	}
 
 	removeSong(songid) {
-		this.queue.push({
-			cmd: "deleteid "+songid,
-			response: "",
-			state: INITIAL
-		});
+        return this.createPromise("deleteid "+songid);
 	}
 
 	update() {

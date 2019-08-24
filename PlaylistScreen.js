@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Modal, Picker, PickerIOS } from 'react-native';
+import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Modal, Picker, PickerIOS, Dimensions } from 'react-native';
 import { SearchBar, FormLabel, FormInput, Button } from 'react-native-elements'
 
 import ActionButton from 'react-native-action-button';
@@ -105,7 +105,8 @@ export default class PlaylistScreen extends React.Component {
           isPlaying: false,
           currentSongId: -1,
           modalVisible: false,
-          totalTime: ""
+          totalTime: "",
+          isEditing: false
         };
     }
 
@@ -170,7 +171,32 @@ export default class PlaylistScreen extends React.Component {
     }
 
     onPress(item) {
-        MPDConnection.current().play(item.id);
+        if (this.state.isEditing) {
+            Alert.alert(
+                "Remove Song from Queue",
+                "Are you sure you want to remove ''"+item.title+"'' ?",
+                [
+                    {text: 'OK', onPress: () => {
+                        this.setState({loading: true});
+                        MPDConnection.current().removeSong(item.id)
+                        .then(() => {
+                            this.setState({loading: false});
+                            this.load();
+                        })
+                        .catch((err) => {
+                            this.setState({loading: false});
+                            Alert.alert(
+                                "MPD Error",
+                                "Error : "+err
+                            );
+                        });
+                    }},
+                    {text: 'Cancel'}
+                ]
+            );
+        } else {
+            MPDConnection.current().play(item.id);
+        }
     }
 
     onRandom(type, value) {
@@ -194,6 +220,10 @@ export default class PlaylistScreen extends React.Component {
     onClear() {
         MPDConnection.current().clearPlayList();
         this.load();
+    }
+
+    onEdit() {
+        this.state.isEditing ? this.setState({isEditing: false}) : this.setState({isEditing: true})
     }
 
     load() {
@@ -261,6 +291,7 @@ export default class PlaylistScreen extends React.Component {
         let audio;
         const isSelected = this.state.selected.get(item.artist+item.album+item.title)
         const selected = isSelected ? "flex" : "none";
+        const editSelectIcon = this.state.isEditing === true ? "ios-trash" : "ios-musical-notes";
 
         if (isSelected && this.state.status && this.state.status.time) {
             let time = Math.floor(parseInt(this.state.status.time));
@@ -275,7 +306,7 @@ export default class PlaylistScreen extends React.Component {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                 <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                    <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                    <Icon name={editSelectIcon} size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                     <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                         {item.artist !== "" &&
                             <Text style={styles.item}>{item.artist}</Text>
@@ -299,6 +330,11 @@ export default class PlaylistScreen extends React.Component {
     };
 
     render() {
+        const {height, width} = Dimensions.get('window');
+        let actionButtonSize = 40;
+        if (height < 570) {
+            actionButtonSize = 30;
+        }
         const playPauseIcon = this.state.isPlaying == true ? "pause" : "play";
         const playPauseLabel = this.state.isPlaying == true ? "Pause" : "Play";
         return (
@@ -324,22 +360,25 @@ export default class PlaylistScreen extends React.Component {
                     </View>
                 }
                 <ActionButton buttonColor="rgba(231,76,60,1)">
-                    <ActionButton.Item size={40} buttonColor='#3498db' title="Random Playlist" textStyle={styles.actionButtonText} onPress={() => this.doRandom()}>
+                    <ActionButton.Item size={actionButtonSize} buttonColor='#3498db' title="Edit/Select" textStyle={styles.actionButtonText} onPress={this.onEdit.bind(this)}>
+                        <FAIcon name="edit" size={15} color="#e6e6e6" />
+                    </ActionButton.Item>
+                    <ActionButton.Item size={actionButtonSize} buttonColor='#3498db' title="Random Playlist" textStyle={styles.actionButtonText} onPress={() => this.doRandom()}>
                         <FAIcon name="random" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item size={40} buttonColor='#1abc9c' title="Clear Queue" textStyle={styles.actionButtonText} onPress={this.onClear.bind(this)}>
+                    <ActionButton.Item size={actionButtonSize} buttonColor='#1abc9c' title="Clear Queue" textStyle={styles.actionButtonText} onPress={this.onClear.bind(this)}>
                         <FAIcon name="eraser" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item size={40} buttonColor='#9b59b6' title="Previous" textStyle={styles.actionButtonText} onPress={this.onPrevious.bind(this)}>
+                    <ActionButton.Item size={actionButtonSize} buttonColor='#9b59b6' title="Previous" textStyle={styles.actionButtonText} onPress={this.onPrevious.bind(this)}>
                         <FAIcon name="fast-backward" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item size={40} buttonColor='#3498db' title="Stop" textStyle={styles.actionButtonText} onPress={this.onStop.bind(this)}>
+                    <ActionButton.Item size={actionButtonSize} buttonColor='#3498db' title="Stop" textStyle={styles.actionButtonText} onPress={this.onStop.bind(this)}>
                         <FAIcon name="stop" size={12} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item size={40} buttonColor='#1abc9c' title="Play/Pause" textStyle={styles.actionButtonText} onPress={this.onPlayPause.bind(this)}>
+                    <ActionButton.Item size={actionButtonSize} buttonColor='#1abc9c' title="Play/Pause" textStyle={styles.actionButtonText} onPress={this.onPlayPause.bind(this)}>
                         <FAIcon name={playPauseIcon} size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item size={40} buttonColor='#9b59b6' title="Next" textStyle={styles.actionButtonText} onPress={this.onNext.bind(this)}>
+                    <ActionButton.Item size={actionButtonSize} buttonColor='#9b59b6' title="Next" textStyle={styles.actionButtonText} onPress={this.onNext.bind(this)}>
                         <FAIcon name="fast-forward" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>
