@@ -28,6 +28,7 @@ const mpdEventEmiiter = new EventEmitter();
 
 const ARTIST_PREFIX = "Artist: ";
 const ALBUM_PREFIX = "Album: ";
+const ALBUM_PREFIX_NO_SPACE = "Album:";
 const TITLE_PREFIX = "Title: ";
 const TRACK_PREFIX = "Track: ";
 const FILE_PREFIX = "file: ";
@@ -204,6 +205,15 @@ class MPDConnection {
                 console.log(versionString);
                 let split = versionString.split(".");
                 this.version = parseInt(split[1]);
+                this.minorVersion = parseInt(split[2]);
+                /*
+                console.log("version: "+this.version+" minorVersion: "+this.minorVersion);
+                if (this.version < 21 && this.minorVersion === 0) {
+                    console.log("old protocol");
+                } else {
+                    console.log("new protocol");
+                }
+                */
                 this._loadFileSuffixes();
             }
         );
@@ -398,33 +408,31 @@ class MPDConnection {
 		const processor = (data) => {
 			const lines = MPDConnection._lineSplit(data);
 			let albums = [];
-			let line;
-            let album = {};
+            let album;
             let currentArtist;
 
             lines.forEach((line) => {
 				if (line.indexOf(ARTIST_PREFIX) === 0) {
 					let artist = line.substring(ARTIST_PREFIX.length);
 					if (artist && artist.trim().length > 0) {
-                        if (this.version < 20) {
+                        if (this.version < 21 && this.minorVersion === 0) {
                             album.artist = artist;
                             if (album.name && album.artist) {
         						albums.push({artist: album.artist, name: album.name});
-                                album = {};
                             }
                         } else {
                             currentArtist = artist;
                         }
 					}
-				} else if (line.indexOf(ALBUM_PREFIX) === 0) {
-					let name = line.substring(ALBUM_PREFIX.length);
+				} else if (line.indexOf(ALBUM_PREFIX_NO_SPACE) === 0) {
+                    if (this.version < 21 && this.minorVersion === 0) {
+                        album = {};
+                    }
+					let name = line.substring(ALBUM_PREFIX_NO_SPACE.length);
 					if (name && name.trim().length > 0) {
-                        if (this.version < 20) {
+                        name = name.trim();
+                        if (this.version < 21 && this.minorVersion === 0) {
                             album.name = name;
-                            if (album.name && album.artist) {
-        						albums.push({artist: album.artist, name: album.name});
-                                album = {};
-                            }
                         } else {
                             albums.push({name: name, artist: currentArtist});
                         }
