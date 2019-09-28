@@ -22,6 +22,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import HeaderButtons from 'react-navigation-header-buttons';
 
+import { NativeEventEmitter, NativeModules } from 'react-native';
+
 import { Dimensions } from 'react-native';
 
 import PlaylistScreen from './PlaylistScreen';
@@ -30,6 +32,9 @@ import PlaylistEditor from './PlaylistEditor';
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
+
+const { VolumeControl } = NativeModules;
+const volumeEmitter = new NativeEventEmitter(VolumeControl);
 
 class HeaderPlaylist extends React.Component {
     playlist = () => {
@@ -86,6 +91,13 @@ export default class PlayScreen extends React.Component {
             this.setState({urlCommand: urlCommand});
         }
 
+        VolumeControl.getVolume()
+        .then((volume) => {
+            const newVolume = Math.round(volume*100);
+            this.setState({volume: newVolume});
+            MPDConnection.current().setVolume(newVolume);
+        });
+
         this.onStatus = MPDConnection.getEventEmitter().addListener(
             "OnStatus",
             (status) => {
@@ -93,7 +105,8 @@ export default class PlayScreen extends React.Component {
                 if (this.state.status) {
                     currentsong = this.state.status.song;
                 }
-                this.setState({status: status, volume: parseInt(status.volume), isPlaying: status.state === "play"});
+                this.setState({status: status, isPlaying: status.state === "play"});
+                //this.setState({status: status, volume: parseInt(status.volume), isPlaying: status.state === "play"});
                 if (status.song) {
                     if (currentsong !== status.song) {
                         this.setState({imagePath: '', searchedForAlbumArt: false});
@@ -164,6 +177,16 @@ export default class PlayScreen extends React.Component {
             }
         );
 
+        this.onVolumeChange = volumeEmitter.addListener(
+            "OnVolumeChange",
+            (result) => {
+                const newVolume = Math.round(result.volume*100);
+                console.log("OnVolumeChange "+newVolume);
+                this.setState({volume:newVolume});
+                MPDConnection.current().setVolume(newVolume);
+            }
+        );
+
         Linking.addEventListener('url', this.handleOpenURL);
     }
 
@@ -174,6 +197,7 @@ export default class PlayScreen extends React.Component {
         this.onAlbumArtEnd.remove();
         this.onAlbumArtComplete.remove();
         this.onAlbumArtError.remove();
+        this.onVolumeChange.remove();
         Linking.removeEventListener('url', this.handleOpenURL);
     }
 
@@ -222,7 +246,10 @@ export default class PlayScreen extends React.Component {
     }
 
     setVolume = (value) => {
+        console.log("setVolume "+value);
+
         this.setState({volume:value});
+        VolumeControl.setVolume(value/100);
         MPDConnection.current().setVolume(value);
     };
 

@@ -51,6 +51,7 @@
 		D7B5C24116544A0595FE7EE9 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 126E66E4DCE84C968EF82266 /* MaterialCommunityIcons.ttf */; };
 		E63D09E652CB4168AD888E97 /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7F02B79E71F84EF599F3CCF5 /* FontAwesome5_Solid.ttf */; };
 		F17D7B0BEC2A4192B7B33212 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 703A43EF1E5346278E4A38C9 /* Ionicons.ttf */; };
+		F66D3B2323363B9600A9C9C8 /* VolumeControl.m in Sources */ = {isa = PBXBuildFile; fileRef = F66D3B2223363B9600A9C9C8 /* VolumeControl.m */; };
 		F6736300214BE4DA00CEFEEA /* SocketConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = F67362FD214BE4DA00CEFEEA /* SocketConnection.m */; };
 		F6736301214BE4DA00CEFEEA /* BonjourListener.m in Sources */ = {isa = PBXBuildFile; fileRef = F67362FF214BE4DA00CEFEEA /* BonjourListener.m */; };
 		F6930E0B22EDAFD500918027 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F6930E0A22EDAFD500918027 /* libRCTLinking.a */; };
@@ -396,6 +397,8 @@
 		EABD0FCCA43F4B489220CE3F /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		F23DBEC7E68F44AF8382B091 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		F393CCC767DA4527B66229C1 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
+		F66D3AF923363B6B00A9C9C8 /* VolumeControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VolumeControl.h; path = MaximumMPD/VolumeControl.h; sourceTree = "<group>"; };
+		F66D3B2223363B9600A9C9C8 /* VolumeControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = VolumeControl.m; path = MaximumMPD/VolumeControl.m; sourceTree = "<group>"; };
 		F67362D6214BE4DA00CEFEEA /* SocketConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SocketConnection.h; path = MaximumMPD/SocketConnection.h; sourceTree = "<group>"; };
 		F67362FD214BE4DA00CEFEEA /* SocketConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SocketConnection.m; path = MaximumMPD/SocketConnection.m; sourceTree = "<group>"; };
 		F67362FE214BE4DA00CEFEEA /* BonjourListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BonjourListener.h; path = MaximumMPD/BonjourListener.h; sourceTree = "<group>"; };
@@ -558,6 +561,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				F66D3AF923363B6B00A9C9C8 /* VolumeControl.h */,
+				F66D3B2223363B9600A9C9C8 /* VolumeControl.m */,
 			);
 			name = MaximumMPD;
 			sourceTree = "<group>";
@@ -1291,6 +1296,7 @@
 				F6736301214BE4DA00CEFEEA /* BonjourListener.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				F6736300214BE4DA00CEFEEA /* SocketConnection.m in Sources */,
+				F66D3B2323363B9600A9C9C8 /* VolumeControl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
