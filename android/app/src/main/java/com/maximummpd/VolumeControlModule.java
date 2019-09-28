@@ -13,6 +13,9 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
+ *
+ * Thanks to https://github.com/rtmalone/react-native-volume-control/blob/develop/android/src/main/java/com/rtmalone/volumecontrol/RNVolumeControlModule.java
+ * for implementation ideas
  */
 package com.maximummpd;
 
