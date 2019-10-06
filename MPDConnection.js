@@ -1318,7 +1318,6 @@ class MPDConnection {
 			let genres = {};
             let currentAlbum;
             lines.forEach((line) => {
-                console.log(line);
                 if (line.indexOf(GENRE_PREFIX) === 0) {
                     const genre = line.substring(GENRE_PREFIX.length);
                     if (genre !== "") {
