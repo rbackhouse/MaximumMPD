@@ -58,8 +58,14 @@ export default class DebugScreen extends React.Component {
         if (this.state.cmd !== "") {
             console.log(this.state.cmd);
             this.setState({loading: true});
-
-            MPDConnection.current().runCommandWithDebug(this.state.cmd.toLowerCase())
+            let cmd = this.state.cmd;
+            cmd = cmd.replace(/./g, (char) => {
+                const charCode = char.charCodeAt(0);
+                let newChar;
+                charCode === 8220 || charCode === 8221 ? newChar = '"' : newChar = char;
+                return newChar;
+            });
+            MPDConnection.current().runCommandWithDebug(cmd)
             .then((results) => {
                 this.setState({loading: false});
                 let debug = [];
