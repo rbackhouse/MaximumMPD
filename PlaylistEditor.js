@@ -34,7 +34,8 @@ export default class PlaylistEditor extends React.Component {
           playlists: [],
           fullset: [],
           loading: false,
-          modalVisible: false
+          modalVisible: false,
+          playlistFromQueue: false
         };
     }
 
@@ -87,13 +88,59 @@ export default class PlaylistEditor extends React.Component {
     }
 
     onAdd() {
-        this.setState({modalVisible: true});
+        this.setState({modalVisible: true, playlistFromQueue: false});
+    }
+
+    fromQueue() {
+        this.setState({loading: true});
+
+        MPDConnection.current().getPlayListInfo()
+        .then((playlist) => {
+            this.setState({loading: false});
+
+            if (playlist.length > 0) {
+                this.setState({modalVisible: true, playlistFromQueue: true});
+            } else {
+                Alert.alert(
+                    "MPD Error",
+                    "Cannot create Playlist from an Empty Queue"
+                );
+            }
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     createNewPlaylist(name) {
         this.setState({modalVisible: false});
-        const { navigation } = this.props;
-        navigation.navigate('PlaylistDetails', {playlist: name, isNew: true});
+        if (this.state.playlistFromQueue) {
+            this.setState({loading: true});
+
+            MPDConnection.current().savePlayList(name)
+            .then(() => {
+                this.setState({loading: false});
+                this.load();
+                Alert.alert(
+                    "Playlist Created",
+                    "Playlist "+name+" created from current queue"
+                );
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
+        } else {
+            const { navigation } = this.props;
+            navigation.navigate('PlaylistDetails', {playlist: name, isNew: true});
+        }
     }
 
     renderSeparator = () => {
@@ -160,6 +207,9 @@ export default class PlaylistEditor extends React.Component {
                 <NewPlaylistModal visible={this.state.modalVisible} onSet={(name) => {this.createNewPlaylist(name)}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
 
                 <ActionButton buttonColor="rgba(231,76,60,1)">
+                    <ActionButton.Item buttonColor='#9b59b6' title="Playlist from Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.fromQueue();}}>
+                        <FAIcon name="plus-square" size={15} color="#e6e6e6" />
+                    </ActionButton.Item>
                     <ActionButton.Item buttonColor='#3498db' title="New Playlist" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onAdd();}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
