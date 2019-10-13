@@ -27,6 +27,7 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
 import NewPlaylistModal from './NewPlaylistModal';
+import Config from './Config';
 
 export default class AlbumsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -60,27 +61,29 @@ export default class AlbumsScreen extends React.Component {
         const albums = navigation.getParam('albums');
         if (artist) {
             this.setState({loading: true});
-
-            MPDConnection.current().getAlbumsForArtist(artist)
-            .then((albums) => {
-                this.setState({loading: false});
-                this.setState({albums: albums, fullset: albums});
-                albums.forEach((album) => {
-                    AlbumArt.getAlbumArt(artist, album.name).then((path) => {
-                        if (path) {
-                            album.imagePath = "file://"+path;
-                            this.setState({albums: this.state.fullset, fullset: this.state.fullset});
-                        }
+            Config.isSortAlbumsByDate()
+            .then((sortAlbumsByDate) => {
+                MPDConnection.current().getAlbumsForArtist(artist, sortAlbumsByDate)
+                .then((albums) => {
+                    this.setState({loading: false});
+                    this.setState({albums: albums, fullset: albums});
+                    albums.forEach((album) => {
+                        AlbumArt.getAlbumArt(artist, album.name).then((path) => {
+                            if (path) {
+                                album.imagePath = "file://"+path;
+                                this.setState({albums: this.state.fullset, fullset: this.state.fullset});
+                            }
+                        });
                     });
+                })
+                .catch((err) => {
+                    this.setState({loading: false});
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
                 });
             })
-            .catch((err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            });
         } else {
             this.setState({albums: albums, fullset: albums});
             albums.forEach((album) => {
@@ -201,6 +204,9 @@ export default class AlbumsScreen extends React.Component {
                     <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
+                    {item.date !== undefined &&
+                        <Text style={styles.item}>({item.date})</Text>
+                    }
                     <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                 </View>
             </TouchableOpacity>

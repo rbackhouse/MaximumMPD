@@ -21,6 +21,7 @@ import SettingsList from 'react-native-settings-list';
 import { FormLabel, FormInput, Button } from 'react-native-elements'
 import MPDConnection from './MPDConnection';
 import AlbumArt from './AlbumArt';
+import Config from './Config';
 
 class AlbumArtModal extends React.Component {
     state = {
@@ -363,10 +364,15 @@ export default class SettingsScreen extends React.Component {
         removeSongAfterPlay: false,
         randomPlaylistByType: false,
         albumartVisible: false,
-        aboutVisible: false
+        aboutVisible: false,
+        sortAlbumsByDate: false
     }
 
     componentDidMount() {
+        Config.isSortAlbumsByDate()
+        .then((sortAlbumsByDate) => {
+            this.setState({sortAlbumsByDate: sortAlbumsByDate});
+        });
         this.onConnect = MPDConnection.getEventEmitter().addListener(
             "OnConnect",
             () => {
@@ -477,6 +483,11 @@ export default class SettingsScreen extends React.Component {
         }
     }
 
+    onSortAlbumsByDateChange(value) {
+        this.setState({sortAlbumsByDate: value});
+        Config.setSortAlbumsByDate(value);
+    }
+
     setCrossfade(value) {
         this.setState({crossfade: value});
         this.setState({crossfadeVisible: false});
@@ -534,7 +545,7 @@ export default class SettingsScreen extends React.Component {
                       title='Album Art'
                       onPress={() => this.setState({albumartVisible: true})}
                     />
-                    <SettingsList.Header headerStyle={{marginTop:15}} headerText="Playing Configuration"/>
+                    <SettingsList.Header headerStyle={{marginTop:15}} headerText="MPD Configuration"/>
                     <SettingsList.Item
                                 hasNavArrow={false}
                                 switchState={this.state.shuffle}
@@ -560,12 +571,6 @@ export default class SettingsScreen extends React.Component {
                                 switchOnValueChange={(value) => this.onStopAftetSongPlayedChange(value)}
                                 title='Stop after song played'/>
                     <SettingsList.Item
-                                hasNavArrow={false}
-                                switchState={this.state.randomPlaylistByType}
-                                hasSwitch={true}
-                                switchOnValueChange={(value) => this.onRandomPlaylistByTypeChange(value)}
-                                title='Random Playlist by type'/>
-                    <SettingsList.Item
                                   hasNavArrow={true}
                                   title='Replay Gain'
                                   titleInfo={replayGainValue}
@@ -579,6 +584,19 @@ export default class SettingsScreen extends React.Component {
                                   titleInfoStyle={{fontFamily: 'GillSans-Italic'}}
                                   onPress={() => this.setState({crossfadeVisible: true})}
                                 />
+                    <SettingsList.Header headerStyle={{marginTop:15}} headerText="General Options"/>
+                    <SettingsList.Item
+                                hasNavArrow={false}
+                                switchState={this.state.randomPlaylistByType}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onRandomPlaylistByTypeChange(value)}
+                                title='Random Playlist by type'/>
+                    <SettingsList.Item
+                                hasNavArrow={false}
+                                switchState={this.state.sortAlbumsByDate}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onSortAlbumsByDateChange(value)}
+                                title='Sort Albums by date'/>
                     <SettingsList.Header headerStyle={{marginTop:15}} headerText="Debug Options"/>
                     <SettingsList.Item
                       hasNavArrow={true}

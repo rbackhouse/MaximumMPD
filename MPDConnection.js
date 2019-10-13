@@ -48,6 +48,7 @@ const BITRATE_PREFIX = "bitrate: ";
 const AUDIO_PREFIX = "audio: ";
 const GENRE_PREFIX = "Genre: ";
 const ALBUMARTIST_PREFIX = "AlbumArtist: ";
+const DATE_PREFIX = "Date: ";
 
 const INITIAL = 0;
 const WRITTEN = 1;
@@ -550,28 +551,88 @@ class MPDConnection {
 		});
 	}
 
-	getAlbumsForArtist(artist) {
+	getAlbumsForArtist(artist, sortAlbumsByDate) {
 		const processor = (data) => {
 			const lines = MPDConnection._lineSplit(data);
 			let albums = [];
+            let album;
+            let currentDate;
             lines.forEach((line) => {
-				let name = line.substring(ALBUM_PREFIX.length);
-				if (name && name.trim().length > 0) {
-					albums.push({name: name, artist: artist});
-				}
+                if (line.indexOf(ALBUM_PREFIX) === 0) {
+                    if (this.version < 21 && this.minorVersion === 0) {
+                        if (album) {
+                            albums.push({name: album.name, artist: artist});
+                        }
+                        album = {};
+                    }
+    				let name = line.substring(ALBUM_PREFIX.length);
+    				if (name && name.trim().length > 0) {
+                        if (this.version < 21 && this.minorVersion === 0) {
+                            album.name = name;
+                        } else {
+                            const date = currentDate;
+                            //const date = currentDate || "Unknown";
+                            albums.push({name: name, artist: artist, date: date});
+                        }
+    				}
+                } else if (line.indexOf(DATE_PREFIX) === 0) {
+                    const date = line.substring(DATE_PREFIX.length);
+                    if (date && date.trim().length > 0) {
+                        if (this.version < 21 && this.minorVersion === 0) {
+                            album.date = date;
+                            if (album.name && album.date) {
+        						albums.push({name: album.name, artist: artist, date: album.date});
+                                album = undefined;
+                            }
+                        } else {
+                            currentDate = date;
+                        }
+                    }
+                }
 			});
+            if (this.version < 21 && this.minorVersion === 0) {
+                if (album && album.name) {
+                    albums.push({name: album.name, artist: artist});
+                }
+            }
 			albums.sort((a,b) => {
-				if (a.name < b.name) {
-					return -1;
-				} else if (a.name > b.name) {
-					return 1;
-				} else {
-					return 0;
-				}
+                if (sortAlbumsByDate) {
+                    let d1;
+                    let d2;
+                    try {
+                        d1 = a.date ? parseInt(a.date) : 100000;
+                    } catch(err) {
+                        d1 = 100000;
+                    }
+                    try {
+                        d2 = b.date ? parseInt(b.date) : 100000;
+                    } catch(err) {
+                        d2 = 100000;
+                    }
+                    if (d1 < d2) {
+    					return -1;
+    				} else if (d1 > d2) {
+    					return 1;
+    				} else {
+    					return 0;
+    				}
+                } else {
+    				if (a.name < b.name) {
+    					return -1;
+    				} else if (a.name > b.name) {
+    					return 1;
+    				} else {
+    					return 0;
+    				}
+                }
 			});
 			return albums;
 		};
-        return this.createPromise("list album artist \""+artist+"\"", processor);
+        let cmd = "list album artist \""+artist+"\"";
+        if (sortAlbumsByDate) {
+            cmd += " group date";
+        }
+        return this.createPromise(cmd, processor);
 	}
 
 	getSongsForAlbum(album, artist, addArtistAlbum) {

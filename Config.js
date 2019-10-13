@@ -1,0 +1,75 @@
+/*
+* The MIT License (MIT)
+*
+* Copyright (c) 2019 Richard Backhouse
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+* DEALINGS IN THE SOFTWARE.
+*/
+
+import { AsyncStorage } from 'react-native';
+
+class ConfigStorage {
+    async getConfig() {
+        let config;
+        try {
+            const configStr = await AsyncStorage.getItem('@MPD:config');
+            if (configStr !== null) {
+                config = JSON.parse(configStr);
+            } else {
+                config = {
+                    sortAlbumsByDate: false,
+                    randomPlaylistByType: false,
+                    maxListSize: 500
+                };
+                AsyncStorage.setItem('@MPD:config', JSON.stringify(config));
+            }
+        } catch (err) {
+
+        }
+        return config;
+    }
+
+    async setConfig(config) {
+        try {
+            AsyncStorage.setItem('@MPD:config', JSON.stringify(config));
+        } catch (err) {
+
+        }
+    }
+}
+
+const configStorage = new ConfigStorage();
+
+export default {
+    isSortAlbumsByDate: () => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                resolve(config.sortAlbumsByDate);
+            });
+        });
+        return promise;
+    },
+    setSortAlbumsByDate: (byDate) => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                config.sortAlbumsByDate = byDate;
+                configStorage.setConfig(config)
+                .then(() => {
+                    resolve();
+                })
+            });
+        });
+        return promise;
+    }
+}
