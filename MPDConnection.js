@@ -136,7 +136,7 @@ class MPDConnection {
     				}
     			} else if (state == "internalConnected") {
                     this.albumArtDir = status.albumArtDir;
-    				this.queue = [];
+    				//this.queue = [];
     				this.isConnected = true;
                     console.log("Internal Connected");
                     mpdEventEmiiter.emit('OnInternalConnect', {host: this.host, port: this.port});
