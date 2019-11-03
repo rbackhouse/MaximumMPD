@@ -802,14 +802,20 @@ class MPDConnection {
 		});
 	}
 
-	addAlbumToPlayList(albumName, artistName) {
+	addAlbumToPlayList(albumName, artistName, autoplay) {
         const promise = new Promise((resolve, reject) => {
             this.getSongsForAlbum(albumName, artistName)
             .then((songs) => {
     			let cmd = "command_list_begin\n";
+                if (autoplay) {
+                    cmd += "clear\n";
+                }
                 songs.forEach((song) => {
     				cmd += "add \""+song.file+"\"\n";
     			});
+                if (autoplay) {
+                    cmd += "play\n";
+                }
     			cmd += "command_list_end";
                 this.createPromise(cmd)
                 .then(() => {
@@ -893,16 +899,22 @@ class MPDConnection {
         return promise;
 	}
 
-	addDirectoryToPlayList(dir, cb, errorcb) {
+	addDirectoryToPlayList(dir, autoplay) {
         const promise = new Promise((resolve, reject) => {
     		this.listFiles(dir)
             .then((filelist) => {
     			let cmd = "command_list_begin\n";
+                if (autoplay) {
+                    cmd += "clear\n";
+                }
     			filelist.files.forEach((fileEntry) => {
     				if (fileEntry.file.indexOf('.cue', fileEntry.file.length - '.cue'.length) === -1) {
                         cmd += "add \""+fileEntry.file+"\"\n";
     				}
     			});
+                if (autoplay) {
+                    cmd += "play\n";
+                }
     			cmd += "command_list_end";
                 this.createPromise(cmd)
                 .then(() => {
@@ -1198,8 +1210,18 @@ class MPDConnection {
         return this.createPromise("listplaylists", processor);
 	}
 
-	loadPlayList(name) {
-        return this.createPromise("load \""+name+"\"");
+	loadPlayList(name, autoplay) {
+        let cmd;
+        if (autoplay) {
+            cmd = "command_list_begin\n";
+            cmd += "clear\n";
+            cmd += "load \""+name+"\"\n";
+            cmd += "play\n";
+            cmd += "command_list_end";
+        } else {
+            cmd = "load \""+name+"\"";
+        }
+        return this.createPromise(cmd);
 	}
 
 	savePlayList(name) {

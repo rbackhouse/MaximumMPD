@@ -247,6 +247,25 @@ export default class SongsScreen extends React.Component {
         }
     }
 
+    autoPlay() {
+        const { navigation } = this.props;
+        const artist = navigation.getParam('artist');
+        const album = navigation.getParam('album');
+        
+        this.setState({loading: true});
+        MPDConnection.current().addAlbumToPlayList(album, artist, true)
+        .then(() => {
+            this.setState({loading: false});
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
+    }
+
     renderSeparator = () => {
         return (
             <View
@@ -329,6 +348,9 @@ export default class SongsScreen extends React.Component {
                 <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
 
                 <ActionButton buttonColor="rgba(231,76,60,1)">
+                    <ActionButton.Item buttonColor='#1abc9c' title="Play Now" size={40} textStyle={styles.actionButtonText} onPress={() => {this.autoPlay();}}>
+                        <FAIcon name="play" size={15} color="#e6e6e6" />
+                    </ActionButton.Item>
                     <ActionButton.Item buttonColor='#3498db' title="All to Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(false);}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>

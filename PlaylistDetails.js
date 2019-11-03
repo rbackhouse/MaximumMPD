@@ -145,10 +145,10 @@ export default class PlaylistDetails extends React.Component {
         );
     }
 
-    onLoad() {
+    onLoad(autoplay) {
         this.setState({loading: true});
 
-        MPDConnection.current().loadPlayList(this.playlistName)
+        MPDConnection.current().loadPlayList(this.playlistName, autoplay)
         .then(() => {
             this.setState({loading: false});
         })
@@ -224,6 +224,9 @@ export default class PlaylistDetails extends React.Component {
                     </View>
                 }
                 <ActionButton buttonColor="rgba(231,76,60,1)">
+                    <ActionButton.Item buttonColor='#1abc9c' title="Play Now" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onLoad(true);}}>
+                        <FAIcon name="play" size={15} color="#e6e6e6" />
+                    </ActionButton.Item>
                     <ActionButton.Item buttonColor='#3498db' title="Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onLoad();}}>
                         <Icon name="ios-checkmark" size={30} color="#e6e6e6" />
                     </ActionButton.Item>

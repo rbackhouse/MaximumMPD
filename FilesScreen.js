@@ -301,6 +301,24 @@ export default class FilesScreen extends React.Component {
         }
     }
 
+    autoPlay() {
+        const path = Base64.atob(this.state.dirs[this.state.dirs.length-1]);
+        this.setState({loading: true});
+
+        MPDConnection.current().addDirectoryToPlayList(decodeURIComponent(path), true)
+        .then(() => {
+            this.setState({loading: false});
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            console.log(err);
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
+    }
+
     renderSeparator = () => {
         return (
             <View
@@ -407,6 +425,9 @@ export default class FilesScreen extends React.Component {
                 }
                 <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
                 {showAddAll && <ActionButton buttonColor="rgba(231,76,60,1)">
+                    <ActionButton.Item buttonColor='#1abc9c' title="Play Now" size={40} textStyle={styles.actionButtonText} onPress={() => {this.autoPlay();}}>
+                        <FAIcon name="play" size={15} color="#e6e6e6" />
+                    </ActionButton.Item>
                     <ActionButton.Item buttonColor='#3498db' title="Add to Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(false);}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
