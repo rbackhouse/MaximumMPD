@@ -26,6 +26,7 @@ import FAIcon from 'react-native-vector-icons/FontAwesome';
 
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
+import Config from './Config';
 
 class RandomPlaylistTypeModal extends React.Component {
     state = {
@@ -265,11 +266,14 @@ export default class PlaylistScreen extends React.Component {
     }
 
     doRandom() {
-        if (MPDConnection.current().isRandomPlaylistByType()) {
-            this.setState({modalVisible: true});
-        } else {
-            this.onRandom();
-        }
+        Config.isRandomPlaylistByType()
+        .then((isRandomPlaylistByType) => {
+            if (isRandomPlaylistByType) {
+                this.setState({modalVisible: true});
+            } else {
+                this.onRandom();
+            }
+        });
     }
 
     renderSeparator = () => {

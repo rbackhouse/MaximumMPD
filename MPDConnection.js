@@ -99,17 +99,16 @@ const discoverer = new Discoverer();
 discoverer.startListening();
 
 class MPDConnection {
-	constructor(name, host, port, randomPlaylistByType, maxListSize) {
+	constructor(name, host, port) {
         this.name = name;
         this.host = host;
 		this.port = port;
 		this.queue = [];
 		this.isConnected = false;
-        this.randomPlaylistByType = randomPlaylistByType;
-        this.maxListSize = maxListSize;
 	}
 
 	connect(pwd, callback, noemit) {
+        this.pwd = pwd;
         this.stateSubscription = socketConnectionEmitter.addListener(
             "OnStateChange",
             (status) => {
@@ -1365,22 +1364,6 @@ class MPDConnection {
         );
     }
 */
-    isRandomPlaylistByType() {
-        return this.randomPlaylistByType;
-    }
-
-    setRandomPlaylistByType(value) {
-        this.randomPlaylistByType = value;
-    }
-
-    getMaxListSize() {
-        return this.maxListSize;
-    }
-
-    setMaxListSize(maxListSize) {
-        this.maxListSize = maxListSize;
-    }
-
     getCurrentPlaylistName() {
         return this.currentPlaylistName;
     }
@@ -1534,7 +1517,7 @@ class ConnectionsStorage {
         }
     }
 
-    async addConnection(name, host, port, pwd, randomPlaylistByType, maxListSize) {
+    async addConnection(name, host, port, pwd) {
         try {
             return this.getConnectionList().then((connectionList) => {
                 let add = true;
@@ -1544,7 +1527,7 @@ class ConnectionsStorage {
                     }
                 });
                 if (add) {
-                    connectionList.push({name:name, ipAddress:host, port:port, pwd:pwd, randomPlaylistByType: randomPlaylistByType, maxListSize: maxListSize});
+                    connectionList.push({name:name, ipAddress:host, port:port, pwd:pwd});
                     AsyncStorage.setItem('@MPD:connections', JSON.stringify(connectionList));
                 }
             });
@@ -1563,8 +1546,6 @@ class ConnectionsStorage {
                     }
                 });
                 if (conn) {
-                    conn.randomPlaylistByType = connection.randomPlaylistByType;
-                    conn.maxListSize = connection.maxListSize;
                     AsyncStorage.setItem('@MPD:connections', JSON.stringify(connectionList));
                 }
             });
@@ -1598,11 +1579,11 @@ let connectionsStorage = new ConnectionsStorage();
 let connection;
 
 export default {
-    connect: function(name, host, port, pwd, randomPlaylistByType, maxListSize) {
+    connect: function(name, host, port, pwd) {
         if (connection) {
             this.disconnect();
         }
-        connection = new MPDConnection(name, host, port, randomPlaylistByType || false, maxListSize || 0);
+        connection = new MPDConnection(name, host, port);
         let promise = new Promise((resolve, reject) => {
             mpdEventEmiiter.emit('OnConnecting', {host: host, port: port});
             connection.connect(pwd, (error) => {
@@ -1637,8 +1618,8 @@ export default {
     getConnectionList: function() {
         return connectionsStorage.getConnectionList();
     },
-    addConnection: function(name, host, port, pwd, randomPlaylistByType, maxListSize) {
-        return connectionsStorage.addConnection(name, host, port, pwd, randomPlaylistByType, maxListSize);
+    addConnection: function(name, host, port, pwd) {
+        return connectionsStorage.addConnection(name, host, port, pwd);
     },
     updateConnection: function(connection) {
         return connectionsStorage.updateConnection(connection);

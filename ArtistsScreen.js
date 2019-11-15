@@ -24,6 +24,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
+import Config from './Config';
 
 export default class ArtistsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -47,7 +48,8 @@ export default class ArtistsScreen extends React.Component {
           albumsFullset: [],
           selectedTab: 0,
           loading: false,
-          realTotal: 0
+          realTotal: 0,
+          maxListSize: 0
         };
     }
 
@@ -91,6 +93,10 @@ export default class ArtistsScreen extends React.Component {
                 this.updateAlbumArt();
             }
         );
+        Config.getMaxListSize()
+        .then((size) => {
+            //this.setState({maxListSize: size});
+        });
     }
 
     updateAlbumArt() {
@@ -219,7 +225,7 @@ export default class ArtistsScreen extends React.Component {
 
     subset(albums) {
         this.setState({realTotal: albums.length});
-        const maxListSize = MPDConnection.current().getMaxListSize();
+        const maxListSize = this.state.maxListSize;
         if (maxListSize === 0) {
             return albums;
         }

@@ -34,6 +34,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { FormLabel, FormInput, Button } from 'react-native-elements'
 import ActionButton from 'react-native-action-button';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
+import Config from './Config';
 
 class AddConnectionModal extends React.Component {
     state = {
@@ -140,13 +141,22 @@ export default class ConnectionsScreen extends React.Component {
         })
         this.setState({discovered: discovered});
         MPDConnection.getConnectionList()
-            .then((connections) => {
-                connections.forEach((c) => {
-                    c.key = c.name+c.ipAddress+c.port;
-                })
-                this.setState({configured: connections});
+        .then((connections) => {
+            connections.forEach((c) => {
+                c.key = c.name+c.ipAddress+c.port;
+            })
+            this.setState({configured: connections});
+        });
+        if (this.navigateOnConnect) {
+            Config.isAutoConnect()
+            .then((autoConnect) => {
+                if (autoConnect.autoConnect && autoConnect.server) {
+                    //this.connect(autoConnect.server.name, autoConnect.server.ipAddress, autoConnect.server.port, autoConnect.server.pwd);
+                }
             });
+        }
     }
+
     componentWillUnmount() {
         this.onDisconnect.remove();
         this.onDiscover.remove();
@@ -166,14 +176,18 @@ export default class ConnectionsScreen extends React.Component {
         if (!Number.isInteger(port)) {
             port = Number.parseInt(port);
         }
+        this.connect(item.name, item.ipAddress, port, item.pwd);
+    }
+
+    connect(name, ipAddress, port, pwd) {
         if (this.navigateOnConnect) {
             this.setState({loading: true});
         }
-        MPDConnection.connect(item.name, item.ipAddress, port, item.pwd, item.randomPlaylistByType, item.maxListSize).then(
+        MPDConnection.connect(name, ipAddress, port, pwd).then(
             () => {
                 this.setState((state) => {
                     const selected = new Map(state.selected);
-                    selected.set(item.name+item.ipAddress+item.port, true);
+                    selected.set(name+ipAddress+port, true);
                     return {selected};
                 });
 
@@ -190,6 +204,7 @@ export default class ConnectionsScreen extends React.Component {
                 );
             }
         );
+
     }
 
     onCancel() {

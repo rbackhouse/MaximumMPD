@@ -365,7 +365,8 @@ export default class SettingsScreen extends React.Component {
         randomPlaylistByType: false,
         albumartVisible: false,
         aboutVisible: false,
-        sortAlbumsByDate: false
+        sortAlbumsByDate: false,
+        autoConnect: false
     }
 
     componentDidMount() {
@@ -373,14 +374,14 @@ export default class SettingsScreen extends React.Component {
         .then((sortAlbumsByDate) => {
             this.setState({sortAlbumsByDate: sortAlbumsByDate});
         });
-        this.onConnect = MPDConnection.getEventEmitter().addListener(
-            "OnConnect",
-            () => {
-                this.getStatus();
-                this.setState({randomPlaylistByType: MPDConnection.current().isRandomPlaylistByType()});
-            }
-        );
-
+        Config.isAutoConnect()
+        .then((autoConnect) => {
+            this.setState({autoConnect: autoConnect.autoConnect});
+        });
+        Config.isRandomPlaylistByType()
+        .then((value) => {
+            this.setState({randomPlaylistByType: value});
+        });
         this.onDisconnect = MPDConnection.getEventEmitter().addListener(
             "OnDisconnect",
             () => {
@@ -473,19 +474,26 @@ export default class SettingsScreen extends React.Component {
 
     onRandomPlaylistByTypeChange(value) {
         this.setState({randomPlaylistByType: value});
-
-        if (MPDConnection.isConnected()) {
-            MPDConnection.current().setRandomPlaylistByType(value);
-            MPDConnection.updateConnection(MPDConnection.current())
-                .then(() => {
-                    console.log("connection updated");
-                });
-        }
+        Config.setRandomPlaylistByType(value);
     }
 
     onSortAlbumsByDateChange(value) {
         this.setState({sortAlbumsByDate: value});
         Config.setSortAlbumsByDate(value);
+    }
+
+    onAutoConnectChange(value) {
+        this.setState({autoConnect: value});
+        const current = MPDConnection.current();
+        const server = {
+            name: current.name,
+            host: current.host,
+            port: current.port,
+            pwd: current.pwd,
+            randomPlaylistByType: current.randomPlaylistByType,
+            maxListSize: current.maxListSize
+        };
+        Config.setAutoConnect(value, server);
     }
 
     setCrossfade(value) {
@@ -635,4 +643,12 @@ const styles = StyleSheet.create({
   titleInfoStyle={{fontFamily: 'GillSans-Italic'}}
   onPress={() => this.setState({maxListSizeVisible: true})}
 />
+
+<SettingsList.Item
+            hasNavArrow={false}
+            switchState={this.state.autoConnect}
+            hasSwitch={true}
+            switchOnValueChange={(value) => this.onAutoConnectChange(value)}
+            title='Auto connect to last used server'/>
+
 */

@@ -28,7 +28,9 @@ class ConfigStorage {
                 config = {
                     sortAlbumsByDate: false,
                     randomPlaylistByType: false,
-                    maxListSize: 500
+                    maxListSize: 0,
+                    autoConnect: false,
+                    autoConnectServer: {}
                 };
                 AsyncStorage.setItem('@MPD:config', JSON.stringify(config));
             }
@@ -50,6 +52,28 @@ class ConfigStorage {
 const configStorage = new ConfigStorage();
 
 export default {
+    isRandomPlaylistByType: () => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                resolve(config.randomPlaylistByType);
+            });
+        });
+        return promise;
+    },
+    setRandomPlaylistByType: (randomPlaylistByType) => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                config.randomPlaylistByType = randomPlaylistByType;
+                configStorage.setConfig(config)
+                .then(() => {
+                    resolve();
+                })
+            });
+        });
+        return promise;
+    },
     isSortAlbumsByDate: () => {
         let promise = new Promise((resolve, reject) => {
             configStorage.getConfig()
@@ -68,6 +92,38 @@ export default {
                 .then(() => {
                     resolve();
                 })
+            });
+        });
+        return promise;
+    },
+    isAutoConnect: () => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                resolve({autoConnect: config.autoConnect, server: config.autoConnectServer});
+            });
+        });
+        return promise;
+    },
+    setAutoConnect: (autoConnect, server) => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                config.autoConnect = autoConnect;
+                config.autoConnectServer = server;
+                configStorage.setConfig(config)
+                .then(() => {
+                    resolve();
+                })
+            });
+        });
+        return promise;
+    },
+    getMaxListSize: () => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                resolve(config.maxListSize);
             });
         });
         return promise;
