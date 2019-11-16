@@ -1080,7 +1080,7 @@ class MPDConnection {
         return this.createPromise(cmd, processor);
 	}
 
-	albumart(uri, artist, album) {
+	albumart(uri, artist, album, statusHandler) {
         const filename = 'albumart_'+this.toAlbumArtFilename(artist, album)+".png";
         const promise = new Promise((resolve, reject) => {
             if (this.version < 21) {
@@ -1110,6 +1110,7 @@ class MPDConnection {
                 .then((meta) => {
                     offset += meta.binary;
                     if (offset < meta.size) {
+                        statusHandler(offset, meta.size);
                         addTask();
                     } else {
                         resolve({artist: artist, album: album, song: uri, path: meta.filename});

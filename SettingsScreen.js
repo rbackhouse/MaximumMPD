@@ -27,6 +27,7 @@ class AlbumArtModal extends React.Component {
     state = {
         albumart: false,
         status: 'Idle',
+        downloadStatus: "",
         count: ''
     }
 
@@ -39,26 +40,31 @@ class AlbumArtModal extends React.Component {
         this.onAlbumArtStart = AlbumArt.getEventEmitter().addListener(
             "OnAlbumArtStart",
             (album) => {
-                this.setState({status: "Downloading albumart for "+album.artist+" : "+album.name, count: ""+AlbumArt.getQueue().length});
+                this.setState({count: ""+AlbumArt.getQueue().length, downloadStatus:""});
             }
         );
-
+        this.OnAlbumArtStatus = AlbumArt.getEventEmitter().addListener(
+            "OnAlbumArtStatus",
+            (status) => {
+                this.setState({status: status.album.artist+" : "+status.album.name, downloadStatus: "Size: "+status.size+"k "+status.percentageDowloaded+"% downloaded"});
+            }
+        );
         this.onAlbumArtEnd = AlbumArt.getEventEmitter().addListener(
             "OnAlbumArtEnd",
             (album) => {
-                this.setState({status: "Downloaded albumart for "+album.artist+" : "+album.name, count: ""+AlbumArt.getQueue().length});
+                this.setState({status: "Idle", count: ""+AlbumArt.getQueue().length, downloadStatus:""});
             }
         );
         this.onAlbumArtError = AlbumArt.getEventEmitter().addListener(
             "OnAlbumArtError",
             (details) => {
-                this.setState({status: details.album.artist+" : "+details.album.name+" "+details.err, count: ""+AlbumArt.getQueue().length});
+                this.setState({status: details.album.artist+" : "+details.album.name+" "+details.err, count: ""+AlbumArt.getQueue().length, downloadStatus:""});
             }
         );
         this.onAlbumArtComplete = AlbumArt.getEventEmitter().addListener(
             "OnAlbumArtComplete",
             (details) => {
-                this.setState({status: "Complete", count: ""+AlbumArt.getQueue().length});
+                this.setState({status: "Complete", count: ""+AlbumArt.getQueue().length, downloadStatus:""});
             }
         );
         AlbumArt.isEnabled()
@@ -73,6 +79,7 @@ class AlbumArtModal extends React.Component {
 
     componentWillUnmount() {
         this.onAlbumArtStart.remove();
+        this.OnAlbumArtStatus.remove();
         this.onAlbumArtEnd.remove();
         this.onAlbumArtError.remove();
         this.onAlbumArtComplete.remove();
@@ -125,6 +132,7 @@ class AlbumArtModal extends React.Component {
                                     title='Enable'/>
                         <SettingsList.Item title={queueText} hasNavArrow={false}/>
                         <SettingsList.Item title={this.state.status} titleStyle={styles.status} hasNavArrow={false}/>
+                        <SettingsList.Item title={this.state.downloadStatus} titleStyle={styles.status} hasNavArrow={false}/>
                     </SettingsList>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button

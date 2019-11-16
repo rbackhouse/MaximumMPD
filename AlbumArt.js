@@ -74,7 +74,11 @@ const processor = () => {
                         albumArtEventEmiiter.emit('OnAlbumArtStart', album);
                         //console.log("getting path for ["+album.artist+"] ["+album.name+"] ["+songs[0].file+"]");
                         const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
-                        MPDConnection.current().albumart(songs[0].file, album.artist, album.name)
+                        MPDConnection.current().albumart(songs[0].file, album.artist, album.name, (offset, size) => {
+                            const percentageDowloaded = Math.round((offset / size) * 100);
+                            const sizeInK = Math.round(size / 1024);
+                            albumArtEventEmiiter.emit('OnAlbumArtStatus', {album: album, size: sizeInK, percentageDowloaded: percentageDowloaded});
+                        })
                         .then((path) => {
                             //console.log("saving path for ["+album.artist+"] ["+album.name+"] ["+path.path+"]");
                             albumArt[key] = path.path;
