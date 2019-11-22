@@ -279,6 +279,8 @@ export default class PlayScreen extends React.Component {
               elapsed = minutes+":"+seconds;
               if (this.state.status.duration) {
                   dur = Math.floor(parseInt(this.state.status.duration));
+              } else {
+                  dur = parseInt(this.state.status.Time);
               }
               let dmins = Math.floor(dur / 60);
               let dsecs = dur - dmins * 60;
