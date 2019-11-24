@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { View, Picker, Modal, Text, StyleSheet, Alert } from 'react-native';
+import { View, Picker, Modal, Text, StyleSheet, Alert, Linking } from 'react-native';
 import SettingsList from 'react-native-settings-list';
 import { FormLabel, FormInput, Button } from 'react-native-elements'
 import MPDConnection from './MPDConnection';
@@ -289,6 +289,14 @@ class AboutModal extends React.Component {
                             onPress={() => {this.onOk();}}
                             title="Ok"
                             icon={{name: 'check', type: 'font-awesome'}}
+                            raised={true}
+                            rounded
+                            backgroundColor={'#3396FF'}
+                        />
+                        <Button
+                            onPress={ ()=>{ Linking.openURL('http://rbackhouse.github.io/MaximumMPD.html')}}
+                            title="Help"
+                            icon={{name: 'question', type: 'font-awesome'}}
                             raised={true}
                             rounded
                             backgroundColor={'#3396FF'}
