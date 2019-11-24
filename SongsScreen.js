@@ -251,7 +251,7 @@ export default class SongsScreen extends React.Component {
         const { navigation } = this.props;
         const artist = navigation.getParam('artist');
         const album = navigation.getParam('album');
-        
+
         this.setState({loading: true});
         MPDConnection.current().addAlbumToPlayList(album, artist, true)
         .then(() => {
@@ -317,11 +317,12 @@ export default class SongsScreen extends React.Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}, styles.rowFront]}>
+                                <View style={{paddingLeft: 10}}/>
                                 {this.state.imagePath.length < 1 &&
-                                    <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
+                                    <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
                                 }
                                 {this.state.imagePath.length > 0 &&
-                                    <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: this.state.imagePath}}/>
+                                    <Image style={{width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: this.state.imagePath}}/>
                                 }
                                 <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                                     <Text style={styles.item}>{item.title}</Text>
@@ -397,6 +398,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		backgroundColor: '#FFFFFF',
 		justifyContent: 'center',
+        height: 65
 	},
 	rowBack: {
 		alignItems: 'center',
@@ -405,6 +407,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		paddingLeft: 15,
+        height: 65
 	},
 	backRightBtn: {
 		alignItems: 'center',
