@@ -16,10 +16,11 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, InteractionManager } from 'react-native';
+import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, InteractionManager, Dimensions } from 'react-native';
 import { SearchBar, ButtonGroup } from "react-native-elements";
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
+import ActionButton from 'react-native-action-button';
 
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
@@ -49,7 +50,9 @@ export default class ArtistsScreen extends React.Component {
           selectedTab: 0,
           loading: false,
           realTotal: 0,
-          maxListSize: 0
+          maxListSize: 0,
+          grid: false,
+          numColumns: 1
         };
     }
 
@@ -265,6 +268,18 @@ export default class ArtistsScreen extends React.Component {
         navigation.navigate('Songs', {genre: item.name});
     }
 
+    changeTab(index) {
+        let numColumns = 1;
+        const {height, width} = Dimensions.get('window');
+        if (index === 1 && this.state.grid) {
+            numColumns = width > 375 ? 3 : 2;
+        }
+        this.setState({
+            selectedTab: index,
+            numColumns: numColumns
+        });
+    }
+
     renderSeparator = () => {
         return (
             <View
@@ -342,6 +357,34 @@ export default class ArtistsScreen extends React.Component {
         );
     }
 
+    renderGridAlbumItem = ({item}) => {
+        const size = Dimensions.get('window').width/this.state.numColumns;
+        const gridStyles = StyleSheet.create({
+          itemContainer: {
+            width: size,
+            height: size,
+            alignItems: 'center'
+          }
+        });
+
+        return (
+            <TouchableOpacity onPress={this.onAlbumPress.bind(this, item)}>
+                <View style={gridStyles.itemContainer}>
+                    {item.imagePath === undefined &&
+                        <Image style={{width: size-30, height: size-30, paddingLeft: 5, paddingRight: 5, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-100.png')}/>
+                    }
+                    {item.imagePath !== undefined &&
+                        <Image style={{width: size-30, height: size-30, paddingLeft: 5, paddingRight: 5, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
+                    }
+                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5}}>
+                        <Text style={styles.albumGridItem}>{item.name}</Text>
+                        <Text style={styles.albumGridItem}>{item.artist}</Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+
     render() {
         if (this.state.selectedTab === 0) {
             return (
@@ -349,7 +392,7 @@ export default class ArtistsScreen extends React.Component {
                     <View style={{flex: .06, width: "100%"}}>
                         <ButtonGroup
                             onPress={(index) => {
-                                this.setState({selectedTab:index});
+                                this.changeTab(index);
                             }}
                             selectedIndex={this.state.selectedTab}
                             buttons={['Artists', 'Albums', 'Genres']}
@@ -384,7 +427,8 @@ export default class ArtistsScreen extends React.Component {
                             renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
                             keyExtractor={item => item.key}
                             ItemSeparatorComponent={this.renderSeparator}
-                        />
+                            key={this.state.numColumns}
+                       />
                     </View>
                     {this.state.loading &&
                         <View style={styles.loading}>
@@ -399,7 +443,7 @@ export default class ArtistsScreen extends React.Component {
                     <View style={{flex: .06, width: "100%"}}>
                         <ButtonGroup
                             onPress={(index) => {
-                                this.setState({selectedTab:index});
+                                this.changeTab(index);
                             }}
                             selectedIndex={this.state.selectedTab}
                             buttons={['Artists', 'Albums', 'Genres']}
@@ -427,14 +471,39 @@ export default class ArtistsScreen extends React.Component {
                         </View>
                     </View>
                     <View style={{flex: .84, width: "100%"}}>
-                        <FlatList
-                            data={this.state.albums}
-                            renderItem={this.renderAlbumItem}
-                            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-                            keyExtractor={item => item.key}
-                            ItemSeparatorComponent={this.renderSeparator}
-                        />
+                        {this.state.grid === false &&
+                            <FlatList
+                                data={this.state.albums}
+                                renderItem={this.renderAlbumItem}
+                                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                                keyExtractor={item => item.key}
+                                ItemSeparatorComponent={this.renderSeparator}
+                                key={this.state.numColumns}
+                            />
+                        }
+                        {this.state.grid === true &&
+                            <FlatList
+                                data={this.state.albums}
+                                renderItem={this.renderGridAlbumItem}
+                                keyExtractor={item => item.key}
+                                numColumns={this.state.numColumns}
+                                columnWrapperStyle={styles.row}
+                                key={this.state.numColumns}
+                            />
+                        }
                     </View>
+                    <ActionButton buttonColor="rgba(231,76,60,1)">
+                        <ActionButton.Item buttonColor='#3498db' title="List View" size={40} textStyle={styles.actionButtonText} onPress={() => {this.setState({grid: false, numColumns: 1});}}>
+                            <Icon name="ios-list" size={20} color="white"/>
+                        </ActionButton.Item>
+                        <ActionButton.Item buttonColor='#9b59b6' title="Grid View" size={40} textStyle={styles.actionButtonText} onPress={() => {
+                            const {height, width} = Dimensions.get('window');
+                            numColumns = width > 375 ? 3 : 2;
+                            this.setState({grid: true, numColumns: numColumns});
+                        }}>
+                            <Icon name="ios-grid" size={20} color="white"/>
+                        </ActionButton.Item>
+                    </ActionButton>
                     {this.state.loading &&
                         <View style={styles.loading}>
                             <ActivityIndicator size="large" color="#0000ff"/>
@@ -448,7 +517,7 @@ export default class ArtistsScreen extends React.Component {
                     <View style={{flex: .06, width: "100%"}}>
                         <ButtonGroup
                             onPress={(index) => {
-                                this.setState({selectedTab:index});
+                                this.changeTab(index);
                             }}
                             selectedIndex={this.state.selectedTab}
                             buttons={['Artists', 'Albums', 'Genres']}
@@ -507,6 +576,10 @@ const styles = StyleSheet.create({
         fontFamily: 'GillSans-Italic',
         padding: 3
     },
+    albumGridItem: {
+        fontSize: 13,
+        fontFamily: 'GillSans-Italic'
+    },
     sectionHeader: {
         paddingTop: 2,
         paddingLeft: 10,
@@ -556,5 +629,13 @@ const styles = StyleSheet.create({
 	backRightBtnRight: {
 		backgroundColor: 'darkgray',
 		right: 0
-	}
+	},
+    actionButtonText: {
+        fontSize: 13,
+        fontFamily: 'GillSans-Italic'
+    },
+    row: {
+        flex: 1,
+        justifyContent: "space-around"
+    }
 });
