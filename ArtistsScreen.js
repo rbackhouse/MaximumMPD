@@ -376,9 +376,9 @@ export default class ArtistsScreen extends React.Component {
                     {item.imagePath !== undefined &&
                         <Image style={{width: size-30, height: size-30, paddingLeft: 5, paddingRight: 5, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
                     }
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5}}>
-                        <Text style={styles.albumGridItem}>{item.name}</Text>
-                        <Text style={styles.albumGridItem}>{item.artist}</Text>
+                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5, paddingLeft: 5, paddingRight: 5}}>
+                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.albumGridItem}>{item.name}</Text>
+                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.albumGridItem}>{item.artist}</Text>
                     </View>
                 </View>
             </TouchableOpacity>

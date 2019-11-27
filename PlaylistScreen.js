@@ -313,12 +313,12 @@ export default class PlaylistScreen extends React.Component {
                     <Icon name={editSelectIcon} size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                     <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                         {item.artist !== "" &&
-                            <Text style={styles.item}>{item.artist}</Text>
+                            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.artist}</Text>
                         }
                         {item.album !== "" &&
-                            <Text style={styles.item}>{item.album}</Text>
+                            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.album}</Text>
                         }
-                        <Text style={styles.item}>{item.title}</Text>
+                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.title}</Text>
                         <Text style={styles.item}>{timeTrack}</Text>
                         {bitrate != undefined &&
                             <Text style={styles.item}>{bitrate}</Text>
