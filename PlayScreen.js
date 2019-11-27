@@ -294,12 +294,14 @@ export default class PlayScreen extends React.Component {
 
       let albumArtSize;
 
-      if (width === 320) {
-          albumArtSize = 140;
-      } else if (width === 375) {
-          albumArtSize = 175;
+      if (width < 321) {
+          albumArtSize = 180;
+      } else if (width < 376) {
+          albumArtSize = 225;
+      } else if (width < 800) {
+          albumArtSize = 300;
       } else {
-          albumArtSize = 200;
+          albumArtSize = 500;
       }
 
       if (this.state.selectedTab === 0) {
@@ -332,21 +334,21 @@ export default class PlayScreen extends React.Component {
                                 <Text style={{ paddingLeft: 15 }}>{duration}</Text>
                             </View>
                       </View>
-                      <View style={{flex: .4, width: "60%", alignItems: 'center', justifyContent: 'center'}} >
+                      <View style={{flex: .6, width: "60%", alignItems: 'center', justifyContent: 'center'}} >
                           {this.state.imagePath.length < 1 &&
-                              <Image style={{width: albumArtSize, height: albumArtSize}} source={require('./images/icons8-cd-filled-100.png')}/>
+                              <Image style={{width: albumArtSize, height: albumArtSize}} source={require('./images/cd-large.png')}/>
                           }
                           {this.state.imagePath.length > 0 &&
                               <Image style={{width: albumArtSize, height: albumArtSize, resizeMode: 'contain'}} source={{uri: this.state.imagePath}}/>
                           }
                       </View>
-                      <View style={{flex: .2, width: "80%", height: "15%", padding: 15, alignItems: 'center', justifyContent: 'center'}}>
+                      <View style={{flex: .1, width: "80%", height: "15%", padding: 15, alignItems: 'center', justifyContent: 'center'}}>
                           <Text numberOfLines={1} style={styles.item}>{currentsong.artist}</Text>
                           <Text numberOfLines={1} style={styles.item}>{currentsong.album}</Text>
                           <Text numberOfLines={1} style={styles.item}>{currentsong.title}</Text>
                           <Text numberOfLines={1} style={styles.item}>{timeTrack}</Text>
                       </View>
-                      <View style={{flex: .2, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center'}}>
+                      <View style={{flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center'}}>
                           <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
                               <TouchableOpacity
                                   onPress={this.onMute.bind(this)}>
