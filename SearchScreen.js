@@ -265,11 +265,12 @@ export default class SearchScreen extends React.Component {
                                         </TouchableOpacity>
                                     </View>
                                     <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center'}, styles.rowFront]}>
+                                        <View style={{paddingLeft: 10}}/>
                                         {item.imagePath === undefined &&
-                                            <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
+                                            <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
                                         }
                                         {item.imagePath !== undefined &&
-                                            <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
+                                            <Image style={{width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
                                         }
                                         <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                                             {item.title && <Text style={styles.item}>{item.title}</Text>}
@@ -284,12 +285,13 @@ export default class SearchScreen extends React.Component {
                         } else {
                             return (
                                 <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                                    <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+                                    <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', height: 65}}>
+                                        <View style={{paddingLeft: 10}}/>
                                         {item.imagePath === undefined &&
-                                            <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
+                                            <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
                                         }
                                         {item.imagePath !== undefined &&
-                                            <Image style={{width: 35, height: 35, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
+                                            <Image style={{width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
                                         }
                                         <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                                             {item.artist && <Text style={styles.item}>{item.artist}</Text>}
@@ -340,6 +342,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		backgroundColor: '#FFFFFF',
 		justifyContent: 'center',
+        height: 65
 	},
 	rowBack: {
 		alignItems: 'center',
@@ -348,6 +351,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		paddingLeft: 15,
+        height: 65
 	},
 	backRightBtn: {
 		alignItems: 'center',
