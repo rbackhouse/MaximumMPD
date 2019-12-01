@@ -292,17 +292,12 @@ export default class PlayScreen extends React.Component {
 
       const {height, width} = Dimensions.get('window');
 
-      let albumArtSize;
+      let padding = 35;
 
       if (width < 321) {
-          albumArtSize = 180;
-      } else if (width < 376) {
-          albumArtSize = 225;
-      } else if (width < 800) {
-          albumArtSize = 300;
-      } else {
-          albumArtSize = 500;
+          padding = 45;
       }
+      albumArtSize = Math.round((height/10) * 4) - padding;
 
       if (this.state.selectedTab === 0) {
           return (
