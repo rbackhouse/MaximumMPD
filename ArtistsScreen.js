@@ -371,7 +371,7 @@ export default class ArtistsScreen extends React.Component {
             <TouchableOpacity onPress={this.onAlbumPress.bind(this, item)}>
                 <View style={gridStyles.itemContainer}>
                     {item.imagePath === undefined &&
-                        <Image style={{width: size-30, height: size-30, paddingLeft: 5, paddingRight: 5, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-100.png')}/>
+                        <Image style={{width: size-30, height: size-30, paddingLeft: 5, paddingRight: 5, resizeMode: 'contain'}} source={require('./images/cd-large.png')}/>
                     }
                     {item.imagePath !== undefined &&
                         <Image style={{width: size-30, height: size-30, paddingLeft: 5, paddingRight: 5, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
