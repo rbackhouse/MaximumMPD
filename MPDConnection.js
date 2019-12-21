@@ -235,6 +235,15 @@ class MPDConnection {
             }
         );
 
+        this.timeoutSubscription = socketConnectionEmitter.addListener(
+            "OnTimeout",
+            (timeout) => {
+                if (callback) {
+                    callback("timeout");
+                }
+            }
+        );
+
 		SocketConnection.connect(this.host, this.port);
 
 		let processQueue = () => {
@@ -274,7 +283,7 @@ class MPDConnection {
         this.errorSubscription.remove();
         this.responseSubscription.remove();
         this.initSubscription.remove();
-        this.errorSubscription.remove();
+        this.timeoutSubscription.remove();
 		this.isConnected = false;
 		SocketConnection.disconnect();
 	}

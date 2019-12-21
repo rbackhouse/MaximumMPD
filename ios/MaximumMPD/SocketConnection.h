@@ -30,6 +30,7 @@
 @property (strong, nonatomic) NSString* host;
 @property (nonatomic) int port;
 @property (nonatomic) BOOL internalConnect;
+@property (nonatomic) NSTimer* timer;
 @property (nonatomic) NSMutableData *_data;
 @property (nonatomic) NSString *albumArtFilename;
 @property (nonatomic) NSString *albumArtDir;

@@ -42,6 +42,8 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.File;
 import java.net.Socket;
+import java.net.InetSocketAddress;
+import java.net.SocketTimeoutException;
 import javax.annotation.Nullable;
 
 import android.Manifest;
@@ -208,17 +210,8 @@ public class SocketConnectionModule extends ReactContextBaseJavaModule implement
 
     private void mpdConnect(boolean internalConnect) {
         Log.d("SockectConnection", "mpdConnect");
-        readThread = new ReadThread();
+        readThread = new ReadThread(internalConnect);
         new Thread(readThread).start();
-        WritableMap params = Arguments.createMap();
-        params.putString("albumArtDir", documentDir.getAbsolutePath());
-
-        if (internalConnect) {
-            params.putString("msg", "internalConnected");
-        } else {
-            params.putString("msg", "connected");
-        }
-        sendEvent("OnStateChange", params);
     }
 
     private void mpdDisconnect() {
@@ -234,6 +227,7 @@ public class SocketConnectionModule extends ReactContextBaseJavaModule implement
 
     public class ReadThread implements Runnable {
         private boolean shutdown = false;
+        private boolean internalConnect = false;
         private InputStream is = null;
         private boolean binaryFound = false;
         private int binaryOffset = 0;
@@ -241,19 +235,36 @@ public class SocketConnectionModule extends ReactContextBaseJavaModule implement
         private String binaryText = null;
         private ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        public ReadThread() {}
+        public ReadThread(boolean internalConnect) {
+            this.internalConnect = internalConnect;
+        }
 
         public void run() {
             try {
-                socket = new Socket(host, port);
+                socket = new Socket();
+                socket.connect(new InetSocketAddress(host, port), 10000);
                 BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
                 pw = new PrintWriter(bos);
-
                 is = new BufferedInputStream(socket.getInputStream());
+            } catch (SocketTimeoutException e) {
+                Log.d("SockectConnection", "timeout : "+e.toString());
+                sendEvent("OnTimeout", "msg", "timeout");
+                return;
             } catch (Exception e) {
                 Log.d("SockectConnection", "error : "+e.toString());
                 sendEvent("OnError", "error", e);
+                return;
             }
+            WritableMap params = Arguments.createMap();
+            params.putString("albumArtDir", documentDir.getAbsolutePath());
+
+            if (internalConnect) {
+                params.putString("msg", "internalConnected");
+            } else {
+                params.putString("msg", "connected");
+            }
+            sendEvent("OnStateChange", params);
+
             byte[] bytes = new byte[8192];
             int len;
 
@@ -327,7 +338,9 @@ public class SocketConnectionModule extends ReactContextBaseJavaModule implement
         public void shutdown() {
             Log.d("SockectConnection", "shutdown request");
             try {
-                pw.close();
+                if (pw != null) {
+                    pw.close();
+                }
                 socket.close();
                 socket = null;
             } catch (IOException e) {

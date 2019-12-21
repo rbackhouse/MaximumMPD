@@ -151,7 +151,7 @@ export default class ConnectionsScreen extends React.Component {
             Config.isAutoConnect()
             .then((autoConnect) => {
                 if (autoConnect.autoConnect && autoConnect.server) {
-                    //this.connect(autoConnect.server.name, autoConnect.server.ipAddress, autoConnect.server.port, autoConnect.server.pwd);
+                    this.connect(autoConnect.server.name, autoConnect.server.host, autoConnect.server.port, autoConnect.server.pwd);
                 }
             });
         }
@@ -189,6 +189,18 @@ export default class ConnectionsScreen extends React.Component {
                     const selected = new Map(state.selected);
                     selected.set(name+ipAddress+port, true);
                     return {selected};
+                });
+                Config.isAutoConnect()
+                .then((autoConnect) => {
+                    if (autoConnect.autoConnect) {
+                        const server = {
+                            name: name,
+                            host: ipAddress,
+                            port: port,
+                            pwd: pwd
+                        };
+                        Config.setAutoConnect(true, server);
+                    }
                 });
 
                 if (this.navigateOnConnect) {

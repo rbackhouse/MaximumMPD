@@ -500,15 +500,16 @@ export default class SettingsScreen extends React.Component {
 
     onAutoConnectChange(value) {
         this.setState({autoConnect: value});
-        const current = MPDConnection.current();
-        const server = {
-            name: current.name,
-            host: current.host,
-            port: current.port,
-            pwd: current.pwd,
-            randomPlaylistByType: current.randomPlaylistByType,
-            maxListSize: current.maxListSize
-        };
+        let server;
+        if (value === true) {
+            const current = MPDConnection.current();
+            server = {
+                name: current.name,
+                host: current.host,
+                port: current.port,
+                pwd: current.pwd
+            };
+        }
         Config.setAutoConnect(value, server);
     }
 
@@ -621,6 +622,12 @@ export default class SettingsScreen extends React.Component {
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onSortAlbumsByDateChange(value)}
                                 title='Sort Albums by date'/>
+                    <SettingsList.Item
+                                hasNavArrow={false}
+                                switchState={this.state.autoConnect}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onAutoConnectChange(value)}
+                                title='Auto connect to last used server'/>
                     <SettingsList.Header headerStyle={{marginTop:15}} headerText="Debug Options"/>
                     <SettingsList.Item
                       hasNavArrow={true}
@@ -660,11 +667,5 @@ const styles = StyleSheet.create({
   onPress={() => this.setState({maxListSizeVisible: true})}
 />
 
-<SettingsList.Item
-            hasNavArrow={false}
-            switchState={this.state.autoConnect}
-            hasSwitch={true}
-            switchOnValueChange={(value) => this.onAutoConnectChange(value)}
-            title='Auto connect to last used server'/>
 
 */

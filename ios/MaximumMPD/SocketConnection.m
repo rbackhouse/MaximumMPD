@@ -134,7 +134,7 @@ RCT_EXPORT_METHOD(saveDebugData:(NSString *)data) {
 
 
 - (NSArray<NSString *> *)supportedEvents {
-  return @[@"OnStateChange", @"OnError", @"OnPauseResume", @"OnResponse", @"OnInit", @"OnResponseError"];
+  return @[@"OnStateChange", @"OnError", @"OnPauseResume", @"OnResponse", @"OnInit", @"OnResponseError", @"OnTimeout"];
 }
 
 - (dispatch_queue_t)methodQueue {
@@ -150,6 +150,10 @@ RCT_EXPORT_METHOD(saveDebugData:(NSString *)data) {
   switch (streamEvent) {
     case NSStreamEventOpenCompleted: {
       if (stream == self.inputStream) {
+        if (self.timer != nil) {
+          [self.timer invalidate];
+          self.timer = nil;
+        }
         NSString* statusMsg = nil;
         if (self.internalConnect == false) {
           statusMsg = @"connected";
@@ -264,7 +268,7 @@ RCT_EXPORT_METHOD(saveDebugData:(NSString *)data) {
 }
 
 - (void) mpdConnect {
-  NSLog(@"mpdConnect");
+  NSLog(@"mpdConnect %@ %d", self.host, self.port);
 
   CFReadStreamRef readStream;
   CFWriteStreamRef writeStream;
@@ -278,6 +282,19 @@ RCT_EXPORT_METHOD(saveDebugData:(NSString *)data) {
   [self.outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
   [self.inputStream open];
   [self.outputStream open];
+  if (self.internalConnect == false) {
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:10 target: self selector: @selector(timeout) userInfo: nil repeats: false];
+  }
+}
+
+- (void)timeout {
+  if (self.timer != nil) {
+    NSLog(@"timeout");
+    [self.timer invalidate];
+    self.timer = nil;
+    [self mpdDisconnect];
+    [self sendEventWithName:@"OnTimeout" body:@{@"msg": @"timeout"}];
+  }
 }
 
 - (void) mpdDisconnect {
