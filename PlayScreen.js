@@ -282,6 +282,9 @@ export default class PlayScreen extends React.Component {
               } else {
                   dur = parseInt(this.state.status.Time);
               }
+              if (isNaN(dur)) {
+                  dur = 0;
+              }
               let dmins = Math.floor(dur / 60);
               let dsecs = dur - dmins * 60;
               dsecs = (dsecs < 10 ? '0' : '') + dsecs;
@@ -289,7 +292,6 @@ export default class PlayScreen extends React.Component {
               timeTrack = "Track: "+(parseInt(this.state.status.song)+1)+ " Format: "+this.state.status.audio;
           }
       }
-
       const {height, width} = Dimensions.get('window');
 
       let padding = 35;
