@@ -16,18 +16,18 @@
 */
 
 import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Image, Alert, Platform, Linking } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Image, Alert, Platform, Linking, ActivityIndicator } from 'react-native';
 import { Slider, ButtonGroup } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import HeaderButtons from 'react-navigation-header-buttons';
 
-import { NativeEventEmitter, NativeModules } from 'react-native';
-
-import { Dimensions } from 'react-native';
+import { NativeEventEmitter, NativeModules, Dimensions } from 'react-native';
+import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 
 import PlaylistScreen from './PlaylistScreen';
 import PlaylistEditor from './PlaylistEditor';
+import NewPlaylistModal from './NewPlaylistModal';
 
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
@@ -68,7 +68,10 @@ export default class PlayScreen extends React.Component {
             selectedTab: 0,
             imagePath: "",
             searchedForAlbumArt: false,
-            urlCommand: ""
+            urlCommand: "",
+            selectedItem: "",
+            modalVisible: false,
+            loading: false
         }
     }
 
@@ -238,16 +241,18 @@ export default class PlayScreen extends React.Component {
     }
 
     onMute() {
-        MPDConnection.current().setVolume(0);
+        this.setVolume(0);
     }
 
     onMax() {
-        MPDConnection.current().setVolume(100);
+        this.setVolume(100);
+    }
+
+    onMore() {
+        this.menu.show();
     }
 
     setVolume = (value) => {
-        console.log("setVolume "+value);
-
         this.setState({volume:value});
         VolumeControl.setVolume(value/100);
         MPDConnection.current().setVolume(value);
@@ -256,6 +261,71 @@ export default class PlayScreen extends React.Component {
     setPosition = (value) => {
         MPDConnection.current().seekCurrrent(value);
     };
+
+    setMenuRef = ref => {
+        this.menu = ref;
+    };
+
+    addToPlaylist = () => {
+        this.menu.hide(() => {
+            if (this.state.status.currentsong.b64file) {
+                 if (!MPDConnection.current().getCurrentPlaylistName()) {
+                     this.setState({modalVisible: true, selectedItem: this.state.status.currentsong.b64file});
+                 } else {
+                     this.setState({loading: true});
+                     MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(Base64.atob(this.state.status.currentsong.b64file)), MPDConnection.current().getCurrentPlaylistName())
+                     .then(() => {
+                         this.setState({loading: false});
+                     })
+                     .catch((err) => {
+                         this.setState({loading: false});
+                         Alert.alert(
+                             "MPD Error",
+                             "Error : "+err
+                         );
+                     });
+                 }
+            }
+        });
+    };
+
+    finishAdd(name, selectedItem) {
+        this.setState({modalVisible: false, loading: true});
+        MPDConnection.current().setCurrentPlaylistName(name);
+        MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(Base64.atob(selectedItem)), MPDConnection.current().getCurrentPlaylistName())
+        .then(() => {
+            this.setState({loading: false});
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
+    }
+
+    onRandom = () => {
+        this.menu.hide();
+        MPDConnection.current().clearPlayList();
+        this.setState({loading: true});
+        MPDConnection.current().randomPlayList()
+        .then(() => {
+            this.setState({loading: false});
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
+    }
+
+    onClear= () => {
+        this.menu.hide();
+        MPDConnection.current().clearPlayList();
+    }
 
     render() {
       const playPauseIcon = this.state.isPlaying == true ? "pause" : "play";
@@ -295,9 +365,10 @@ export default class PlayScreen extends React.Component {
       const {height, width} = Dimensions.get('window');
 
       let padding = 35;
-
+      let isMedium = false;
       if (width < 321) {
           padding = 45;
+          isMedium = true;
       }
       albumArtSize = Math.round((height/10) * 4) - padding;
 
@@ -349,28 +420,28 @@ export default class PlayScreen extends React.Component {
                           <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
                               <TouchableOpacity
                                   onPress={this.onMute.bind(this)}>
-                                    <Icon name="volume-off" size={20} color="grey" style={{ paddingRight: 15 }}/>
+                                    <Icon name="volume-off" size={20} color="grey" style={{ paddingRight: 10 }}/>
                                 </TouchableOpacity>
                                 <Slider
                                     value={this.state.volume}
                                     onValueChange={this.setVolume}
                                     maximumValue={100}
                                     step={1}
-                                    style={{width: "80%"}}
+                                    style={{width: "85%"}}
                                     thumbTintColor="#3396FF"
                                 />
                                 <TouchableOpacity
                                     onPress={this.onMax.bind(this)}>
-                                    <Icon name="volume-up" size={20} color="grey" style={{ paddingLeft: 15 }}/>
+                                    <Icon name="volume-up" size={20} color="grey" style={{ paddingLeft: 10 }}/>
                                 </TouchableOpacity>
-                        </View>
+                            </View>
                       </View>
                   </View>
                   <View style={styles.tabBar}>
                         <View style={styles.tabBarButton} >
                             <TouchableOpacity
                              onPress={this.onPrevious}>
-                                    <View style={styles.button}>
+                                    <View style={[styles.button, styles.mediumButton]}>
                                         <Icon name="fast-backward" size={15} color="#e6e6e6" />
                                     </View>
                             </TouchableOpacity>
@@ -378,7 +449,7 @@ export default class PlayScreen extends React.Component {
                         <View style={styles.tabBarButton}>
                             <TouchableOpacity
                              onPress={this.onStop}>
-                                    <View style={styles.button}>
+                                    <View style={[styles.button, isMedium ? styles.mediumButton : styles.largeButton]}>
                                         <Icon name="stop" size={12} color="#e6e6e6" />
                                     </View>
                             </TouchableOpacity>
@@ -386,7 +457,7 @@ export default class PlayScreen extends React.Component {
                         <View style={styles.tabBarButton}>
                             <TouchableOpacity
                              onPress={this.onPlayPause.bind(this)}>
-                                    <View style={styles.button}>
+                                    <View style={[styles.button, isMedium ? styles.mediumButton : styles.largeButton]}>
                                         <Icon name={playPauseIcon} size={15} color="#e6e6e6" />
                                     </View>
                             </TouchableOpacity>
@@ -394,12 +465,33 @@ export default class PlayScreen extends React.Component {
                         <View style={styles.tabBarButton}>
                             <TouchableOpacity
                              onPress={this.onNext}>
-                                    <View style={styles.button}>
+                                    <View style={[styles.button, styles.mediumButton]}>
                                         <Icon name="fast-forward" size={15} color="#e6e6e6" />
                                     </View>
                             </TouchableOpacity>
                         </View>
+                        <View style={styles.tabBarButton}>
+                            <Menu
+                              ref={this.setMenuRef}
+                              button={<TouchableOpacity
+                               onPress={this.onMore.bind(this)}>
+                                      <View style={[styles.button, styles.smallButton]}>
+                                          <IonIcon name="ios-more" size={20} color="#e6e6e6" style={{ paddingLeft: 1 }}/>
+                                      </View>
+                              </TouchableOpacity>}
+                            >
+                              <MenuItem textStyle={styles.meniItem} onPress={this.addToPlaylist}>Add to Playlist</MenuItem>
+                              <MenuItem textStyle={styles.meniItem} onPress={this.onRandom}>Random Playlist</MenuItem>
+                              <MenuItem textStyle={styles.meniItem} onPress={this.onClear}>Clear Queue</MenuItem>
+                            </Menu>
+                        </View>
                   </View>
+                  <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
+                  {this.state.loading &&
+                      <View style={styles.loading}>
+                          <ActivityIndicator size="large" color="#0000ff"/>
+                      </View>
+                  }
               </View>
           );
         } else if (this.state.selectedTab === 1) {
@@ -452,12 +544,9 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     button: {
-        width: 60,
-        height: 60,
         backgroundColor: '#3396FF',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 50,
         shadowOpacity: 0.35,
         shadowOffset: {
           width: 0,
@@ -466,6 +555,21 @@ const styles = StyleSheet.create({
         shadowColor: "#000",
         shadowRadius: 3,
         elevation: 5
+    },
+    largeButton: {
+        width: 60,
+        height: 60,
+        borderRadius: 50,
+    },
+    mediumButton: {
+        width: 50,
+        height: 50,
+        borderRadius: 35,
+    },
+    smallButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 30,
     },
     tabBar: {
         paddingLeft: 20,
@@ -482,5 +586,18 @@ const styles = StyleSheet.create({
     item: {
         fontSize: 18,
         fontFamily: 'GillSans-Italic'
+    },
+    meniItem: {
+        fontSize: 16,
+        fontFamily: 'GillSans-Italic'
+    },
+    loading: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 })
