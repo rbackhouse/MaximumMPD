@@ -93,20 +93,16 @@ export default class PlayScreen extends React.Component {
         if (urlCommand !== "") {
             this.setState({urlCommand: urlCommand});
         }
-
-        VolumeControl.getVolume()
-        .then((volume) => {
-            const newVolume = Math.round(volume*100);
-            this.setState({volume: newVolume});
-            MPDConnection.current().setVolume(newVolume);
-        });
-
         this.onStatus = MPDConnection.getEventEmitter().addListener(
             "OnStatus",
             (status) => {
                 let currentsong = -1;
                 if (this.state.status) {
                     currentsong = this.state.status.song;
+                } else {
+                    let volume = parseInt(status.volume);
+                    this.setState({volume:volume});
+                    VolumeControl.setVolume(volume/100);
                 }
                 this.setState({status: status, isPlaying: status.state === "play"});
                 //this.setState({status: status, volume: parseInt(status.volume), isPlaying: status.state === "play"});
@@ -145,6 +141,13 @@ export default class PlayScreen extends React.Component {
                     }
                     this.setState({urlCommand: ''});
                 }
+            }
+        );
+
+        this.onDisconnect = MPDConnection.getEventEmitter().addListener(
+            "OnDisconnect",
+            () => {
+                this.setState({status: undefined});
             }
         );
 
@@ -201,6 +204,7 @@ export default class PlayScreen extends React.Component {
         this.onAlbumArtComplete.remove();
         this.onAlbumArtError.remove();
         this.onVolumeChange.remove();
+        this.onDisconnect.remove();
         Linking.removeEventListener('url', this.handleOpenURL);
     }
 
