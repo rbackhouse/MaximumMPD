@@ -127,24 +127,7 @@ export default class SongsScreen extends React.Component {
         const album = navigation.getParam('album');
 
         if (toPlaylist === true) {
-            if (!MPDConnection.current().getCurrentPlaylistName()) {
-                this.setState({modalVisible: true, selectedItem: "all"});
-                return;
-            }
-
-            this.setState({loading: true});
-
-            MPDConnection.current().addAlbumToNamedPlayList(album, artist, MPDConnection.current().getCurrentPlaylistName())
-            .then(() => {
-                this.setState({loading: false});
-            })
-            .catch((err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            });
+            this.setState({modalVisible: true, selectedItem: "all"});
         } else {
             this.setState({loading: true});
             MPDConnection.current().addAlbumToPlayList(album, artist)
@@ -163,23 +146,7 @@ export default class SongsScreen extends React.Component {
 
     onPress(item, toPlaylist) {
         if (toPlaylist === true) {
-            if (!MPDConnection.current().getCurrentPlaylistName()) {
-                this.setState({modalVisible: true, selectedItem: item.b64file});
-                return;
-            }
-
-            this.setState({loading: true});
-            MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(Base64.atob(item.b64file)), MPDConnection.current().getCurrentPlaylistName())
-            .then(() => {
-                this.setState({loading: false});
-            })
-            .catch((err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            });
+            this.setState({modalVisible: true, selectedItem: item.b64file});
         } else {
             this.setState({loading: true});
             MPDConnection.current().addSongToPlayList(decodeURIComponent(Base64.atob(item.b64file)))

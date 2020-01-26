@@ -273,22 +273,7 @@ export default class PlayScreen extends React.Component {
     addToPlaylist = () => {
         this.menu.hide(() => {
             if (this.state.status.currentsong.b64file) {
-                 if (!MPDConnection.current().getCurrentPlaylistName()) {
-                     this.setState({modalVisible: true, selectedItem: this.state.status.currentsong.b64file});
-                 } else {
-                     this.setState({loading: true});
-                     MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(Base64.atob(this.state.status.currentsong.b64file)), MPDConnection.current().getCurrentPlaylistName())
-                     .then(() => {
-                         this.setState({loading: false});
-                     })
-                     .catch((err) => {
-                         this.setState({loading: false});
-                         Alert.alert(
-                             "MPD Error",
-                             "Error : "+err
-                         );
-                     });
-                 }
+                this.setState({modalVisible: true, selectedItem: this.state.status.currentsong.b64file});
             }
         });
     };

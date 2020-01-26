@@ -233,9 +233,6 @@ export default class PlaylistDetails extends React.Component {
                     <ActionButton.Item buttonColor='#1abc9c' title="Delete" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onDelete();}}>
                         <Icon name="ios-trash" size={23} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#9b59b6' title="Set Active" size={40} textStyle={styles.actionButtonText} onPress={() => {MPDConnection.current().setCurrentPlaylistName(this.playlistName);}}>
-                        <FAIcon name="plus-square" size={15} color="#e6e6e6" />
-                    </ActionButton.Item>
                 </ActionButton>
             </View>
         );

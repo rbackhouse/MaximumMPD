@@ -116,26 +116,7 @@ export default class AlbumsScreen extends React.Component {
         const artist = navigation.getParam('artist');
 
         if (toPlaylist) {
-            if (!MPDConnection.current().getCurrentPlaylistName()) {
-                this.setState({modalVisible: true});
-                return;
-            }
-
-            this.state.albums.forEach((album) => {
-                this.setState({loading: true});
-
-                MPDConnection.current().addAlbumToNamedPlayList(album.name, artist, MPDConnection.current().getCurrentPlaylistName())
-                .then(() => {
-                    this.setState({loading: false});
-                })
-                .catch((err) => {
-                    this.setState({loading: false});
-                    Alert.alert(
-                        "MPD Error",
-                        "Error : "+err
-                    );
-                });
-            });
+            this.setState({modalVisible: true});
         } else {
             this.state.albums.forEach((album) => {
                 this.setState({loading: true});
@@ -177,7 +158,23 @@ export default class AlbumsScreen extends React.Component {
     finishAdd(name) {
         this.setState({modalVisible: false});
         MPDConnection.current().setCurrentPlaylistName(name);
-        this.addAll(true);
+        const { navigation } = this.props;
+        const artist = navigation.getParam('artist');
+        this.state.albums.forEach((album) => {
+            this.setState({loading: true});
+
+            MPDConnection.current().addAlbumToNamedPlayList(album.name, artist, MPDConnection.current().getCurrentPlaylistName())
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
+        });
     }
 
     renderSeparator = () => {

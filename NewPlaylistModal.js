@@ -16,21 +16,100 @@
 */
 
 import React from 'react';
-import { Text, View, Modal, StyleSheet } from 'react-native';
-import { FormLabel, FormInput, Button } from "react-native-elements";
+import { Text, View, Modal, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { SearchBar, FormLabel, FormInput, Button } from "react-native-elements";
+import Icon from 'react-native-vector-icons/Ionicons';
+
+import MPDConnection from './MPDConnection';
 
 export default class NewPlaylistModal extends React.Component {
     state = {
-        playlistName: ""
+        playlistName: "",
+        searchValue: "",
+        playlists: [],
+        fullset: []
+    }
+
+    componentDidMount() {
+        this.load();
+
+        this.onConnect = MPDConnection.getEventEmitter().addListener(
+            "OnConnect",
+            () => {
+                this.load();
+            }
+        );
+    }
+
+    componentWillUnmount() {
+        this.onConnect.remove();
+    }
+
+    load() {
+        MPDConnection.current().listPlayLists()
+        .then((playlists) => {
+            this.setState({playlists: playlists, fullset: playlists});
+        })
+        .catch((err) => {
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
+
     }
 
     onOk() {
-        this.props.onSet(this.state.playlistName, this.props.selectedItem);
+        if (this.state.playlistName !== "") {
+            this.props.onSet(this.state.playlistName.trim(), this.props.selectedItem);
+        }
     }
 
     onCancel(visible) {
         this.props.onCancel();
     }
+
+    onPress(item) {
+        this.props.onSet(item, this.props.selectedItem);
+    }
+
+    search = (text) => {
+        if (text.length > 0) {
+            let filtered = this.state.fullset.filter((playlist) => {
+                return playlist.toLowerCase().indexOf(text.toLowerCase()) > -1;
+            });
+            this.setState({playlists: filtered, searchValue: text});
+        } else {
+            this.setState({playlists: this.state.fullset, searchValue: text});
+        }
+    }
+
+    renderSeparator = () => {
+        return (
+            <View
+                style={{
+                  height: 1,
+                  width: "90%",
+                  backgroundColor: "#CED0CE",
+                  marginLeft: "5%"
+                }}
+            />
+        );
+    };
+
+    renderItem = ({item}) => {
+        return (
+            <TouchableOpacity onPress={this.onPress.bind(this, item)}>
+                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+                    <Icon name="ios-list" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                        <Text style={styles.item}>{item}</Text>
+                    </View>
+                    <Icon name="ios-add-circle" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                </View>
+            </TouchableOpacity>
+        );
+    };
 
     render() {
         const visible = this.props.visible;
@@ -42,16 +121,47 @@ export default class NewPlaylistModal extends React.Component {
                 visible={visible}
                 onRequestClose={() => {
             }}>
-                <View style={{marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'}}>
-                    <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Set Playlist Name</Text>
+                <View style={{marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'space-around'}}>
+                    <View style={{ flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', marginBottom: 20 }}>
+                        <View style={{ flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                            <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Select Playlist</Text>
+                        </View>
+                        <View style={{ flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                            <Text style={{fontSize: 16, fontFamily: 'GillSans-Italic'}}>Pick from List OR Enter a new name below</Text>
+                        </View>
                     </View>
-                    <FormLabel>Name</FormLabel>
-                    <FormInput onChangeText={(playlistName) => this.setState({playlistName})} style={styles.entryField}></FormInput>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                    <View style={{ flex: .6, justifyContent: 'flex-start', alignItems: 'stretch'}}>
+                        <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
+                            <View style={{flex: 1}}>
+                                <SearchBar
+                                    round
+                                    clearIcon
+                                    lightTheme
+                                    cancelButtonTitle="Cancel"
+                                    placeholder='Search'
+                                    onChangeText={this.search}
+                                    value={this.state.searchValue}
+                                    containerStyle={{backgroundColor: "#fff"}}
+                                    inputStyle={{backgroundColor: "#EBECEC"}}
+                                />
+                            </View>
+                        </View>
+                        <FlatList
+                            data={this.state.playlists}
+                            renderItem={this.renderItem}
+                            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                            keyExtractor={item => item}
+                            ItemSeparatorComponent={this.renderSeparator}
+                        />
+                    </View>
+                    <View style={{ flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', marginTop: 15}}>
+                        <FormLabel>Create New Playlist</FormLabel>
+                        <FormInput value={this.state.playlistName} onChangeText={(playlistName) => this.setState({playlistName})} style={styles.entryField}></FormInput>
+                    </View>
+                    <View style={{ flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.onOk();}}
-                            title="Ok"
+                            title="Create"
                             icon={{name: 'check', type: 'font-awesome'}}
                             raised={true}
                             rounded
@@ -79,5 +189,19 @@ const styles = StyleSheet.create({
         margin: 15,
         borderColor: '#e3e5e5',
         borderWidth: 1
+    },
+    item: {
+        fontSize: 17,
+        fontFamily: 'GillSans-Italic',
+        padding: 10
+    },
+    sectionHeader: {
+        paddingTop: 2,
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingBottom: 2,
+        fontSize: 14,
+        fontWeight: 'bold',
+        backgroundColor: 'rgba(247,247,247,1.0)',
     }
 });

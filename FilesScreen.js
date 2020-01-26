@@ -116,25 +116,7 @@ export default class FilesScreen extends React.Component {
     addAll(toPlaylist) {
         const path = Base64.atob(this.state.dirs[this.state.dirs.length-1]);
         if (toPlaylist) {
-            if (!MPDConnection.current().getCurrentPlaylistName()) {
-                this.setState({modalVisible: true, selectedItem: "all"});
-                return;
-            }
-
-            this.setState({loading: true});
-
-            MPDConnection.current().addDirectoryToNamedPlayList(decodeURIComponent(path),MPDConnection.current().getCurrentPlaylistName())
-            .then(() => {
-                this.setState({loading: false});
-            })
-            .catch((err) => {
-                this.setState({loading: false});
-                console.log(err);
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            });
+            this.setState({modalVisible: true, selectedItem: "all"});
         } else {
             this.setState({loading: true});
 
@@ -242,25 +224,7 @@ export default class FilesScreen extends React.Component {
         if (item.file.indexOf('.cue', item.file.length - '.cue'.length) !== -1) {
             return;
         }
-        if (!MPDConnection.current().getCurrentPlaylistName()) {
-            this.setState({modalVisible: true, selectedItem: item.b64file});
-            return;
-        }
-        const path = Base64.atob(item.b64file);
-
-        this.setState({loading: true});
-
-        MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(path), MPDConnection.current().getCurrentPlaylistName())
-        .then(() => {
-            this.setState({loading: false});
-        })
-        .catch((err) => {
-            this.setState({loading: false});
-            Alert.alert(
-                "MPD Error",
-                "Error : "+err
-            );
-        });
+        this.setState({modalVisible: true, selectedItem: item.b64file});
     }
 
     finishAdd(name, selectedItem) {

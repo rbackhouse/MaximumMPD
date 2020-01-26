@@ -176,22 +176,7 @@ export default class SearchScreen extends React.Component {
         if (rowMap[item.key]) {
 			rowMap[item.key].closeRow();
 		}
-        if (!MPDConnection.current().getCurrentPlaylistName()) {
-            this.setState({modalVisible: true, selectedItem: item.b64file});
-            return;
-        }
-        this.setState({loading: true});
-        MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(Base64.atob(item.b64file)), MPDConnection.current().getCurrentPlaylistName())
-        .then(() => {
-            this.setState({loading: false});
-        })
-        .catch((err) => {
-            this.setState({loading: false});
-            Alert.alert(
-                "MPD Error",
-                "Error : "+err
-            );
-        });
+        this.setState({modalVisible: true, selectedItem: item.b64file});
     }
 
     finishAdd(name, selectedItem) {

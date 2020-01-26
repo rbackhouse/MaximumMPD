@@ -210,12 +210,6 @@ export default class PlaylistEditor extends React.Component {
                     <ActionButton.Item buttonColor='#9b59b6' title="Playlist from Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.fromQueue();}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="New Playlist" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onAdd();}}>
-                        <FAIcon name="plus-square" size={15} color="#e6e6e6" />
-                    </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#1abc9c' title="Clear Active" size={40} textStyle={styles.actionButtonText} onPress={() => {MPDConnection.current().setCurrentPlaylistName(undefined);}}>
-                        <FAIcon name="eraser" size={15} color="#e6e6e6" />
-                    </ActionButton.Item>
                 </ActionButton>
             </View>
         );
