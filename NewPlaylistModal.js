@@ -30,25 +30,14 @@ export default class NewPlaylistModal extends React.Component {
         fullset: []
     }
 
-    componentDidMount() {
-        this.load();
-
-        this.onConnect = MPDConnection.getEventEmitter().addListener(
-            "OnConnect",
-            () => {
-                this.load();
-            }
-        );
-    }
-
-    componentWillUnmount() {
-        this.onConnect.remove();
+    constructor(props) {
+        super(props);
     }
 
     load() {
         MPDConnection.current().listPlayLists()
         .then((playlists) => {
-            this.setState({playlists: playlists, fullset: playlists});
+            this.setState({playlists: playlists, fullset: playlists, playlistName: "", searchValue: ""});
         })
         .catch((err) => {
             Alert.alert(
@@ -56,7 +45,6 @@ export default class NewPlaylistModal extends React.Component {
                 "Error : "+err
             );
         });
-
     }
 
     onOk() {
@@ -119,8 +107,8 @@ export default class NewPlaylistModal extends React.Component {
                 animationType="fade"
                 transparent={false}
                 visible={visible}
-                onRequestClose={() => {
-            }}>
+                onShow={() => {this.load();}}
+            >
                 <View style={{marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'space-around'}}>
                     <View style={{ flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', marginBottom: 20 }}>
                         <View style={{ flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
