@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, Modal, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { Text, View, Modal, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SearchBar, FormLabel, FormInput, Button } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -24,6 +24,7 @@ import MPDConnection from './MPDConnection';
 
 export default class NewPlaylistModal extends React.Component {
     state = {
+        loading: false,
         playlistName: "",
         searchValue: "",
         playlists: [],
@@ -35,11 +36,13 @@ export default class NewPlaylistModal extends React.Component {
     }
 
     load() {
+        this.setState({loading: true});
         MPDConnection.current().listPlayLists()
         .then((playlists) => {
-            this.setState({playlists: playlists, fullset: playlists, playlistName: "", searchValue: ""});
+            this.setState({loading: false, playlists: playlists, fullset: playlists, playlistName: "", searchValue: ""});
         })
         .catch((err) => {
+            this.setState({loading: false});
             Alert.alert(
                 "MPD Error",
                 "Error : "+err
@@ -164,6 +167,11 @@ export default class NewPlaylistModal extends React.Component {
                             backgroundColor={'#3396FF'}
                         />
                     </View>
+                    {this.state.loading &&
+                        <View style={styles.loading}>
+                            <ActivityIndicator size="large" color="#0000ff"/>
+                        </View>
+                    }
                 </View>
             </Modal>
         );
@@ -191,5 +199,14 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 'bold',
         backgroundColor: 'rgba(247,247,247,1.0)',
+    },
+    loading: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
