@@ -137,6 +137,9 @@ class MPDConnection {
                     this.albumArtDir = status.albumArtDir;
     				//this.queue = [];
     				this.isConnected = true;
+                    if (pwd) {
+                        this.login(pwd).then(() => {}).catch((err) => {});
+                    }
                     console.log("Internal Connected");
                     mpdEventEmiiter.emit('OnInternalConnect', {host: this.host, port: this.port});
     			} else if (state == "disconnected") {
