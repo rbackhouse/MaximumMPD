@@ -98,6 +98,8 @@ export default class PlaylistScreen extends React.Component {
 
     constructor(props) {
         super(props);
+        this.selectedRowHeight = 89;
+        this.rowHeight = 89;
         this.state = {
           playlist: [],
           status: undefined,
@@ -255,6 +257,17 @@ export default class PlaylistScreen extends React.Component {
             } else {
                 this.setState({totalTime: ""});
             }
+            MPDConnection.current().getStatus((status) => {
+                if (status.song) {
+                    let viewPosition = 0.5;
+                    const playlistlength = parseInt(status.playlistlength);
+                    const song = parseInt(status.song);
+                    if (playlistlength-song < 8) {
+                        viewPosition = 1;
+                    }
+                    this.listRef.scrollToIndex({animated: true, index: song, viewPosition: viewPosition});
+                }
+            });
         })
         .catch((err) => {
             this.setState({loading: false});
@@ -309,7 +322,14 @@ export default class PlaylistScreen extends React.Component {
         }
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+                <View onLayout={(event) => {
+                    const {x, y, width, height} = event.nativeEvent.layout;
+                    if (isSelected) {
+                        this.selectedRowHeight = height+1;
+                    } else {
+                        this.rowHeight = height+1;
+                    }
+                }} style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
                     <Icon name={editSelectIcon} size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                     <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
                         {item.artist !== "" &&
@@ -332,6 +352,17 @@ export default class PlaylistScreen extends React.Component {
             </TouchableOpacity>
         );
     };
+
+    getItemLayout = (item, index) => {
+        const isSelected = this.state.selected.get(item.artist+item.album+item.title)
+        let ROW_HEIGHT;
+        if (isSelected) {
+            ROW_HEIGHT = this.selectedRowHeight;
+        } else {
+            ROW_HEIGHT = this.rowHeight;
+        }
+        return {offset: ROW_HEIGHT * index, length: ROW_HEIGHT, index: index};
+    }
 
     render() {
         const {height, width} = Dimensions.get('window');
@@ -357,6 +388,8 @@ export default class PlaylistScreen extends React.Component {
                     keyExtractor={item => ""+item.id}
                     ItemSeparatorComponent={this.renderSeparator}
                     extraData={this.state.selected}
+                    ref={(ref) => { this.listRef = ref; }}
+                    getItemLayout={this.getItemLayout}
                 />
                 {this.state.loading &&
                     <View style={styles.loading}>
