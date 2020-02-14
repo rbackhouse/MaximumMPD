@@ -62,6 +62,13 @@ export default class ArtistsScreen extends React.Component {
             this.props.navigation.navigate('Connections');
         }
 
+        Config.isUseGrdiView()
+        .then((useGridView) => {
+            if (useGridView) {
+                this.setState({grid: true});
+            }
+        });
+
         const { navigation } = this.props;
 
         this.load();

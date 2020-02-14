@@ -281,7 +281,7 @@ class AboutModal extends React.Component {
                     <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>About Maximum MPD</Text>
                     </View>
-                    <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Version: 2.3</Text>
+                    <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Version: 2.4</Text>
                     <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Author: Richard Backhouse</Text>
                     <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Various Images provided by Icons8 (https://icons8.com)</Text>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
@@ -382,7 +382,9 @@ export default class SettingsScreen extends React.Component {
         albumartVisible: false,
         aboutVisible: false,
         sortAlbumsByDate: false,
-        autoConnect: false
+        autoConnect: false,
+        useDeviceVolume: false,
+        useGridView: false
     }
 
     componentDidMount() {
@@ -397,6 +399,14 @@ export default class SettingsScreen extends React.Component {
         Config.isRandomPlaylistByType()
         .then((value) => {
             this.setState({randomPlaylistByType: value});
+        });
+        Config.isUseDeviceVolume()
+        .then((value) => {
+            this.setState({useDeviceVolume: value});
+        });
+        Config.isUseGrdiView()
+        .then((value) => {
+            this.setState({useGridView: value});
         });
         this.onDisconnect = MPDConnection.getEventEmitter().addListener(
             "OnDisconnect",
@@ -511,6 +521,16 @@ export default class SettingsScreen extends React.Component {
             };
         }
         Config.setAutoConnect(value, server);
+    }
+
+    onUseDeviceVolumeChange(value) {
+        this.setState({useDeviceVolume: value});
+        Config.setUseDeviceVolume(value);
+    }
+
+    onUseGridViewChange(value) {
+        this.setState({useGridView: value});
+        Config.setUseGridView(value);
     }
 
     setCrossfade(value) {
@@ -628,6 +648,18 @@ export default class SettingsScreen extends React.Component {
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onAutoConnectChange(value)}
                                 title='Auto connect to last used server'/>
+                    <SettingsList.Item
+                                hasNavArrow={false}
+                                switchState={this.state.useDeviceVolume}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onUseDeviceVolumeChange(value)}
+                                title='Link Device Volume Control to MPD Volume'/>
+                    <SettingsList.Item
+                                hasNavArrow={false}
+                                switchState={this.state.useGridView}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onUseGridViewChange(value)}
+                                title='Use Grid View by default'/>
                     <SettingsList.Header headerStyle={{marginTop:15}} headerText="Debug Options"/>
                     <SettingsList.Item
                       hasNavArrow={true}

@@ -32,6 +32,7 @@ import NewPlaylistModal from './NewPlaylistModal';
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
+import Config from './Config';
 
 const { VolumeControl } = NativeModules;
 const volumeEmitter = new NativeEventEmitter(VolumeControl);
@@ -102,7 +103,12 @@ export default class PlayScreen extends React.Component {
                 } else {
                     let volume = parseInt(status.volume);
                     this.setState({volume:volume});
-                    VolumeControl.setVolume(volume/100);
+                    Config.isUseDeviceVolume()
+                    .then((useDeviceVolume) => {
+                        if (useDeviceVolume) {
+                            VolumeControl.setVolume(volume/100);
+                        }
+                    });
                 }
                 this.setState({status: status, isPlaying: status.state === "play"});
                 //this.setState({status: status, volume: parseInt(status.volume), isPlaying: status.state === "play"});
@@ -186,10 +192,14 @@ export default class PlayScreen extends React.Component {
         this.onVolumeChange = volumeEmitter.addListener(
             "OnVolumeChange",
             (result) => {
-                const newVolume = Math.round(result.volume*100);
-                console.log("OnVolumeChange "+newVolume);
-                this.setState({volume:newVolume});
-                MPDConnection.current().setVolume(newVolume);
+                Config.isUseDeviceVolume()
+                .then((useDeviceVolume) => {
+                    if (useDeviceVolume) {
+                        const newVolume = Math.round(result.volume*100);
+                        this.setState({volume:newVolume});
+                        MPDConnection.current().setVolume(newVolume);
+                    }
+                });
             }
         );
 
@@ -258,7 +268,12 @@ export default class PlayScreen extends React.Component {
 
     setVolume = (value) => {
         this.setState({volume:value});
-        VolumeControl.setVolume(value/100);
+        Config.isUseDeviceVolume()
+        .then((useDeviceVolume) => {
+            if (useDeviceVolume) {
+                VolumeControl.setVolume(value/100);
+            }
+        });
         MPDConnection.current().setVolume(value);
     };
 

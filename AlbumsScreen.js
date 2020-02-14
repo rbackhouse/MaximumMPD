@@ -59,6 +59,14 @@ export default class AlbumsScreen extends React.Component {
 
     componentDidMount() {
         const { navigation } = this.props;
+        Config.isUseGrdiView()
+        .then((useGridView) => {
+            if (useGridView) {
+                const {height, width} = Dimensions.get('window');
+                numColumns = width > 375 ? 3 : 2;
+                this.setState({grid: true, numColumns: numColumns});
+            }
+        });
         const artist = navigation.getParam('artist');
         const albums = navigation.getParam('albums');
         if (artist) {

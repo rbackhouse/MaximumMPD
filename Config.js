@@ -30,7 +30,9 @@ class ConfigStorage {
                     randomPlaylistByType: false,
                     maxListSize: 0,
                     autoConnect: false,
-                    autoConnectServer: {}
+                    autoConnectServer: {},
+                    useDeviceVolume: true,
+                    useGridView: false
                 };
                 AsyncStorage.setItem('@MPD:config', JSON.stringify(config));
             }
@@ -124,6 +126,66 @@ export default {
             configStorage.getConfig()
             .then((config) => {
                 resolve(config.maxListSize);
+            });
+        });
+        return promise;
+    },
+    isUseDeviceVolume: () => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                if (config.useDeviceVolume !== undefined) {
+                    resolve(config.useDeviceVolume);
+                } else {
+                    config.useDeviceVolume = true;
+                    configStorage.setConfig(config)
+                    .then(() => {
+                        resolve(config.useDeviceVolume);
+                    });
+                }
+            });
+        });
+        return promise;
+    },
+    setUseDeviceVolume: (useDeviceVolume) => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                config.useDeviceVolume = useDeviceVolume;
+                configStorage.setConfig(config)
+                .then(() => {
+                    resolve();
+                })
+            });
+        });
+        return promise;
+    },
+    isUseGrdiView: () => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                if (config.useGridView !== undefined) {
+                    resolve(config.useGridView);
+                } else {
+                    config.useGridView = false;
+                    configStorage.setConfig(config)
+                    .then(() => {
+                        resolve(config.useGridView);
+                    });
+                }
+            });
+        });
+        return promise;
+    },
+    setUseGridView: (useGridView) => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                config.useGridView = useGridView;
+                configStorage.setConfig(config)
+                .then(() => {
+                    resolve();
+                })
             });
         });
         return promise;
