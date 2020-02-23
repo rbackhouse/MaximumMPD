@@ -303,7 +303,10 @@ export default class PlaylistScreen extends React.Component {
     };
 
     renderItem = ({item}) => {
-        let timeTrack = "Time: "+item.time;
+        let timeTrack;
+        if (item.time) {
+            timeTrack = "Time: "+item.time;
+        }
         let bitrate;
         let audio;
         const isSelected = this.state.selected.get(item.artist+item.album+item.title)
@@ -339,11 +342,13 @@ export default class PlaylistScreen extends React.Component {
                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.album}</Text>
                         }
                         <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.title}</Text>
-                        <Text style={styles.item}>{timeTrack}</Text>
-                        {bitrate != undefined &&
+                        {timeTrack !== undefined &&
+                            <Text style={styles.item}>{timeTrack}</Text>
+                        }
+                        {bitrate !== undefined &&
                             <Text style={styles.item}>{bitrate}</Text>
                         }
-                        {audio != undefined &&
+                        {audio !== undefined &&
                             <Text style={styles.item}>{audio}</Text>
                         }
                     </View>

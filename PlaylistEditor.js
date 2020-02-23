@@ -26,6 +26,72 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import NewPlaylistModal from './NewPlaylistModal';
 
+class AddStreamURLModal extends React.Component {
+    state = {
+        streamName: "",
+        streamURL: ""
+    }
+
+    onOk() {
+        if (this.state.streamName !== "" && this.state.streamURL != "") {
+            const valid = /^(ftp|http|https):\/\/[^ "]+$/.test(this.state.streamURL);
+            if (valid) {
+                this.props.onSet(this.state.streamName, this.state.streamURL);
+            } else {
+                Alert.alert(
+                    "Invalid Stream URL",
+                    "Stream URL ["+this.state.streamURL+"] is invalid"
+                );
+            }
+        }
+    }
+
+    onCancel(visible) {
+        this.props.onCancel();
+    }
+
+    render() {
+        const visible = this.props.visible;
+        return (
+            <Modal
+                animationType="fade"
+                transparent={false}
+                visible={visible}
+                onRequestClose={() => {
+            }}>
+                <View style={{marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'}}>
+                    <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                        <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Add a Stream URL</Text>
+                    </View>
+                    <FormLabel>Name</FormLabel>
+                    <FormInput onChangeText={(streamName) => this.setState({streamName: streamName})} style={styles.entryField}></FormInput>
+                    <FormLabel>Stream URL</FormLabel>
+                    <FormInput onChangeText={(url) => this.setState({streamURL: url})} style={styles.entryField}></FormInput>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                        <Button
+                            onPress={() => {this.onOk();}}
+                            title="Ok"
+                            icon={{name: 'check', type: 'font-awesome'}}
+                            raised={true}
+                            rounded
+                            backgroundColor={'#3396FF'}
+                        />
+                        <Button
+                            onPress={() => {this.onCancel();}}
+                            title="Cancel"
+                            icon={{name: 'times-circle', type: 'font-awesome'}}
+                            raised={true}
+                            rounded
+                            backgroundColor={'#3396FF'}
+                        />
+                    </View>
+
+                </View>
+            </Modal>
+        );
+    }
+}
+
 export default class PlaylistEditor extends React.Component {
     constructor(props) {
         super(props);
@@ -35,7 +101,8 @@ export default class PlaylistEditor extends React.Component {
           fullset: [],
           loading: false,
           modalVisible: false,
-          playlistFromQueue: false
+          playlistFromQueue: false,
+          addStreamURLVisible: false
         };
     }
 
@@ -87,10 +154,6 @@ export default class PlaylistEditor extends React.Component {
         navigation.navigate('PlaylistDetails', {playlist: item, isNew: false});
     }
 
-    onAdd() {
-        this.setState({modalVisible: true, playlistFromQueue: false});
-    }
-
     fromQueue() {
         this.setState({loading: true});
 
@@ -140,6 +203,21 @@ export default class PlaylistEditor extends React.Component {
         } else {
             const { navigation } = this.props;
             navigation.navigate('PlaylistDetails', {playlist: name, isNew: true});
+        }
+    }
+
+    addStreamURL(name, url) {
+        this.setState({addStreamURLVisible: false});
+        if (name !== "" && url !== "") {
+            this.setState({loading: true});
+            MPDConnection.current().addSongToNamedPlayList(url, "Stream_"+name)
+            .then(() => {
+                this.setState({loading: false});
+                this.load();
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+            });
         }
     }
 
@@ -205,8 +283,11 @@ export default class PlaylistEditor extends React.Component {
                     </View>
                 }
                 <NewPlaylistModal visible={this.state.modalVisible} onSet={(name) => {this.createNewPlaylist(name)}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
-
+                <AddStreamURLModal visible={this.state.addStreamURLVisible} onSet={(name, url) => {this.addStreamURL(name, url)}} onCancel={() => this.setState({addStreamURLVisible: false})}></AddStreamURLModal>
                 <ActionButton buttonColor="rgba(231,76,60,1)">
+                    <ActionButton.Item buttonColor='#1abc9c' title="Add Stream URL" size={40} textStyle={styles.actionButtonText} onPress={() => {this.setState({addStreamURLVisible: true});}}>
+                        <FAIcon name="plus-square" size={15} color="#e6e6e6" />
+                    </ActionButton.Item>
                     <ActionButton.Item buttonColor='#9b59b6' title="Playlist from Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.fromQueue();}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
