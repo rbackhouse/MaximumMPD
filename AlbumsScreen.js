@@ -76,14 +76,8 @@ export default class AlbumsScreen extends React.Component {
                 MPDConnection.current().getAlbumsForArtist(artist, sortAlbumsByDate)
                 .then((albums) => {
                     this.setState({loading: false});
-                    this.setState({albums: albums, fullset: albums});
-                    albums.forEach((album) => {
-                        AlbumArt.getAlbumArt(artist, album.name).then((path) => {
-                            if (path) {
-                                album.imagePath = "file://"+path;
-                                this.setState({albums: this.state.fullset, fullset: this.state.fullset});
-                            }
-                        });
+                    AlbumArt.getAlbumArtForAlbums(albums).then((albums) => {
+                        this.setState({albums: albums, fullset: albums});
                     });
                 })
                 .catch((err) => {
@@ -95,14 +89,8 @@ export default class AlbumsScreen extends React.Component {
                 });
             })
         } else {
-            this.setState({albums: albums, fullset: albums});
-            albums.forEach((album) => {
-                AlbumArt.getAlbumArt(album.artist, album.name).then((path) => {
-                    if (path) {
-                        album.imagePath = "file://"+path;
-                        this.setState({albums: this.state.fullset, fullset: this.state.fullset});
-                    }
-                });
+            AlbumArt.getAlbumArtForAlbums(albums).then((albums) => {
+                this.setState({albums: albums, fullset: albums});
             });
         }
         this.onDisconnect = MPDConnection.getEventEmitter().addListener(

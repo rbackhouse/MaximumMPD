@@ -155,13 +155,10 @@ export default class ArtistsScreen extends React.Component {
             });
             albums.forEach((album, index) => {
                 album.key = ""+(index+1);
-                AlbumArt.getAlbumArt(album.artist, album.name).then((path) => {
-                    if (path) {
-                        album.imagePath = "file://"+path;
-                    }
-                });
             });
-            this.setState({albums: this.subset(albums), albumsFullset: albums});
+            AlbumArt.getAlbumArtForAlbums(albums).then((albums) => {
+                this.setState({albums: this.subset(albums), albumsFullset: albums});
+            });
             let genreList = [];
             let index = 0;
             for (let genre in genres) {
