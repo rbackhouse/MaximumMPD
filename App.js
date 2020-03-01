@@ -19,7 +19,7 @@ import React from 'react';
 import { StyleSheet, ActivityIndicator, View } from 'react-native';
 import Icon  from 'react-native-vector-icons/Ionicons';
 import FAIcon  from 'react-native-vector-icons/FontAwesome';
-import { createStackNavigator, createBottomTabNavigator, createSwitchNavigator } from 'react-navigation';
+import { createStackNavigator, createBottomTabNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
 import HeaderButtons from 'react-navigation-header-buttons';
 
 import PlayScreen from './PlayScreen';
@@ -195,7 +195,7 @@ const MainPage = createBottomTabNavigator(
     Settings: { screen: SettingsStack }
   },
   {
-    navigationOptions: ({ navigation }) => ({
+    defaultNavigationOptions: ({ navigation }) => ({
         tabBarIcon: ({ focused, tintColor }) => {
             const { routeName } = navigation.state;
             let iconName;
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     }
 });
 
-export default createSwitchNavigator(
+const SwitchPage = createSwitchNavigator(
     {
         WelcomeScreen: { screen: WelcomeScreen },
         MainPage: { screen: MainPage }
@@ -254,3 +254,5 @@ export default createSwitchNavigator(
         initialRouteName: 'WelcomeScreen'
     }
 );
+
+export default createAppContainer(SwitchPage);

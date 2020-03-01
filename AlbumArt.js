@@ -15,11 +15,11 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import Base64 from './Base64';
 import MPDConnection from './MPDConnection';
-import EventEmitter from 'EventEmitter';
+import EventEmitter from "react-native/Libraries/vendor/emitter/EventEmitter";
 
 const albumArtEventEmiiter = new EventEmitter();
 

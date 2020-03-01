@@ -30,8 +30,9 @@ import {
     Dimensions,
     PanResponder } from 'react-native';
 import MPDConnection from './MPDConnection';
+import IonIcon  from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { FormLabel, FormInput, Button } from 'react-native-elements'
+import { Input, Button } from 'react-native-elements'
 import ActionButton from 'react-native-action-button';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Config from './Config';
@@ -65,30 +66,24 @@ class AddConnectionModal extends React.Component {
                     <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Add MPD Connection</Text>
                     </View>
-                    <FormLabel>Name</FormLabel>
-                    <FormInput onChangeText={(name) => this.setState({name})} style={styles.entryField}></FormInput>
-                    <FormLabel>Host</FormLabel>
-                    <FormInput onChangeText={(host) => this.setState({host})} style={styles.entryField}></FormInput>
-                    <FormLabel>Port</FormLabel>
-                    <FormInput keyboardType='numeric' maxLength={5} onChangeText={(port) => this.setState({port})} style={styles.entryField}></FormInput>
-                    <FormLabel>Password (if required by MPD server)</FormLabel>
-                    <FormInput secureTextEntry={true} onChangeText={(password) => this.setState({password})} style={styles.entryField}></FormInput>
+                    <Input label="Name" autoCapitalize="none" onChangeText={(name) => this.setState({name})} style={styles.entryField}></Input>
+                    <Input label="Host" autoCapitalize="none" onChangeText={(host) => this.setState({host})} style={styles.entryField}></Input>
+                    <Input keyboardType='numeric' label="Port" onChangeText={(port) => this.setState({port})} style={styles.entryField}></Input>
+                    <Input secureTextEntry={true} label="Password (if required by MPD server)" onChangeText={(password) => this.setState({password})} style={styles.entryField}></Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.addConnection();}}
                             title="Add"
-                            icon={{name: 'plus', type: 'font-awesome'}}
+                            icon={{name: 'plus', size: 15, type: 'font-awesome'}}
                             raised={true}
-                            rounded
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={{name: 'times-circle', type: 'font-awesome'}}
+                            icon={{name: 'times-circle', size: 15, type: 'font-awesome'}}
                             raised={true}
-                            rounded
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                     </View>
                 </View>

@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, Modal } from 'react-native';
-import { SearchBar, FormLabel, FormInput, Button } from "react-native-elements";
+import { SearchBar, Input, Button } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
@@ -63,25 +63,23 @@ class AddStreamURLModal extends React.Component {
                     <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Add a Stream URL</Text>
                     </View>
-                    <FormLabel>Name</FormLabel>
-                    <FormInput onChangeText={(streamName) => this.setState({streamName: streamName})} style={styles.entryField}></FormInput>
-                    <FormLabel>Stream URL</FormLabel>
-                    <FormInput onChangeText={(url) => this.setState({streamURL: url})} style={styles.entryField}></FormInput>
+                    <Input label="Name" autoCapitalize="none" onChangeText={(streamName) => this.setState({streamName: streamName})} style={styles.entryField}></Input>
+                    <Input label="Stream URL" autoCapitalize="none" onChangeText={(url) => this.setState({streamURL: url})} style={styles.entryField}></Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
-                            icon={{name: 'check', type: 'font-awesome'}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={{name: 'times-circle', type: 'font-awesome'}}
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                     </View>

@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { Text, View, Modal, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { SearchBar, FormLabel, FormInput, Button } from "react-native-elements";
+import { SearchBar, Input, Button } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import MPDConnection from './MPDConnection';
@@ -146,24 +146,23 @@ export default class NewPlaylistModal extends React.Component {
                         />
                     </View>
                     <View style={{ flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', marginTop: 15}}>
-                        <FormLabel>Create New Playlist</FormLabel>
-                        <FormInput value={this.state.playlistName} onChangeText={(playlistName) => this.setState({playlistName})} style={styles.entryField}></FormInput>
+                        <Input label="Create New Playlist" autoCapitalize="none" onChangeText={(playlistName) => this.setState({playlistName})} style={styles.entryField}></Input>
                     </View>
                     <View style={{ flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Create"
-                            icon={{name: 'check', type: 'font-awesome'}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={{name: 'times-circle', type: 'font-awesome'}}
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                     </View>

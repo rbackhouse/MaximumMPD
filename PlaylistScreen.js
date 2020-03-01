@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Modal, Picker, PickerIOS, Dimensions } from 'react-native';
-import { SearchBar, FormLabel, FormInput, Button } from 'react-native-elements'
+import { SearchBar, Input, Button } from 'react-native-elements'
 
 import ActionButton from 'react-native-action-button';
 
@@ -64,23 +64,22 @@ class RandomPlaylistTypeModal extends React.Component {
                         <Picker.Item label="By Title" value="title" />
                         <Picker.Item label="By Genre" value="genre" />
                     </Picker>
-                    <FormLabel>Value</FormLabel>
-                    <FormInput value={this.state.value} onChangeText={(value) => this.setState({value})} style={styles.entryField}></FormInput>
+                    <Input label="Value" autoCapitalize="none" value={this.state.value} onChangeText={(value) => this.setState({value})} style={styles.entryField}></Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
-                            icon={{name: 'check', type: 'font-awesome'}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={{name: 'times-circle', type: 'font-awesome'}}
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                     </View>

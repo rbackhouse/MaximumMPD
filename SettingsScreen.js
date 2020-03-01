@@ -18,7 +18,7 @@
 import React from 'react';
 import { View, Picker, Modal, Text, StyleSheet, Alert, Linking } from 'react-native';
 import SettingsList from 'react-native-settings-list';
-import { FormLabel, FormInput, Button } from 'react-native-elements'
+import { Input, Button } from 'react-native-elements'
 import MPDConnection from './MPDConnection';
 import AlbumArt from './AlbumArt';
 import Config from './Config';
@@ -138,9 +138,9 @@ class AlbumArtModal extends React.Component {
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
-                            icon={{name: 'check', type: 'font-awesome'}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                     </View>
@@ -178,23 +178,22 @@ class CrossfadeModal extends React.Component {
                     <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Set Crossfade</Text>
                     </View>
-                    <FormLabel>Crossfade (Seconds)</FormLabel>
-                    <FormInput value={value} keyboardType='numeric' maxLength={5} onChangeText={(crossFade) => this.setState({crossFade})} style={styles.entryField}></FormInput>
+                    <Input keyboardType='numeric' label="Crossfade (Seconds)" maxLength={5} value={value} onChangeText={(crossFade) => this.setState({crossFade})}></Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
-                            icon={{name: 'check', type: 'font-awesome'}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={{name: 'times-circle', type: 'font-awesome'}}
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                     </View>
@@ -243,17 +242,17 @@ class ReplayGainModal extends React.Component {
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
-                            icon={{name: 'check', type: 'font-awesome'}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={{name: 'times-circle', type: 'font-awesome'}}
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                     </View>
@@ -288,17 +287,17 @@ class AboutModal extends React.Component {
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
-                            icon={{name: 'check', type: 'font-awesome'}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                         <Button
                             onPress={ ()=>{ Linking.openURL('http://rbackhouse.github.io/MaximumMPD.html')}}
                             title="Help"
-                            icon={{name: 'question', type: 'font-awesome'}}
+                            icon={{name: 'question',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                     </View>
@@ -335,23 +334,22 @@ class MaxListSizeModal extends React.Component {
                     <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Set Crossfade</Text>
                     </View>
-                    <FormLabel>Max List Size</FormLabel>
-                    <FormInput value={value} keyboardType='numeric' maxLength={5} onChangeText={(maxListSize) => this.setState({maxListSize})} style={styles.entryField}></FormInput>
+                    <Input keyboardType='numeric' label="Max List Size" maxLength={5} value={value} onChangeText={(maxListSize) => this.setState({maxListSize})}></Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
-                            icon={{name: 'check', type: 'font-awesome'}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={{name: 'times-circle', type: 'font-awesome'}}
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: "white"}}
                             raised={true}
-                            rounded
+                            buttonStyle={{borderRadius: 12}}
                             backgroundColor={'#3396FF'}
                         />
                     </View>

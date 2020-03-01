@@ -18,7 +18,6 @@
 import React from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, Alert, ActivityIndicator} from 'react-native';
 import ActionButton from 'react-native-action-button';
-import { FormLabel, FormInput, Button } from 'react-native-elements'
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 
 import MPDConnection from './MPDConnection';
