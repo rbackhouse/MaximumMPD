@@ -138,10 +138,9 @@ class AlbumArtModal extends React.Component {
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
-                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                     </View>
                 </View>
@@ -183,18 +182,16 @@ class CrossfadeModal extends React.Component {
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
-                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                     </View>
 
@@ -242,18 +239,16 @@ class ReplayGainModal extends React.Component {
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
-                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                     </View>
                 </View>
@@ -287,18 +282,16 @@ class AboutModal extends React.Component {
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
-                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                         <Button
                             onPress={ ()=>{ Linking.openURL('http://rbackhouse.github.io/MaximumMPD.html')}}
                             title="Help"
-                            icon={{name: 'question',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'question',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                     </View>
                 </View>
@@ -339,18 +332,16 @@ class MaxListSizeModal extends React.Component {
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
-                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                     </View>
 

@@ -224,10 +224,13 @@ export default class SearchScreen extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                        />
+                            containerStyle={{backgroundColor: 'white'}}
+                            inputContainerStyle={{backgroundColor: '#EBECEC'}}
+                            inputStyle={{backgroundColor: '#EBECEC'}}
+                    />
                     </View>
                 </View>
-
+                <View style={{flex: .9, flexDirection: 'row', alignItems: 'stretch' }}>
                 <SwipeListView
                     useSectionList
                     sections={[
@@ -291,7 +294,7 @@ export default class SearchScreen extends React.Component {
                     renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
                     ItemSeparatorComponent={this.renderSeparator}
                 />
-
+                </View>
                 <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
 
                 {this.state.loading &&

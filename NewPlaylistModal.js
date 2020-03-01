@@ -133,7 +133,8 @@ export default class NewPlaylistModal extends React.Component {
                                     onChangeText={this.search}
                                     value={this.state.searchValue}
                                     containerStyle={{backgroundColor: "#fff"}}
-                                    inputStyle={{backgroundColor: "#EBECEC"}}
+                                    inputContainerStyle={{backgroundColor: '#EBECEC'}}
+                                    inputStyle={{backgroundColor: "#EBECEC"}}                                    
                                 />
                             </View>
                         </View>
@@ -152,18 +153,16 @@ export default class NewPlaylistModal extends React.Component {
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Create"
-                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                     </View>
                     {this.state.loading &&

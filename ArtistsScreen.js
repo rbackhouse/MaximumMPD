@@ -415,6 +415,9 @@ export default class ArtistsScreen extends React.Component {
                                 placeholder='Search'
                                 onChangeText={this.search}
                                 value={this.state.searchValue}
+                                containerStyle={{backgroundColor: 'white'}}
+                                inputContainerStyle={{backgroundColor: '#EBECEC'}}
+                                inputStyle={{backgroundColor: '#EBECEC'}}
                             />
                         </View>
                         <View style={{flex: .25}}>
@@ -466,6 +469,9 @@ export default class ArtistsScreen extends React.Component {
                                 placeholder='Search'
                                 onChangeText={this.searchAlbums}
                                 value={this.state.searchAlbumValue}
+                                containerStyle={{backgroundColor: 'white'}}
+                                inputContainerStyle={{backgroundColor: '#EBECEC'}}
+                                inputStyle={{backgroundColor: '#EBECEC'}}
                             />
                         </View>
                         <View style={{flex: .25}}>
@@ -540,6 +546,9 @@ export default class ArtistsScreen extends React.Component {
                                 placeholder='Search'
                                 onChangeText={this.searchGenres}
                                 value={this.state.searchGenreValue}
+                                containerStyle={{backgroundColor: 'white'}}
+                                inputContainerStyle={{backgroundColor: '#EBECEC'}}
+                                inputStyle={{backgroundColor: '#EBECEC'}}
                             />
                         </View>
                         <View style={{flex: .25}}>

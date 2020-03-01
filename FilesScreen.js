@@ -322,7 +322,10 @@ export default class FilesScreen extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                        />
+                            containerStyle={{backgroundColor: 'white'}}                            
+                            inputContainerStyle={{backgroundColor: '#EBECEC'}}
+                            inputStyle={{backgroundColor: '#EBECEC'}}
+                    />
                     </View>
                     <View style={{flex: .5}}>
                         <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
@@ -330,6 +333,7 @@ export default class FilesScreen extends React.Component {
                         </Text>
                     </View>
                 </View>
+                <View style={{flex: .9, flexDirection: 'row', alignItems: 'flex-start' }}>
                 <SwipeListView
 					useFlatList
                     data={this.state.files}
@@ -382,6 +386,7 @@ export default class FilesScreen extends React.Component {
                     renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
                     ItemSeparatorComponent={this.renderSeparator}
 				/>
+                </View>
                 {this.state.loading &&
                     <View style={styles.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>

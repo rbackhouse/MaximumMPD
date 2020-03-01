@@ -69,18 +69,16 @@ class RandomPlaylistTypeModal extends React.Component {
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
-                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                     </View>
 
@@ -377,14 +375,15 @@ export default class PlaylistScreen extends React.Component {
         const playPauseIcon = this.state.isPlaying == true ? "pause" : "play";
         const playPauseLabel = this.state.isPlaying == true ? "Pause" : "Play";
         return (
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+                <View style={{flex: .05, flexDirection: 'row', alignItems: 'flex-start' }}>
                     <View style={{flex: 1, justifyContent: 'center'}}>
                         <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic', paddingLeft: 10}}>
                             Total : {this.state.playlist.length}   Time : {this.state.totalTime}
                         </Text>
                     </View>
                 </View>
+                <View style={{flex: .95, flexDirection: 'row', alignItems: 'flex-start' }}>
                 <FlatList
                     data={this.state.playlist}
                     renderItem={this.renderItem}
@@ -395,6 +394,7 @@ export default class PlaylistScreen extends React.Component {
                     ref={(ref) => { this.listRef = ref; }}
                     getItemLayout={this.getItemLayout}
                 />
+                </View>
                 {this.state.loading &&
                     <View style={styles.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>

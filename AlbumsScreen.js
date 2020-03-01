@@ -252,6 +252,9 @@ export default class AlbumsScreen extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
+                            containerStyle={{backgroundColor: 'white'}}
+                            inputContainerStyle={{backgroundColor: '#EBECEC'}}
+                            inputStyle={{backgroundColor: '#EBECEC'}}
                         />
                     </View>
                     <View style={{flex: .25}}>
@@ -261,6 +264,7 @@ export default class AlbumsScreen extends React.Component {
                     </View>
                 </View>
                 {this.state.grid === false &&
+                    <View style={{flex: .9, flexDirection: 'row', alignItems: 'flex-start' }}>
                     <FlatList
                         data={this.state.albums}
                         renderItem={this.renderItem}
@@ -269,8 +273,10 @@ export default class AlbumsScreen extends React.Component {
                         ItemSeparatorComponent={this.renderSeparator}
                         key={this.state.numColumns}
                     />
+                    </View>
                 }
                 {this.state.grid === true &&
+                    <View style={{flex: .9, flexDirection: 'row', alignItems: 'flex-start' }}>
                     <FlatList
                         data={this.state.albums}
                         renderItem={this.renderGridAlbumItem}
@@ -279,6 +285,7 @@ export default class AlbumsScreen extends React.Component {
                         columnWrapperStyle={styles.row}
                         key={this.state.numColumns}
                     />
+                    </View>
                 }
                 {this.state.loading &&
                     <View style={styles.loading}>

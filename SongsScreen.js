@@ -259,7 +259,10 @@ export default class SongsScreen extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                        />
+                            containerStyle={{backgroundColor: 'white'}}
+                            inputContainerStyle={{backgroundColor: '#EBECEC'}}
+                            inputStyle={{backgroundColor: '#EBECEC'}}
+                    />
                     </View>
                     <View style={{flex: .25}}>
                         <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
@@ -267,6 +270,7 @@ export default class SongsScreen extends React.Component {
                         </Text>
                     </View>
                 </View>
+                <View style={{flex: .9, flexDirection: 'row', alignItems: 'stretch' }}>
                 <SwipeListView
 					useFlatList
                     data={this.state.songs}
@@ -308,6 +312,7 @@ export default class SongsScreen extends React.Component {
                     renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
                     ItemSeparatorComponent={this.renderSeparator}
 				/>
+                </View>
                 {this.state.loading &&
                     <View style={styles.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>

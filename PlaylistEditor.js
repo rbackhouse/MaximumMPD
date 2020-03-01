@@ -69,18 +69,16 @@ class AddStreamURLModal extends React.Component {
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
-                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'check',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: "white"}}
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome'}}
                             raised={true}
-                            buttonStyle={{borderRadius: 12}}
-                            backgroundColor={'#3396FF'}
+                            type="outline"
                         />
                     </View>
 
@@ -260,7 +258,10 @@ export default class PlaylistEditor extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                        />
+                            containerStyle={{backgroundColor: 'white'}}
+                            inputContainerStyle={{backgroundColor: '#EBECEC'}}
+                            inputStyle={{backgroundColor: '#EBECEC'}}
+                    />
                     </View>
                     <View style={{flex: .25}}>
                         <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>

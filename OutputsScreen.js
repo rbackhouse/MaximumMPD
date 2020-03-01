@@ -107,7 +107,7 @@ export default class OutputsScreen extends React.Component {
     }
 
     render() {
-        const outputs = this.state.outputs.map((output) =>
+        const outputs = this.state.outputs.map((output) => 
             <SettingsList.Item
                         hasNavArrow={false}
                         switchState={output.enabled}
