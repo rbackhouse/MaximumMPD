@@ -390,10 +390,19 @@ export default class ArtistsScreen extends React.Component {
     }
 
     render() {
+        const {height, width} = Dimensions.get('window');
+        let bg = .06;
+        let sb = .1;
+        let fl = .84;
+
+        if (width < 321) {
+            bg = .08;
+            fl = .82;
+        }
         if (this.state.selectedTab === 0) {
             return (
                 <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
-                    <View style={{flex: .06, width: "100%"}}>
+                    <View style={{flex: bg, width: "100%"}}>
                         <ButtonGroup
                             onPress={(index) => {
                                 this.changeTab(index);
@@ -405,7 +414,7 @@ export default class ArtistsScreen extends React.Component {
                             selectedTextStyle={{color: 'white'}}
                         />
                     </View>
-                    <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
+                    <View style={{flex: sb, flexDirection: 'row', alignItems: 'center'}}>
                         <View style={{flex: .75}}>
                             <SearchBar
                                 clearIcon
@@ -427,7 +436,7 @@ export default class ArtistsScreen extends React.Component {
                         </View>
                     </View>
 
-                    <View style={{flex: .84, width: "100%"}}>
+                    <View style={{flex: fl, width: "100%"}}>
                         <FlatList
                             data={this.state.artists}
                             renderItem={this.renderItem}
@@ -447,7 +456,7 @@ export default class ArtistsScreen extends React.Component {
         } else if (this.state.selectedTab === 1) {
             return (
                 <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
-                    <View style={{flex: .06, width: "100%"}}>
+                    <View style={{flex: bg, width: "100%"}}>
                         <ButtonGroup
                             onPress={(index) => {
                                 this.changeTab(index);
@@ -459,7 +468,7 @@ export default class ArtistsScreen extends React.Component {
                             selectedTextStyle={{color: 'white'}}
                         />
                     </View>
-                    <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
+                    <View style={{flex: sb, flexDirection: 'row', alignItems: 'center'}}>
                         <View style={{flex: .75}}>
                             <SearchBar
                                 clearIcon
@@ -480,7 +489,7 @@ export default class ArtistsScreen extends React.Component {
                             </Text>
                         </View>
                     </View>
-                    <View style={{flex: .84, width: "100%"}}>
+                    <View style={{flex: fl, width: "100%"}}>
                         {this.state.grid === false &&
                             <FlatList
                                 data={this.state.albums}
@@ -524,7 +533,7 @@ export default class ArtistsScreen extends React.Component {
         } else if (this.state.selectedTab === 2) {
             return (
                 <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
-                    <View style={{flex: .06, width: "100%"}}>
+                    <View style={{flex: bg, width: "100%"}}>
                         <ButtonGroup
                             onPress={(index) => {
                                 this.changeTab(index);
@@ -536,7 +545,7 @@ export default class ArtistsScreen extends React.Component {
                             selectedTextStyle={{color: 'white'}}
                         />
                     </View>
-                    <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
+                    <View style={{flex: sb, flexDirection: 'row', alignItems: 'center'}}>
                         <View style={{flex: .75}}>
                             <SearchBar
                                 clearIcon
@@ -557,7 +566,7 @@ export default class ArtistsScreen extends React.Component {
                             </Text>
                         </View>
                     </View>
-                    <View style={{flex: .84, width: "100%"}}>
+                    <View style={{flex: fl, width: "100%"}}>
                         <SwipeListView
         					useFlatList
                             data={this.state.genres}

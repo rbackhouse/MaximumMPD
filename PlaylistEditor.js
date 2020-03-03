@@ -63,8 +63,8 @@ class AddStreamURLModal extends React.Component {
                     <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Add a Stream URL</Text>
                     </View>
-                    <Input label="Name" autoCapitalize="none" onChangeText={(streamName) => this.setState({streamName: streamName})} style={styles.entryField}></Input>
-                    <Input label="Stream URL" autoCapitalize="none" onChangeText={(url) => this.setState({streamURL: url})} style={styles.entryField}></Input>
+                    <Input label="Name" autoCapitalize="none" onChangeText={(streamName) => this.setState({streamName: streamName})} style={styles.entryField} labelStyle={styles.label}></Input>
+                    <Input label="Stream URL" autoCapitalize="none" onChangeText={(url) => this.setState({streamURL: url})} style={styles.entryField} labelStyle={styles.label}></Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.onOk();}}
@@ -269,6 +269,7 @@ export default class PlaylistEditor extends React.Component {
                         </Text>
                     </View>
                 </View>
+                <View style={{flex: .9, flexDirection: 'row', alignItems: 'flex-start' }}>
                 <FlatList
                     data={this.state.playlists}
                     renderItem={this.renderItem}
@@ -276,6 +277,7 @@ export default class PlaylistEditor extends React.Component {
                     keyExtractor={item => item}
                     ItemSeparatorComponent={this.renderSeparator}
                 />
+                </View>
                 {this.state.loading &&
                     <View style={styles.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
@@ -301,6 +303,11 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontFamily: 'GillSans-Italic',
         padding: 10
+    },
+    label: {
+        fontSize: 17,
+        fontFamily: 'GillSans-Italic',
+        fontWeight: 'normal',
     },
     sectionHeader: {
         paddingTop: 2,

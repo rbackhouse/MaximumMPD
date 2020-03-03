@@ -64,7 +64,7 @@ class RandomPlaylistTypeModal extends React.Component {
                         <Picker.Item label="By Title" value="title" />
                         <Picker.Item label="By Genre" value="genre" />
                     </Picker>
-                    <Input label="Value" autoCapitalize="none" value={this.state.value} onChangeText={(value) => this.setState({value})} style={styles.entryField}></Input>
+                    <Input label="Value" autoCapitalize="none" value={this.state.value} onChangeText={(value) => this.setState({value})} style={styles.entryField} labelStyle={styles.label}></Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.onOk();}}
@@ -433,6 +433,11 @@ const styles = StyleSheet.create({
     item: {
         fontSize: 17,
         fontFamily: 'GillSans-Italic'
+    },
+    label: {
+        fontSize: 17,
+        fontFamily: 'GillSans-Italic',
+        fontWeight: 'normal',
     },
     sectionHeader: {
         paddingTop: 2,

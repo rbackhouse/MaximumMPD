@@ -165,7 +165,7 @@ class CrossfadeModal extends React.Component {
 
     render() {
         const visible = this.props.visible;
-        const value = this.props.value;
+        const value = ""+this.props.value;
         return (
             <Modal
                 animationType="fade"
@@ -177,7 +177,7 @@ class CrossfadeModal extends React.Component {
                     <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Set Crossfade</Text>
                     </View>
-                    <Input keyboardType='numeric' label="Crossfade (Seconds)" maxLength={5} value={value} onChangeText={(crossFade) => this.setState({crossFade})}></Input>
+                    <Input keyboardType='numeric' label="Crossfade (Seconds)" maxLength={5} value={value} onChangeText={(crossFade) => this.setState({crossFade})} labelStyle={styles.label}></Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.onOk();}}
@@ -275,7 +275,7 @@ class AboutModal extends React.Component {
                     <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>About Maximum MPD</Text>
                     </View>
-                    <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Version: 2.5</Text>
+                    <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Version: 2.6</Text>
                     <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Author: Richard Backhouse</Text>
                     <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Various Images provided by Icons8 (https://icons8.com)</Text>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
@@ -327,7 +327,7 @@ class MaxListSizeModal extends React.Component {
                     <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Set Crossfade</Text>
                     </View>
-                    <Input keyboardType='numeric' label="Max List Size" maxLength={5} value={value} onChangeText={(maxListSize) => this.setState({maxListSize})}></Input>
+                    <Input keyboardType='numeric' label="Max List Size" maxLength={5} value={value} onChangeText={(maxListSize) => this.setState({maxListSize})} labelStyle={styles.label}></Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.onOk();}}
@@ -673,6 +673,11 @@ const styles = StyleSheet.create({
         margin: 15,
         borderColor: '#e3e5e5',
         borderWidth: 1
+    },
+    label: {
+        fontSize: 17,
+        fontFamily: 'GillSans-Italic',
+        fontWeight: 'normal',
     },
     status: {
         fontSize: 12

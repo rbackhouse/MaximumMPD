@@ -138,6 +138,7 @@ export default class NewPlaylistModal extends React.Component {
                                 />
                             </View>
                         </View>
+                        <View style={{flex: .9, flexDirection: 'row', alignItems: 'flex-start' }}>
                         <FlatList
                             data={this.state.playlists}
                             renderItem={this.renderItem}
@@ -145,9 +146,10 @@ export default class NewPlaylistModal extends React.Component {
                             keyExtractor={item => item}
                             ItemSeparatorComponent={this.renderSeparator}
                         />
+                        </View>
                     </View>
                     <View style={{ flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', marginTop: 15}}>
-                        <Input label="Create New Playlist" autoCapitalize="none" onChangeText={(playlistName) => this.setState({playlistName})} style={styles.entryField}></Input>
+                        <Input label="Create New Playlist" autoCapitalize="none" onChangeText={(playlistName) => this.setState({playlistName})} style={styles.entryField} labelStyle={styles.label}></Input>
                     </View>
                     <View style={{ flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
@@ -188,6 +190,11 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontFamily: 'GillSans-Italic',
         padding: 10
+    },
+    label: {
+        fontSize: 17,
+        fontFamily: 'GillSans-Italic',
+        fontWeight: 'normal',
     },
     sectionHeader: {
         paddingTop: 2,

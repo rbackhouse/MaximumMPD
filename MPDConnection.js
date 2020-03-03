@@ -137,7 +137,7 @@ class MPDConnection {
     				}
     			} else if (state == "internalConnected") {
                     this.albumArtDir = status.albumArtDir;
-    				//this.queue = [];
+    				this.queue = [];
     				this.isConnected = true;
                     if (pwd) {
                         this.login(pwd).then(() => {}).catch((err) => {});

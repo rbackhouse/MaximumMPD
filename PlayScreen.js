@@ -72,7 +72,8 @@ export default class PlayScreen extends React.Component {
             urlCommand: "",
             selectedItem: "",
             modalVisible: false,
-            loading: false
+            loading: false,
+            isVisible: true
         }
     }
 
@@ -161,12 +162,14 @@ export default class PlayScreen extends React.Component {
             'didBlur',
             payload => {
                 //MPDConnection.current().stopEmittingStatus();
+                this.setState({isVisible: false});
                 MPDConnection.current().startEmittingStatus(30000);
             }
         );
         this.didFocusSubscription = this.props.navigation.addListener(
             'didFocus',
             payload => {
+                this.setState({isVisible: true});
                 MPDConnection.current().startEmittingStatus(1000);
             }
         );
@@ -202,6 +205,22 @@ export default class PlayScreen extends React.Component {
                 });
             }
         );
+        this.onInternalConnect = MPDConnection.getEventEmitter().addListener(
+            "OnInternalConnect",
+            () => {
+                if (this.state.isVisible) {
+                    MPDConnection.current().startEmittingStatus(1000);
+                }
+            }
+        );
+        this.onConnect = MPDConnection.getEventEmitter().addListener(
+            "OnConnect",
+            () => {
+                if (this.state.isVisible) {
+                    MPDConnection.current().startEmittingStatus(1000);
+                }
+            }
+        );
 
         Linking.addEventListener('url', this.handleOpenURL);
     }
@@ -215,6 +234,8 @@ export default class PlayScreen extends React.Component {
         this.onAlbumArtError.remove();
         this.onVolumeChange.remove();
         this.onDisconnect.remove();
+        this.onConnect.remove();
+        this.onInternalConnect.remove();
         Linking.removeEventListener('url', this.handleOpenURL);
     }
 
@@ -512,14 +533,14 @@ export default class PlayScreen extends React.Component {
                             selectedButtonStyle={{backgroundColor: '#3396FF'}}
                             selectedTextStyle={{color: 'white'}}
                         />
-                      </View>
-                      <PlaylistScreen navigation={this.props.navigation}/>
-                  </View>
+                    </View>
+                    <PlaylistScreen navigation={this.props.navigation}/>
+                </View>
             );
         } else {
             return (
                 <View style={{flex:1}}>
-                    <View style={{flex:.07, width: "100%", alignItems: 'stretch', justifyContent: 'center', padding: 5}}>
+                    <View style={{flex: .07, width: "100%", alignItems: 'stretch', justifyContent: 'center', padding: 5}}>
                         <ButtonGroup
                             onPress={(index) => {
                                 this.setState({selectedTab:index});
@@ -530,9 +551,9 @@ export default class PlayScreen extends React.Component {
                             selectedButtonStyle={{backgroundColor: '#3396FF'}}
                             selectedTextStyle={{color: 'white'}}
                         />
-                      </View>
-                      <PlaylistEditor navigation={this.props.navigation}/>
-                  </View>
+                    </View>
+                    <PlaylistEditor navigation={this.props.navigation}/>
+                </View>
             );
         }
     }

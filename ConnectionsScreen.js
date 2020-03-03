@@ -66,10 +66,10 @@ class AddConnectionModal extends React.Component {
                     <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Add MPD Connection</Text>
                     </View>
-                    <Input label="Name" autoCapitalize="none" onChangeText={(name) => this.setState({name})} style={styles.entryField}></Input>
-                    <Input label="Host" autoCapitalize="none" onChangeText={(host) => this.setState({host})} style={styles.entryField}></Input>
-                    <Input keyboardType='numeric' label="Port" onChangeText={(port) => this.setState({port})} style={styles.entryField}></Input>
-                    <Input secureTextEntry={true} label="Password (if required by MPD server)" onChangeText={(password) => this.setState({password})} style={styles.entryField}></Input>
+                    <Input label="Name" autoCapitalize="none" onChangeText={(name) => this.setState({name})} style={styles.entryField} labelStyle={styles.label}></Input>
+                    <Input label="Host" autoCapitalize="none" onChangeText={(host) => this.setState({host})} style={styles.entryField} labelStyle={styles.label}></Input>
+                    <Input keyboardType='numeric' label="Port" onChangeText={(port) => this.setState({port})} style={styles.entryField} labelStyle={styles.label}></Input>
+                    <Input secureTextEntry={true} label="Password (if required by MPD server)" onChangeText={(password) => this.setState({password})} style={styles.entryField} labelStyle={styles.label}></Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.addConnection();}}
@@ -377,6 +377,11 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontFamily: 'GillSans-Italic',
         paddingLeft: 10
+    },
+    label: {
+        fontSize: 17,
+        fontFamily: 'GillSans-Italic',
+        fontWeight: 'normal',
     },
     sectionHeader: {
         paddingTop: 2,

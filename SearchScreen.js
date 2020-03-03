@@ -261,10 +261,10 @@ export default class SearchScreen extends React.Component {
                                             <Image style={{width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
                                         }
                                         <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
-                                            {item.title && <Text style={styles.item}>{item.title}</Text>}
-                                            {item.artist && <Text style={styles.item}>{item.artist}</Text>}
-                                            {item.album && <Text style={styles.item}>{item.album}</Text>}
-                                            {item.time && <Text style={styles.item}>{item.time}</Text>}
+                                            {item.title && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.title}</Text>}
+                                            {item.artist && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.artist}</Text>}
+                                            {item.album && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.album}</Text>}
+                                            {item.time && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.time}</Text>}
                                         </View>
                                         <Icon name="ios-swap" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                                     </View>
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		backgroundColor: '#FFFFFF',
 		justifyContent: 'center',
-        height: 65
+        height: 85
 	},
 	rowBack: {
 		alignItems: 'center',
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		paddingLeft: 15,
-        height: 65
+        height: 85
 	},
 	backRightBtn: {
 		alignItems: 'center',
