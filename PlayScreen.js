@@ -391,9 +391,11 @@ export default class PlayScreen extends React.Component {
 
       let padding = 35;
       let isMedium = false;
+      let bg = .07;
       if (width < 321) {
           padding = 45;
           isMedium = true;
+          bg = .1;
       }
       albumArtSize = Math.round((height/10) * 4) - padding;
 
@@ -522,7 +524,7 @@ export default class PlayScreen extends React.Component {
         } else if (this.state.selectedTab === 1) {
             return (
                 <View style={{flex:1}}>
-                    <View style={{flex:.07, width: "100%", alignItems: 'stretch', justifyContent: 'center', padding: 5}}>
+                    <View style={{flex: bg, width: "100%", alignItems: 'stretch', justifyContent: 'center', padding: 5}}>
                         <ButtonGroup
                             onPress={(index) => {
                                 this.setState({selectedTab:index});
@@ -540,7 +542,7 @@ export default class PlayScreen extends React.Component {
         } else {
             return (
                 <View style={{flex:1}}>
-                    <View style={{flex: .07, width: "100%", alignItems: 'stretch', justifyContent: 'center', padding: 5}}>
+                    <View style={{flex: bg, width: "100%", alignItems: 'stretch', justifyContent: 'center', padding: 5}}>
                         <ButtonGroup
                             onPress={(index) => {
                                 this.setState({selectedTab:index});

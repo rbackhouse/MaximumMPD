@@ -165,7 +165,6 @@ class CrossfadeModal extends React.Component {
 
     render() {
         const visible = this.props.visible;
-        const value = ""+this.props.value;
         return (
             <Modal
                 animationType="fade"
@@ -177,7 +176,7 @@ class CrossfadeModal extends React.Component {
                     <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Set Crossfade</Text>
                     </View>
-                    <Input keyboardType='numeric' label="Crossfade (Seconds)" maxLength={5} value={value} onChangeText={(crossFade) => this.setState({crossFade})} labelStyle={styles.label}></Input>
+                    <Input keyboardType='numeric' label="Crossfade (Seconds)" maxLength={5} onChangeText={(crossFade) => this.setState({crossFade})} labelStyle={styles.label}></Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.onOk();}}
@@ -424,7 +423,6 @@ export default class SettingsScreen extends React.Component {
     }
 
     componentWillUnmount() {
-        this.onConnect.remove();
         this.onDisconnect.remove();
     }
 

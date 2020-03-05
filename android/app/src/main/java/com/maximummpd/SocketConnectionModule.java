@@ -48,7 +48,6 @@ import javax.annotation.Nullable;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 import android.os.Environment;
@@ -74,8 +73,8 @@ public class SocketConnectionModule extends ReactContextBaseJavaModule implement
             if (getCurrentActivity() != null) {
                 ((PermissionAwareActivity) getCurrentActivity()).requestPermissions(PERMISSIONS, 1, new PermissionListener() {
                     public boolean onRequestPermissionsResult(final int requestCode,
-                                                              @NonNull final String[] permissions,
-                                                              @NonNull final int[] grantResults) {
+                                                              final String[] permissions,
+                                                              final int[] grantResults) {
                         boolean permissionsGranted = true;
                         for (int i = 0; i < permissions.length; i++) {
                             final boolean granted = grantResults[i] == PackageManager.PERMISSION_GRANTED;
