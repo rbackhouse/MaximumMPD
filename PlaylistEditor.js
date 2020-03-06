@@ -300,7 +300,6 @@ export default class PlaylistEditor extends React.Component {
 
 const styles = StyleSheet.create({
     item: {
-        fontSize: 17,
         fontFamily: 'GillSans-Italic',
         padding: 10
     },

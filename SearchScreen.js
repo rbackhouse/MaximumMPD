@@ -309,7 +309,6 @@ export default class SearchScreen extends React.Component {
 
 const styles = StyleSheet.create({
     item: {
-        fontSize: 17,
         fontFamily: 'GillSans-Italic',
         paddingLeft: 10
     },
