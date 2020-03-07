@@ -131,7 +131,6 @@ export default class PlayScreen extends React.Component {
                     this.setState({imagePath: '', searchedForAlbumArt: false});
                 }
                 if (this.state.urlCommand !== '') {
-                    console.log("running urlCommand "+this.state.urlCommand);
                     switch (this.state.urlCommand) {
                         case 'playpause':
                             this.onPlayPause();

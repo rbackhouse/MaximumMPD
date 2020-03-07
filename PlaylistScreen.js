@@ -200,7 +200,6 @@ export default class PlaylistScreen extends React.Component {
     }
 
     onRandom(type, value) {
-        console.log("type "+ type+" value "+value);
         this.setState({loading: true, modalVisible: false});
         MPDConnection.current().clearPlayList();
         MPDConnection.current().randomPlayList(type, value)

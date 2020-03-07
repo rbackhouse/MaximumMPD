@@ -72,7 +72,6 @@ export default class FilesScreen extends React.Component {
         this.onDisconnect = MPDConnection.getEventEmitter().addListener(
             "OnDisconnect",
             () => {
-                console.log("OnDisconnect");
                 this.setState({files: [], dirs: [], fullset: []});
                 this.props.navigation.popToTop();
             }
