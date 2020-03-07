@@ -36,6 +36,9 @@ export default class ArtistsScreen extends React.Component {
 
     constructor(props) {
         super(props);
+        this.artistRowHeight = 60;
+        this.albumRowHeight = 60;
+
         this.state = {
           searchValue: "",
           searchGenreValue: "",
@@ -300,7 +303,10 @@ export default class ArtistsScreen extends React.Component {
     renderItem = ({item}) => {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', height: 65 }}>
+                <View onLayout={(event) => {
+                    const {x, y, width, height} = event.nativeEvent.layout;
+                    this.artistRowHeight = height+1;
+                }} style={{flex: 1, flexDirection: 'row', alignItems: 'center', height: 65 }}>
                     <View style={{paddingLeft: 10}}/>
                     {item.imagePath === undefined &&
                         <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain'}} source={require('./images/icons8-dj-30.png')}/>
@@ -343,7 +349,10 @@ export default class ArtistsScreen extends React.Component {
     renderAlbumItem = ({item}) => {
         return (
             <TouchableOpacity onPress={this.onAlbumPress.bind(this, item)}>
-                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', height: 65 }}>
+                <View onLayout={(event) => {
+                    const {x, y, width, height} = event.nativeEvent.layout;
+                    this.albumRowHeight = height+1;
+                }} style={{flex: 1, flexDirection: 'row', alignItems: 'center', height: 65 }}>
                     <View style={{paddingLeft: 10}}/>
                     {item.imagePath === undefined &&
                         <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
@@ -387,6 +396,14 @@ export default class ArtistsScreen extends React.Component {
                 </View>
             </TouchableOpacity>
         );
+    }
+
+    getArtistItemLayout = (item, index) => {
+        return {offset: this.artistRowHeight * index, length: this.artistRowHeight, index: index};
+    }
+
+    getAlbumItemLayout = (item, index) => {
+        return {offset: this.albumRowHeight * index, length: this.albumRowHeight, index: index};
     }
 
     render() {
@@ -444,6 +461,7 @@ export default class ArtistsScreen extends React.Component {
                             keyExtractor={item => item.key}
                             ItemSeparatorComponent={this.renderSeparator}
                             key={this.state.numColumns}
+                            getItemLayout={this.getArtistItemLayout}
                        />
                     </View>
                     {this.state.loading &&
@@ -498,6 +516,7 @@ export default class ArtistsScreen extends React.Component {
                                 keyExtractor={item => item.key}
                                 ItemSeparatorComponent={this.renderSeparator}
                                 key={this.state.numColumns}
+                                getItemLayout={this.getAlbumItemLayout}
                             />
                         }
                         {this.state.grid === true &&
@@ -574,7 +593,7 @@ export default class ArtistsScreen extends React.Component {
                             renderItem={this.renderGenreItem}
                             renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
                             ItemSeparatorComponent={this.renderSeparator}
-        				/>
+                        />
                     </View>
                     {this.state.loading &&
                         <View style={styles.loading}>

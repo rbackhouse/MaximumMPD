@@ -46,6 +46,8 @@ export default class AlbumsScreen extends React.Component {
 
     constructor(props) {
         super(props);
+        this.rowHeight = 60;
+
         this.state = {
           searchValue: "",
           albums: [],
@@ -189,7 +191,10 @@ export default class AlbumsScreen extends React.Component {
     renderItem = ({item}) => {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', height: 65 }}>
+                <View onLayout={(event) => {
+                    const {x, y, width, height} = event.nativeEvent.layout;
+                    this.rowHeight = height+1;
+                }} style={{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', height: 65 }}>
                     <View style={{paddingLeft: 10}}/>
                     {item.imagePath === undefined &&
                         <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
@@ -239,6 +244,10 @@ export default class AlbumsScreen extends React.Component {
         );
     }
 
+    getItemLayout = (item, index) => {
+        return {offset: this.rowHeight * index, length: this.rowHeight, index: index};
+    }
+
     render() {
         return (
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
@@ -272,6 +281,8 @@ export default class AlbumsScreen extends React.Component {
                         keyExtractor={item => item.name}
                         ItemSeparatorComponent={this.renderSeparator}
                         key={this.state.numColumns}
+                        ref={(ref) => { this.listRef = ref; }}
+                        getItemLayout={this.getItemLayout}
                     />
                     </View>
                 }
