@@ -396,9 +396,16 @@ export default class SettingsScreen extends React.Component {
         .then((value) => {
             this.setState({useGridView: value});
         });
+        this.onConnect = MPDConnection.getEventEmitter().addListener(
+            "OnConnect",
+            () => {
+                this.getStatus();
+            }
+        );
         this.onDisconnect = MPDConnection.getEventEmitter().addListener(
             "OnDisconnect",
             () => {
+                console.log("settings disconnect");
                 this.setState({
                     replayGain: "off",
                     crossfade: 0,
@@ -423,6 +430,7 @@ export default class SettingsScreen extends React.Component {
     }
 
     componentWillUnmount() {
+        this.onConnect.remove();
         this.onDisconnect.remove();
     }
 
