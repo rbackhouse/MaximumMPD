@@ -28,7 +28,8 @@ export default class NewPlaylistModal extends React.Component {
         playlistName: "",
         searchValue: "",
         playlists: [],
-        fullset: []
+        fullset: [],
+        createDisabled: true
     }
 
     constructor(props) {
@@ -36,7 +37,7 @@ export default class NewPlaylistModal extends React.Component {
     }
 
     load() {
-        this.setState({loading: true});
+        this.setState({loading: true, createDisabled: true, playlistName: ""});
         MPDConnection.current().listPlayLists()
         .then((playlists) => {
             this.setState({loading: false, playlists: playlists, fullset: playlists, playlistName: "", searchValue: ""});
@@ -149,7 +150,7 @@ export default class NewPlaylistModal extends React.Component {
                         </View>
                     </View>
                     <View style={{ flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', marginTop: 15}}>
-                        <Input label="Create New Playlist" autoCapitalize="none" onChangeText={(playlistName) => this.setState({playlistName})} style={styles.entryField} labelStyle={styles.label}></Input>
+                        <Input placeholder="Click here to enter name" label="Create New Playlist" autoCapitalize="none" onChangeText={(playlistName) => { this.setState({playlistName}); playlistName.length < 1 ?  this.setState({createDisabled: true}) : this.setState({createDisabled: false}); }} style={styles.entryField} inputStyle={styles.label} labelStyle={styles.label}></Input>
                     </View>
                     <View style={{ flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
@@ -158,6 +159,7 @@ export default class NewPlaylistModal extends React.Component {
                             icon={{name: 'check',  size: 15, type: 'font-awesome'}}
                             raised={true}
                             type="outline"
+                            disabled={this.state.createDisabled}
                         />
                         <Button
                             onPress={() => {this.onCancel();}}
