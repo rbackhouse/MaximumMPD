@@ -180,9 +180,12 @@ export default class PlaylistDetails extends React.Component {
                 <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
                     <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                     <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
-                        <Text style={styles.item}>{item.title}</Text>
-                        <Text style={styles.item}>{item.artist}</Text>
-                        <Text style={styles.item}>{item.album}</Text>
+                        {item.name !== undefined &&
+                            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.name}</Text>
+                        }
+                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.title}</Text>
+                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.artist}</Text>
+                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.album}</Text>
                     </View>
                     <Icon name="ios-trash" size={28} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                 </View>
