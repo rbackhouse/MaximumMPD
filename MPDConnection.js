@@ -51,6 +51,7 @@ const AUDIO_PREFIX = "audio: ";
 const GENRE_PREFIX = "Genre: ";
 const ALBUMARTIST_PREFIX = "AlbumArtist: ";
 const DATE_PREFIX = "Date: ";
+const NAME_PREFIX = "Name: ";
 
 const INITIAL = 0;
 const WRITTEN = 1;
@@ -748,7 +749,9 @@ class MPDConnection {
 					song.id = parseInt(line.substring(ID_PREFIX.length));
 				} else if (line.indexOf(POS_PREFIX) === 0) {
 					song.pos = parseInt(line.substring(POS_PREFIX.length));
-				}
+				} else if (line.indexOf(NAME_PREFIX) === 0) {
+                    song.name = line.substring(NAME_PREFIX.length);
+                }
 			});
 			return songs;
 		};
