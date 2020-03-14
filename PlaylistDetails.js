@@ -46,9 +46,9 @@ export default class PlaylistDetails extends React.Component {
         const { navigation } = this.props;
         this.playlistName = navigation.getParam('playlist');
         const isNew = navigation.getParam('isNew');
-        if (!isNew) {
-            this.load();
-        }
+        //if (!isNew) {
+        //    this.load();
+        //}
 
         this.didFocusSubscription = this.props.navigation.addListener(
             'didFocus',
@@ -66,11 +66,11 @@ export default class PlaylistDetails extends React.Component {
         this.setState({loading: true});
         MPDConnection.current().getNamedPlayListInfo(this.playlistName)
         .then((playlist) => {
-                this.setState({loading: false});
-                playlist.forEach((entry, index) => {
-                    entry.pos = index;
-                })
-                this.setState({playlist: playlist, fullset: playlist});
+            this.setState({loading: false});
+            playlist.forEach((entry, index) => {
+                entry.pos = index;
+            })
+            this.setState({playlist: playlist, fullset: playlist});
         })
         .catch((err) => {
             this.setState({loading: false});
