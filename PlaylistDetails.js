@@ -228,7 +228,7 @@ export default class PlaylistDetails extends React.Component {
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }
-                <ActionButton buttonColor="rgba(231,76,60,1)">
+                <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                     <ActionButton.Item buttonColor='#1abc9c' title="Play Now" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onLoad(true);}}>
                         <FAIcon name="play" size={15} color="#e6e6e6" />
                     </ActionButton.Item>

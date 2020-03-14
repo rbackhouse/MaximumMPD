@@ -285,7 +285,7 @@ export default class PlaylistEditor extends React.Component {
                 }
                 <NewPlaylistModal visible={this.state.modalVisible} onSet={(name) => {this.createNewPlaylist(name)}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
                 <AddStreamURLModal visible={this.state.addStreamURLVisible} onSet={(name, url) => {this.addStreamURL(name, url)}} onCancel={() => this.setState({addStreamURLVisible: false})}></AddStreamURLModal>
-                <ActionButton buttonColor="rgba(231,76,60,1)">
+                <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                     <ActionButton.Item buttonColor='#1abc9c' title="Add Stream URL" size={40} textStyle={styles.actionButtonText} onPress={() => {this.setState({addStreamURLVisible: true});}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>

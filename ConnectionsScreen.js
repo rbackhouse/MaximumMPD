@@ -362,7 +362,7 @@ export default class ConnectionsScreen extends React.Component {
                     </View>
                 }
 
-                <ActionButton buttonColor="rgba(231,76,60,1)">
+                <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                     <ActionButton.Item buttonColor='#3498db' title="Add Connection" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onAdd();}}>
                         <Icon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>

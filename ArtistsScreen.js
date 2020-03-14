@@ -530,7 +530,7 @@ export default class ArtistsScreen extends React.Component {
                             />
                         }
                     </View>
-                    <ActionButton buttonColor="rgba(231,76,60,1)">
+                    <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                         <ActionButton.Item buttonColor='#3498db' title="List View" size={40} textStyle={styles.actionButtonText} onPress={() => {this.setState({grid: false, numColumns: 1});}}>
                             <Icon name="ios-list" size={20} color="white"/>
                         </ActionButton.Item>

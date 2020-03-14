@@ -320,7 +320,7 @@ export default class SongsScreen extends React.Component {
                 }
                 <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
 
-                <ActionButton buttonColor="rgba(231,76,60,1)">
+                <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                     <ActionButton.Item buttonColor='#1abc9c' title="Play Now" size={40} textStyle={styles.actionButtonText} onPress={() => {this.autoPlay();}}>
                         <FAIcon name="play" size={15} color="#e6e6e6" />
                     </ActionButton.Item>

@@ -134,7 +134,7 @@ export default class DebugScreen extends React.Component {
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }
-                <ActionButton buttonColor="rgba(231,76,60,1)">
+                <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                     <ActionButton.Item buttonColor='#3498db' title="Run" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onRun();}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>

@@ -399,7 +399,7 @@ export default class PlaylistScreen extends React.Component {
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }
-                <ActionButton buttonColor="rgba(231,76,60,1)">
+                <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                     <ActionButton.Item size={actionButtonSize} buttonColor='#3498db' title="Edit/Select" textStyle={styles.actionButtonText} onPress={this.onEdit.bind(this)}>
                         <FAIcon name="edit" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
