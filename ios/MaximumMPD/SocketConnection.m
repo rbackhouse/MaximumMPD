@@ -193,9 +193,13 @@ RCT_EXPORT_METHOD(saveDebugData:(NSString *)data) {
                 //NSLog(@"binary out [%ld] [%@]", [albumArtData length], out);
               } else {
                 NSString *out = [[NSString alloc] initWithBytes:[self._data bytes] length:[self._data length] encoding:NSUTF8StringEncoding];
-                [self sendEventWithName:@"OnResponse" body:@{@"data": out}];
-                self._data = [NSMutableData data];
                 //NSLog(@"out [%@]", out);
+                if (out == NULL) {
+                  [self sendEventWithName:@"OnResponseError" body:@{@"data": @"Response is empty"}];
+                } else {
+                  [self sendEventWithName:@"OnResponse" body:@{@"data": out}];
+                }
+                self._data = [NSMutableData data];
               }
             }
             
