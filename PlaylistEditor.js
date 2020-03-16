@@ -63,8 +63,8 @@ class AddStreamURLModal extends React.Component {
                     <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Add a Stream URL</Text>
                     </View>
-                    <Input label="Name" autoCapitalize="none" onChangeText={(streamName) => this.setState({streamName: streamName})} style={styles.entryField} labelStyle={styles.label}></Input>
-                    <Input label="Stream URL" autoCapitalize="none" onChangeText={(url) => this.setState({streamURL: url})} style={styles.entryField} labelStyle={styles.label}></Input>
+                    <Input label="Name" autoCapitalize="none" onChangeText={(streamName) => this.setState({streamName: streamName})} style={styles.entryField} inputStyle={styles.label} labelStyle={styles.label}></Input>
+                    <Input label="Stream URL" autoCapitalize="none" onChangeText={(url) => this.setState({streamURL: url})} style={styles.entryField} inputStyle={styles.label} labelStyle={styles.label}></Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.onOk();}}

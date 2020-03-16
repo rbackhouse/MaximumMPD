@@ -176,7 +176,7 @@ class CrossfadeModal extends React.Component {
                     <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Set Crossfade</Text>
                     </View>
-                    <Input keyboardType='numeric' label="Crossfade (Seconds)" maxLength={5} onChangeText={(crossFade) => this.setState({crossFade})} labelStyle={styles.label}></Input>
+                    <Input keyboardType='numeric' label="Crossfade (Seconds)" maxLength={5} onChangeText={(crossFade) => this.setState({crossFade})} inputStyle={styles.label} labelStyle={styles.label}></Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.onOk();}}
@@ -326,7 +326,7 @@ class MaxListSizeModal extends React.Component {
                     <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Set Crossfade</Text>
                     </View>
-                    <Input keyboardType='numeric' label="Max List Size" maxLength={5} value={value} onChangeText={(maxListSize) => this.setState({maxListSize})} labelStyle={styles.label}></Input>
+                    <Input keyboardType='numeric' label="Max List Size" maxLength={5} value={value} onChangeText={(maxListSize) => this.setState({maxListSize})} inputStyle={styles.label} labelStyle={styles.label}></Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.onOk();}}
