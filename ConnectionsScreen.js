@@ -66,10 +66,34 @@ class AddConnectionModal extends React.Component {
                     <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Add MPD Connection</Text>
                     </View>
-                    <Input label="Name" autoCapitalize="none" onChangeText={(name) => this.setState({name})} style={styles.entryField} labelStyle={styles.label}></Input>
-                    <Input label="Host" autoCapitalize="none" onChangeText={(host) => this.setState({host})} style={styles.entryField} labelStyle={styles.label}></Input>
-                    <Input keyboardType='numeric' label="Port" onChangeText={(port) => this.setState({port})} style={styles.entryField} labelStyle={styles.label}></Input>
-                    <Input secureTextEntry={true} label="Password (if required by MPD server)" onChangeText={(password) => this.setState({password})} style={styles.entryField} labelStyle={styles.label}></Input>
+                    <Input label="Name" 
+                            autoCapitalize="none" 
+                            onChangeText={(name) => this.setState({name})} 
+                            style={styles.entryField}
+                            inputStyle={styles.label}
+                            labelStyle={styles.label}>
+                    </Input>
+                    <Input label="Host" 
+                            autoCapitalize="none" 
+                            onChangeText={(host) => this.setState({host})} 
+                            style={styles.entryField}
+                            inputStyle={styles.label}
+                            labelStyle={styles.label}>
+                    </Input>
+                    <Input keyboardType='numeric' 
+                            label="Port" 
+                            onChangeText={(port) => this.setState({port})} 
+                            style={styles.entryField} 
+                            inputStyle={styles.label}
+                            labelStyle={styles.label}>
+                    </Input>
+                    <Input secureTextEntry={true} 
+                            label="Password (if required by MPD server)" 
+                            onChangeText={(password) => this.setState({password})} 
+                            style={styles.entryField} 
+                            inputStyle={styles.label}
+                            labelStyle={styles.label}>
+                    </Input>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                         <Button
                             onPress={() => {this.addConnection();}}
@@ -112,11 +136,14 @@ export default class ConnectionsScreen extends React.Component {
         this.onDiscover = MPDConnection.getEventEmitter().addListener(
             "OnDiscover",
             (discovered) => {
-                let discoveredList = MPDConnection.getDiscoveredList();
-                discoveredList.forEach((d) => {
-                    d.key = d.name+d.ipAddress+d.port;
-                })
-                this.setState({discovered: discoveredList});
+                this.state.discovered = this.state.discovered.filter((d) => {
+                        return !(d.name === discovered.name);
+                });
+                if (discovered.type === "add") {
+                    discovered.key = discovered.name+discovered.ipAddress+discovered.port;
+                    this.state.discovered.push(discovered);
+                }
+                this.setState({discovered: this.state.discovered});
             }
         );
 

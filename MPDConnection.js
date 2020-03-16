@@ -76,6 +76,7 @@ class Discoverer {
                 } else if (discovered.type === "remove") {
                     if (discovered.name) {
                         this.discovered[discovered.name] = undefined;
+                        mpdEventEmiiter.emit('OnDiscover', discovered);
                     }
                 } else if (discovered.type === "discover") {
                     //console.log("Discovered : "+discovered.name);
