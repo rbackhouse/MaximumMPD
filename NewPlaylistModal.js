@@ -116,40 +116,13 @@ export default class NewPlaylistModal extends React.Component {
                 <View style={{marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'space-around'}}>
                     <View style={{ flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', marginBottom: 20 }}>
                         <View style={{ flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Select Playlist</Text>
+                            <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Select or Create New Playlist</Text>
                         </View>
                         <View style={{ flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={{fontSize: 16, fontFamily: 'GillSans-Italic'}}>Pick from List OR Enter a new name below</Text>
+                            <Text style={{fontSize: 16, fontFamily: 'GillSans-Italic'}}>Provide name below OR Select from List</Text>
                         </View>
                     </View>
-                    <View style={{ flex: .6, justifyContent: 'flex-start', alignItems: 'stretch'}}>
-                        <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
-                            <View style={{flex: 1}}>
-                                <SearchBar
-                                    round
-                                    clearIcon
-                                    lightTheme
-                                    cancelButtonTitle="Cancel"
-                                    placeholder='Search'
-                                    onChangeText={this.search}
-                                    value={this.state.searchValue}
-                                    containerStyle={{backgroundColor: "#fff"}}
-                                    inputContainerStyle={{backgroundColor: '#EBECEC'}}
-                                    inputStyle={{backgroundColor: "#EBECEC"}}                                    
-                                />
-                            </View>
-                        </View>
-                        <View style={{flex: .9, flexDirection: 'row', alignItems: 'flex-start' }}>
-                        <FlatList
-                            data={this.state.playlists}
-                            renderItem={this.renderItem}
-                            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-                            keyExtractor={item => item}
-                            ItemSeparatorComponent={this.renderSeparator}
-                        />
-                        </View>
-                    </View>
-                    <View style={{ flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', marginTop: 15}}>
+                    <View style={{ flex: .1, justifyContent: 'flex-start', alignItems: 'stretch'}}>
                         <Input placeholder="Click here to enter name" label="Create New Playlist" autoCapitalize="none" onChangeText={(playlistName) => { this.setState({playlistName}); playlistName.length < 1 ?  this.setState({createDisabled: true}) : this.setState({createDisabled: false}); }} style={styles.entryField} inputStyle={styles.label} labelStyle={styles.label}></Input>
                     </View>
                     <View style={{ flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
@@ -168,6 +141,38 @@ export default class NewPlaylistModal extends React.Component {
                             raised={true}
                             type="outline"
                         />
+                    </View>
+                    <View style={{ flex: .6, justifyContent: 'flex-start', alignItems: 'stretch'}}>
+                        <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
+                            <View style={{flex: .75}}>
+                                <SearchBar
+                                    round
+                                    clearIcon
+                                    lightTheme
+                                    cancelButtonTitle="Cancel"
+                                    placeholder='Search'
+                                    onChangeText={this.search}
+                                    value={this.state.searchValue}
+                                    containerStyle={{backgroundColor: "#fff"}}
+                                    inputContainerStyle={{backgroundColor: '#EBECEC'}}
+                                    inputStyle={{backgroundColor: "#EBECEC"}}                                    
+                                />
+                            </View>
+                            <View style={{flex: .25}}>
+                                <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                                    Total : {this.state.playlists.length}
+                                </Text>
+                            </View>
+                        </View>
+                        <View style={{flex: .9, flexDirection: 'row', alignItems: 'flex-start' }}>
+                        <FlatList
+                            data={this.state.playlists}
+                            renderItem={this.renderItem}
+                            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                            keyExtractor={item => item}
+                            ItemSeparatorComponent={this.renderSeparator}
+                        />
+                        </View>
                     </View>
                     {this.state.loading &&
                         <View style={styles.loading}>
