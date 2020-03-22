@@ -873,6 +873,61 @@ class MPDConnection {
         return promise;
     }
 
+    addGenreSongsToNamedPlayList(genre, playlist) {
+        const promise = new Promise((resolve, reject) => {
+            this.getSongsForGenre(genre)
+            .then((songs) => {
+    			let cmd = "command_list_begin\n";
+                songs.forEach((song) => {
+                    cmd += "playlistadd \""+playlist+"\" \""+song.file+"\"\n";
+    			});
+    			cmd += "command_list_end";
+                this.createPromise(cmd)
+                .then(() => {
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+    		})
+            .catch((err) => {
+                reject(err);
+            })
+        });
+        return promise;
+    }
+
+    addGenreSongsToPlayList(genre, autoplay) {
+        const promise = new Promise((resolve, reject) => {
+            this.getSongsForGenre(genre)
+            .then((songs) => {
+    			let cmd = "command_list_begin\n";
+                if (autoplay) {
+                    cmd += "clear\n";
+                }
+                songs.forEach((song) => {
+    				cmd += "add \""+song.file+"\"\n";
+    			});
+                if (autoplay) {
+                    cmd += "play\n";
+                }
+    			cmd += "command_list_end";
+                this.createPromise(cmd)
+                .then(() => {
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+    		})
+            .catch((err) => {
+                reject(err);
+            })
+        });
+        return promise;
+
+    }
+
 	addSongToPlayList(song) {
         return this.createPromise("add \""+song+"\"");
 	}

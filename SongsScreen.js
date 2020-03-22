@@ -64,17 +64,19 @@ export default class SongsScreen extends React.Component {
 
         this.setState({loading: true});
 
-        if (artist && album) {
+        if (album) {
             MPDConnection.current().getSongsForAlbum(album, artist)
             .then((songs) => {
                 this.setState({loading: false});
                 this.setState({songs: songs, fullset: songs});
-                AlbumArt.getAlbumArt(artist, album)
-                .then((path) => {
-                    if (path) {
-                        this.setState({imagePath: "file://"+path});
-                    }
-                });
+                if (artist) {
+                    AlbumArt.getAlbumArt(artist, album)
+                    .then((path) => {
+                        if (path) {
+                            this.setState({imagePath: "file://"+path});
+                        }
+                    });
+                }
             })
             .catch((err) => {
                 this.setState({loading: false});
@@ -125,22 +127,38 @@ export default class SongsScreen extends React.Component {
         const { navigation } = this.props;
         const artist = navigation.getParam('artist');
         const album = navigation.getParam('album');
+        const genre = navigation.getParam('genre');
 
         if (toPlaylist === true) {
             this.setState({modalVisible: true, selectedItem: "all"});
         } else {
-            this.setState({loading: true});
-            MPDConnection.current().addAlbumToPlayList(album, artist)
-            .then(() => {
-                this.setState({loading: false});
-            })
-            .catch((err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            });
+            if (album) {
+                this.setState({loading: true});
+                MPDConnection.current().addAlbumToPlayList(album, artist)
+                .then(() => {
+                    this.setState({loading: false});
+                })
+                .catch((err) => {
+                    this.setState({loading: false});
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                });
+            } else if (genre) {
+                this.setState({loading: true});
+                MPDConnection.current().addGenreSongsToPlayList(genre)
+                .then(() => {
+                    this.setState({loading: false});
+                })
+                .catch((err) => {
+                    this.setState({loading: false});
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                });
+            }
         }
     }
 
@@ -187,18 +205,32 @@ export default class SongsScreen extends React.Component {
             const { navigation } = this.props;
             const artist = navigation.getParam('artist');
             const album = navigation.getParam('album');
-
-            MPDConnection.current().addAlbumToNamedPlayList(album, artist, MPDConnection.current().getCurrentPlaylistName())
-            .then(() => {
-                this.setState({loading: false});
-            })
-            .catch((err) => {
-                this.setState({loading: false});
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            });
+            const genre = navigation.getParam('genre');
+            if (album) {
+                MPDConnection.current().addAlbumToNamedPlayList(album, artist, MPDConnection.current().getCurrentPlaylistName())
+                .then(() => {
+                    this.setState({loading: false});
+                })
+                .catch((err) => {
+                    this.setState({loading: false});
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                });
+            } else if (genre) {
+                MPDConnection.current().addGenreSongsToNamedPlayList(genre, MPDConnection.current().getCurrentPlaylistName())
+                .then(() => {
+                    this.setState({loading: false});
+                })
+                .catch((err) => {
+                    this.setState({loading: false});
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                });
+            }    
         } else {
             MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(Base64.atob(selectedItem)), MPDConnection.current().getCurrentPlaylistName())
             .then(() => {
@@ -218,19 +250,34 @@ export default class SongsScreen extends React.Component {
         const { navigation } = this.props;
         const artist = navigation.getParam('artist');
         const album = navigation.getParam('album');
+        const genre = navigation.getParam('genre');
 
-        this.setState({loading: true});
-        MPDConnection.current().addAlbumToPlayList(album, artist, true)
-        .then(() => {
-            this.setState({loading: false});
-        })
-        .catch((err) => {
-            this.setState({loading: false});
-            Alert.alert(
-                "MPD Error",
-                "Error : "+err
-            );
-        });
+        if (album) {
+            this.setState({loading: true});
+            MPDConnection.current().addAlbumToPlayList(album, artist, true)
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
+        } else if (genre) {
+            MPDConnection.current().addGenreSongsToPlayList(genre, true)
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
+        }
     }
 
     renderSeparator = () => {
