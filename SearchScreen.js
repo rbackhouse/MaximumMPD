@@ -74,13 +74,13 @@ export default class SearchScreen extends React.Component {
         let artists = [], albums = [], songs = [], artistCheck = [], albumCheck = [];
         if (text.length > 2) {
             this.setState({loading: true});
-            MPDConnection.current().search(text.toLowerCase(), 0, 49)
+            MPDConnection.current().search(text.toLowerCase(), 0, 499)
             .then((results) => {
                 this.setState({loading: false});
                 results.forEach((result) => {
                     let artist = {artist: result.artist, key: result.artist, traverse: true};
                     let album = {album: result.album, key: result.album, artist: result.artist, traverse: true};
-                    if (!artistCheck.includes(result.artist) && artist.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
+                    if (result.artist && !artistCheck.includes(result.artist) && artist.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
                         artists.push(artist);
                         artistCheck.push(result.artist);
                         AlbumArt.getAlbumArtForArtists()
@@ -91,7 +91,7 @@ export default class SearchScreen extends React.Component {
                             }
                         });
                     }
-                    if (!albumCheck.includes(result.album) && album.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
+                    if (result.album && !albumCheck.includes(result.album) && album.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
                         albums.push(album);
                         albumCheck.push(result.album);
                         AlbumArt.getAlbumArt(artist.artist, album.album)
