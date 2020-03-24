@@ -74,7 +74,7 @@ export default class SearchScreen extends React.Component {
         let artists = [], albums = [], songs = [], artistCheck = [], albumCheck = [];
         if (text.length > 2) {
             this.setState({loading: true});
-            MPDConnection.current().search(text.toLowerCase(), 0, 499)
+            MPDConnection.current().search(text.toLowerCase(), 0, 49)
             .then((results) => {
                 this.setState({loading: false});
                 results.forEach((result) => {
