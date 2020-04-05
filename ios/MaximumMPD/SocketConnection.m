@@ -132,6 +132,45 @@ RCT_EXPORT_METHOD(saveDebugData:(NSString *)data) {
   }
 }
 
+RCT_EXPORT_METHOD(writeAlbumArtFromURL:(NSString *)filename
+                  urlString:(NSString *)urlString
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+  NSString *path;
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  path = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"mpd_album_art"];
+  path = [path stringByAppendingPathComponent:filename];
+
+  if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession]
+      dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+      NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+      //NSLog(@"statusCode %ld msg: %@", (long)httpResponse.statusCode, [NSHTTPURLResponse localizedStringForStatusCode:httpResponse.statusCode]);
+            
+      if (error != nil) {
+        NSLog(@"Album Art file not found %@ to %@ err: %@", url, filename, error);
+        reject(@"albumart", @"Album Art not found", error);
+      } else if (httpResponse.statusCode != 200) {
+        NSLog(@"Album Art file not found %@ to %@ [%ld] [%@]", url, filename, (long)httpResponse.statusCode, [NSHTTPURLResponse localizedStringForStatusCode:httpResponse.statusCode]);
+        reject(@"albumart", @"Album Art not found", NULL);
+      } else {
+        //NSLog(@"writing image file %@ to %@", urlString, filename);
+        [[NSFileManager defaultManager] createFileAtPath:path
+                                                contents:nil
+                                              attributes:nil];
+        NSFileHandle *handle = [NSFileHandle fileHandleForUpdatingAtPath:path];
+        [handle writeData: data];
+        [handle closeFile];
+        resolve(path);
+      }
+    }];
+    [downloadTask resume];
+  } else {
+    NSLog(@"Album Art file exists %@ to %@", urlString, filename);
+    reject(@"albumart", @"Album Art file exists", NULL);
+  }
+}
 
 - (NSArray<NSString *> *)supportedEvents {
   return @[@"OnStateChange", @"OnError", @"OnPauseResume", @"OnResponse", @"OnInit", @"OnResponseError", @"OnTimeout"];

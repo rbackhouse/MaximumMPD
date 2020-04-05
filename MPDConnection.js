@@ -251,6 +251,13 @@ class MPDConnection {
             }
         );
 
+        this.pauseResumeSubscription = socketConnectionEmitter.addListener(
+            "OnPauseResume",
+            (msg) => {
+                mpdEventEmiiter.emit('OnPauseResume', msg);
+            }
+        );
+
 		SocketConnection.connect(this.host, this.port);
 
 		let processQueue = () => {
@@ -291,6 +298,7 @@ class MPDConnection {
         this.responseSubscription.remove();
         this.initSubscription.remove();
         this.timeoutSubscription.remove();
+        this.pauseResumeSubscription.remove();
 		this.isConnected = false;
 		SocketConnection.disconnect();
 	}
@@ -420,7 +428,7 @@ class MPDConnection {
         return this.createPromise("list artist", processor);
 	}
 
-	getAllAlbums() {
+	getAllAlbums(useAlbumArtist) {
 		const processor = (data) => {
 			const lines = MPDConnection._lineSplit(data);
 			let albums = [];
@@ -440,7 +448,19 @@ class MPDConnection {
                             currentArtist = artist;
                         }
 					}
-				} else if (line.indexOf(ALBUM_PREFIX_NO_SPACE) === 0) {
+                } else if (line.indexOf(ALBUMARTIST_PREFIX) === 0) {
+					let artist = line.substring(ALBUMARTIST_PREFIX.length);
+					if (artist && artist.trim().length > 0) {
+                        if (this.version < 21 && this.minorVersion === 0) {
+                            album.artist = artist;
+                            if (album.name && album.artist) {
+        						albums.push({artist: album.artist, name: album.name});
+                            }
+                        } else {
+                            currentArtist = artist;
+                        }
+					}
+                } else if (line.indexOf(ALBUM_PREFIX_NO_SPACE) === 0) {
                     if (this.version < 21 && this.minorVersion === 0) {
                         album = {};
                     }
@@ -465,8 +485,14 @@ class MPDConnection {
 				}
 			});
 			return albums;
-		};
-        return this.createPromise("list album group artist", processor);
+        };
+        let cmd = "list album group ";
+        if (useAlbumArtist) {
+            cmd += "albumartist";
+        } else {
+            cmd += "artist";
+        }
+        return this.createPromise(cmd, processor);
 	}
 
 	getStatus(cb, errorcb) {
@@ -1196,7 +1222,15 @@ class MPDConnection {
             addTask();
         });
         return promise;
-	}
+    }
+    
+    albumartFromURL(uri, port, artist, album) {
+        const filename = 'albumart_'+this.toAlbumArtFilename(artist, album)+".png";
+        let path = uri.substring(0, uri.lastIndexOf('/'));
+        path += "/cover.png";        
+        const url = "http://"+this.host+":"+port+"/"+encodeURI(path);
+        return SocketConnection.writeAlbumArtFromURL(filename, url);
+    }
 
     deleteAlbumArt(filename) {
         SocketConnection.deleteAlbumArtFile(filename);

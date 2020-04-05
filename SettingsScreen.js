@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { View, Picker, Modal, Text, StyleSheet, Alert, Linking } from 'react-native';
+import { View, Picker, Modal, Text, StyleSheet, Alert, Linking, TextInput, Switch } from 'react-native';
 import SettingsList from 'react-native-settings-list';
 import { Input, Button } from 'react-native-elements'
 import MPDConnection from './MPDConnection';
@@ -28,7 +28,9 @@ class AlbumArtModal extends React.Component {
         albumart: false,
         status: 'Idle',
         downloadStatus: "",
-        count: ''
+        count: '',
+        port: 8080,
+        useHTTP: false,
     }
 
     onOk() {
@@ -36,11 +38,11 @@ class AlbumArtModal extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({count: ""+AlbumArt.getQueue().length});
+        this.setState({count: ""+AlbumArt.getQueueSize()});
         this.onAlbumArtStart = AlbumArt.getEventEmitter().addListener(
             "OnAlbumArtStart",
             (album) => {
-                this.setState({count: ""+AlbumArt.getQueue().length, downloadStatus:""});
+                this.setState({count: ""+AlbumArt.getQueueSize(), status:"Started download of album art for "+album.name, downloadStatus: ""});
             }
         );
         this.OnAlbumArtStatus = AlbumArt.getEventEmitter().addListener(
@@ -52,28 +54,24 @@ class AlbumArtModal extends React.Component {
         this.onAlbumArtEnd = AlbumArt.getEventEmitter().addListener(
             "OnAlbumArtEnd",
             (album) => {
-                this.setState({status: "Idle", count: ""+AlbumArt.getQueue().length, downloadStatus:""});
+                this.setState({status:"Completed download of album art for "+album.name, count: ""+AlbumArt.getQueueSize(), downloadStatus: ""});
             }
         );
         this.onAlbumArtError = AlbumArt.getEventEmitter().addListener(
             "OnAlbumArtError",
             (details) => {
-                this.setState({status: details.album.artist+" : "+details.album.name+" "+details.err, count: ""+AlbumArt.getQueue().length, downloadStatus:""});
+                this.setState({status: details.album.artist+" : "+details.album.name+" "+details.err, count: ""+AlbumArt.getQueueSize(), downloadStatus:""});
             }
         );
         this.onAlbumArtComplete = AlbumArt.getEventEmitter().addListener(
             "OnAlbumArtComplete",
             (details) => {
-                this.setState({status: "Complete", count: ""+AlbumArt.getQueue().length, downloadStatus:""});
+                this.setState({status: "Complete", count: ""+AlbumArt.getQueueSize(), downloadStatus:""});
             }
         );
-        AlbumArt.isEnabled()
-        .then((enabled) => {
-            if (enabled === "true") {
-                this.setState({albumart: true});
-            } else {
-                this.setState({albumart: false});
-            }
+        AlbumArt.getOptions()
+        .then((options) => {
+            this.setState({albumart: options.enabled, useHTTP: options.useHTTP, port: options.port});
         });
     }
 
@@ -100,12 +98,26 @@ class AlbumArtModal extends React.Component {
 
     onAlbumArtChange(value) {
         this.setState({albumart: value});
+
         if (value === true) {
             AlbumArt.enable();
         } else {
-
             AlbumArt.disable();
         }
+    }
+
+    onUseHTTPSChange(value) {
+        this.setState({useHTTP: value});
+        AlbumArt.setUseHTTP(value);
+    }
+
+    onPortChange(value) {
+        let port = parseInt(value);
+        if (isNaN(port)) {
+            port = 0;
+        }
+        this.setState({port: port});
+        AlbumArt.setHTTPSPort(port);
     }
 
     render() {
@@ -118,31 +130,75 @@ class AlbumArtModal extends React.Component {
                 visible={visible}
                 onRequestClose={() => {
             }}>
-            <View style={{marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'}}>
-                <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+            <View style={{marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'flex-start'}}>
+                <View style={{ flex: .1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Album Art</Text>
                 </View>
-                <View style={{backgroundColor:'#EFEFF4',flex:1}}>
-                    <SettingsList borderColor='#c8c7cc' defaultItemSize={50}>
-                        <SettingsList.Item
-                                    hasNavArrow={false}
-                                    switchState={this.state.albumart}
-                                    hasSwitch={true}
-                                    switchOnValueChange={(value) => this.onAlbumArtChange(value)}
-                                    title='Enable'/>
-                        <SettingsList.Item title={queueText} hasNavArrow={false}/>
-                        <SettingsList.Item title={this.state.status} titleStyle={styles.status} hasNavArrow={false}/>
-                        <SettingsList.Item title={this.state.downloadStatus} titleStyle={styles.status} hasNavArrow={false}/>
-                    </SettingsList>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
-                        <Button
-                            onPress={() => {this.onOk();}}
-                            title="Ok"
-                            icon={{name: 'check',  size: 15, type: 'font-awesome'}}
-                            raised={true}
-                            type="outline"
+                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15}}>
+                    <View style={{flex: .80}}>
+                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                            Enable
+                        </Text>
+                    </View>
+                    <View style={{flex: .20}}>
+                        <Switch
+                            onValueChange={(value) => this.onAlbumArtChange(value)}
+                            value={this.state.albumart}
                         />
                     </View>
+                </View>
+                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15}}>
+                    <View style={{flex: .80}}>
+                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                        Use HTTP
+                        </Text>
+                    </View>
+                    <View style={{flex: .20}}>
+                        <Switch
+                            onValueChange={(value) => this.onUseHTTPSChange(value)}
+                            value={this.state.useHTTP}
+                        />
+                    </View>
+                </View>
+                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15 }}>
+                    <View style={{flex: .3}}>
+                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                            HTTP Port : 
+                        </Text>
+                    </View>
+                    <View style={{flex: .7}}>
+                        <TextInput keyboardType='numeric' 
+                                placeholder="HTTP Port"
+                                onChangeText={(port) => this.onPortChange(port)}
+                                defaultValue={""+this.state.port}
+                                editable={this.state.useHTTP}
+                                style={{
+                                    width: 100,
+                                    height: 35,
+                                    borderColor: '#e3e5e5',
+                                    borderWidth: 1                            
+                                }} 
+                                inputStyle={styles.label}>
+                        </TextInput>
+                    </View>
+                </View>
+                <View style={{flex: .1, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'}}>
+                    <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>{queueText}</Text>
+                </View>
+                <View style={{flex: .1, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'}}>
+                    <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>{this.state.status}</Text>
+                </View>
+                <View style={{flex: .1, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'}}>
+                    <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>{this.state.downloadStatus}</Text>
+                </View>
+                <View style={{ flex: .6, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                    <Button
+                        onPress={() => {this.onOk();}}
+                        title="Ok"
+                        icon={{name: 'check',  size: 15, type: 'font-awesome'}}
+                        raised={true}
+                        type="outline"
+                    />
                 </View>
             </View>
             </Modal>
@@ -419,14 +475,6 @@ export default class SettingsScreen extends React.Component {
         if (MPDConnection.isConnected()) {
             this.getStatus();
         }
-        AlbumArt.isEnabled()
-        .then((enabled) => {
-            if (enabled === "true") {
-                this.setState({albumart: true});
-            } else {
-                this.setState({albumart: false});
-            }
-        });
     }
 
     componentWillUnmount() {
@@ -681,12 +729,12 @@ const styles = StyleSheet.create({
         borderWidth: 1
     },
     label: {
-        fontSize: 17,
         fontFamily: 'GillSans-Italic',
         fontWeight: 'normal',
     },
     status: {
-        fontSize: 12
+        fontFamily: 'GillSans-Italic',
+        margin: 15
     }
 });
 
