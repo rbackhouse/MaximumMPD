@@ -130,7 +130,7 @@ export default class ArtistsScreen extends React.Component {
 
     load() {
         const allArtist = MPDConnection.current().getAllArtists();
-        const allAlbums = MPDConnection.current().getAllAlbums();
+        const allAlbums = MPDConnection.current().getAllAlbums(true);
         const allGenres = MPDConnection.current().getAllGenres();
 
         this.setState({loading: true});
@@ -230,7 +230,7 @@ export default class ArtistsScreen extends React.Component {
 
     onAlbumPress(item) {
         const { navigation } = this.props;
-        navigation.navigate('Songs', {artist: item.artist, album: item.name});
+        navigation.navigate('Songs', {album: item.name});
     }
 
     subset(albums) {

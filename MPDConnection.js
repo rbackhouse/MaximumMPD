@@ -676,7 +676,7 @@ class MPDConnection {
         return this.createPromise(cmd, processor);
 	}
 
-	getSongsForAlbum(album, artist, addArtistAlbum) {
+	getSongsForAlbum(album, artist) {
 		const processor = (data) => {
 			const lines = MPDConnection._lineSplit(data);
 			let songs = [];
@@ -688,12 +688,10 @@ class MPDConnection {
 					song.track = line.substring(TRACK_PREFIX.length);
 				} else if (line.indexOf(TIME_PREFIX) === 0) {
 					song.time = MPDConnection._convertTime(line.substring(TIME_PREFIX.length));
+				} else if (line.indexOf(ARTIST_PREFIX) === 0) {
+					song.artist = line.substring(ARTIST_PREFIX.length);
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
 					song = {};
-                    if (addArtistAlbum) {
-                        song.artist = artist;
-                        song.album = album;
-                    }
 					songs.push(song);
 					var file = line.substring(FILE_PREFIX.length);
 					song.file = file;
