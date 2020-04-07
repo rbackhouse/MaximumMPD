@@ -397,6 +397,7 @@ export default class PlayScreen extends React.Component {
           bg = .1;
       }
       albumArtSize = Math.round((height/10) * 4) - padding;
+      const title = currentsong.name !== undefined ? currentsong.name : currentsong.title
 
       if (this.state.selectedTab === 0) {
           return (
@@ -439,7 +440,7 @@ export default class PlayScreen extends React.Component {
                       <View style={{flex: .1, width: "80%", height: "15%", padding: 15, alignItems: 'center', justifyContent: 'center'}}>
                           <Text numberOfLines={1} style={styles.item}>{currentsong.artist}</Text>
                           <Text numberOfLines={1} style={styles.item}>{currentsong.album}</Text>
-                          <Text numberOfLines={1} style={styles.item}>{currentsong.title}</Text>
+                          <Text numberOfLines={1} style={styles.item}>{title}</Text>
                           <Text numberOfLines={1} style={styles.item}>{timeTrack}</Text>
                       </View>
                       <View style={{flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center'}}>

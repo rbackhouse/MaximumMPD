@@ -308,6 +308,7 @@ export default class PlaylistScreen extends React.Component {
         const isSelected = this.state.selected.get(item.artist+item.album+item.title)
         const selected = isSelected ? "flex" : "none";
         const editSelectIcon = this.state.isEditing === true ? "ios-trash" : "ios-musical-notes";
+        const name = item.name !== undefined ? item.name : "";
 
         if (isSelected && this.state.status && this.state.status.time) {
             let time = Math.floor(parseInt(this.state.status.time));
@@ -336,6 +337,9 @@ export default class PlaylistScreen extends React.Component {
                         }
                         {item.album !== "" &&
                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.album}</Text>
+                        }
+                        {name !== "" &&
+                            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{name}</Text>
                         }
                         <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.title}</Text>
                         {timeTrack !== undefined &&

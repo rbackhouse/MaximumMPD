@@ -519,6 +519,8 @@ class MPDConnection {
 					var file = line.substring(FILE_PREFIX.length);
 					currentsong.file = file;
 					currentsong.b64file = this.toBase64(file);
+				} else if (line.indexOf(NAME_PREFIX) === 0) {
+                    currentsong.name = line.substring(NAME_PREFIX.length);
 				} else {
 					var key = line.substring(0, line.indexOf(':'));
 					var value = line.substring(line.indexOf(':')+2);
