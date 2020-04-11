@@ -52,6 +52,7 @@ const GENRE_PREFIX = "Genre: ";
 const ALBUMARTIST_PREFIX = "AlbumArtist: ";
 const DATE_PREFIX = "Date: ";
 const NAME_PREFIX = "Name: ";
+const DURATION_PREFIX = "duration: ";
 
 const INITIAL = 0;
 const WRITTEN = 1;
@@ -369,6 +370,8 @@ class MPDConnection {
 					song.track = line.substring(TRACK_PREFIX.length);
 				} else if (line.indexOf(TIME_PREFIX) === 0) {
 					song.time = MPDConnection._convertTime(line.substring(TIME_PREFIX.length));
+				} else if (line.indexOf(DURATION_PREFIX) === 0) {
+					song.duration = MPDConnection._convertTime(line.substring(DURATION_PREFIX.length));
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
 					song = {};
 					songs.push(song);
@@ -376,7 +379,13 @@ class MPDConnection {
 					song.file = file;
 					song.b64file = this.toBase64(file);
 				}
-			});
+            });
+            songs.forEach((song) => {
+                if (song.duration) {
+                    song.time = song.duration;
+                    song.duration = undefined;
+                }
+            });
 			return songs;
 		};
         let searchCmd = "search any \""+filter+"\"";
@@ -690,6 +699,8 @@ class MPDConnection {
 					song.track = line.substring(TRACK_PREFIX.length);
 				} else if (line.indexOf(TIME_PREFIX) === 0) {
 					song.time = MPDConnection._convertTime(line.substring(TIME_PREFIX.length));
+				} else if (line.indexOf(DURATION_PREFIX) === 0) {
+					song.duration = MPDConnection._convertTime(line.substring(DURATION_PREFIX.length));
 				} else if (line.indexOf(ARTIST_PREFIX) === 0) {
 					song.artist = line.substring(ARTIST_PREFIX.length);
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
@@ -700,6 +711,12 @@ class MPDConnection {
 					song.b64file = this.toBase64(file);
 				}
 			});
+            songs.forEach((song) => {
+                if (song.duration) {
+                    song.time = song.duration;
+                    song.duration = undefined;
+                }
+            });
 			return songs;
 		};
 		var cmd = "find album \""+album.replace(/"/g, "\\\"")+"\"";
@@ -726,6 +743,8 @@ class MPDConnection {
 					song.track = line.substring(TRACK_PREFIX.length);
 				} else if (line.indexOf(TIME_PREFIX) === 0) {
 					song.time = MPDConnection._convertTime(line.substring(TIME_PREFIX.length));
+				} else if (line.indexOf(DURATION_PREFIX) === 0) {
+					song.duration = MPDConnection._convertTime(line.substring(DURATION_PREFIX.length));
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
 					song = {};
 					if (count++ > 99) {
@@ -737,6 +756,12 @@ class MPDConnection {
 					song.b64file = this.toBase64(file);
 				}
 			});
+            songs.forEach((song) => {
+                if (song.duration) {
+                    song.time = song.duration;
+                    song.duration = undefined;
+                }
+            });
 			return songs;
 		};
 		if (!type) {
@@ -767,6 +792,10 @@ class MPDConnection {
                     const time = line.substring(TIME_PREFIX.length);
                     song.rawTime = time;
 					song.time = MPDConnection._convertTime(time);
+				} else if (line.indexOf(DURATION_PREFIX) === 0) {
+                    const duration = line.substring(DURATION_PREFIX.length);
+                    song.rawDuration = duration;
+					song.duration = MPDConnection._convertTime(duration);
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
 					song = {artist: "", album: ""};
 					songs.push(song);
@@ -779,7 +808,15 @@ class MPDConnection {
 				} else if (line.indexOf(NAME_PREFIX) === 0) {
                     song.name = line.substring(NAME_PREFIX.length);
                 }
-			});
+            });
+            songs.forEach((song) => {
+                if (song.duration) {
+                    song.time = song.duration;
+                    song.rawTime = song.rawDuration;
+                    song.duration = undefined;
+                    song.rawDuration = undefined;
+                }
+            });            
 			return songs;
 		};
         let cmd;
@@ -1523,6 +1560,8 @@ class MPDConnection {
 					song.track = line.substring(TRACK_PREFIX.length);
 				} else if (line.indexOf(TIME_PREFIX) === 0) {
 					song.time = MPDConnection._convertTime(line.substring(TIME_PREFIX.length));
+				} else if (line.indexOf(DURATION_PREFIX) === 0) {
+					song.duration = MPDConnection._convertTime(line.substring(DURATION_PREFIX.length));
                 } else if (line.indexOf(ARTIST_PREFIX) === 0) {
 					song.artist = line.substring(ARTIST_PREFIX.length);
 				} else if (line.indexOf(ALBUM_PREFIX) === 0) {
@@ -1535,6 +1574,12 @@ class MPDConnection {
                     songs.push(song);
 				}
 			});
+            songs.forEach((song) => {
+                if (song.duration) {
+                    song.time = song.duration;
+                    song.duration = undefined;
+                }
+            });
 			return songs;
 		};
 		var cmd = "find genre \""+genre.replace(/"/g, "\\\"")+"\"";
