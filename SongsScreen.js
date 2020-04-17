@@ -69,14 +69,12 @@ export default class SongsScreen extends React.Component {
             .then((songs) => {
                 this.setState({loading: false});
                 this.setState({songs: songs, fullset: songs});
-                if (artist) {
-                    AlbumArt.getAlbumArt(artist, album)
-                    .then((path) => {
-                        if (path) {
-                            this.setState({imagePath: "file://"+path});
-                        }
-                    });
-                }
+                AlbumArt.getAlbumArt(songs[0].artist, album)
+                .then((path) => {
+                    if (path) {
+                        this.setState({imagePath: "file://"+path});
+                    }
+                });
             })
             .catch((err) => {
                 this.setState({loading: false});
