@@ -186,6 +186,9 @@ export default class PlaylistDetails extends React.Component {
                         <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.title}</Text>
                         <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.artist}</Text>
                         <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.album}</Text>
+                        {item.time !== undefined &&
+                            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>Time: {item.time}</Text>
+                        }
                     </View>
                     <Icon name="ios-trash" size={28} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                 </View>
