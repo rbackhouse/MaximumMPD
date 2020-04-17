@@ -23,6 +23,10 @@ import EventEmitter from "react-native/Libraries/vendor/emitter/EventEmitter";
 
 const albumArtEventEmiiter = new EventEmitter();
 
+const STARTED = 0;
+const COMPLETE = 1;
+const ERROR = 2;
+
 let albumArt = {};
 let artistArt = {};
 let stop = false;
@@ -34,40 +38,30 @@ async function getAlbumArt(album, options) {
         if (songs.length > 0) {
             albumArtEventEmiiter.emit('OnAlbumArtStart', album);
             const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
-            if (options.useHTTP) {
-                try {
-                    const path = await MPDConnection.current().albumartFromURL(songs[0].file, options.port, album.artist, album.name);
-                    albumArt[key] = path;
-                    if (!artistArt[album.artist]) {
-                        artistArt[album.artist] = path;
-                    }
-                    albumArtEventEmiiter.emit('OnAlbumArtEnd', album);
-                    resolve(!stop);
-                } catch (err) {
-                    albumArtEventEmiiter.emit('OnAlbumArtError', {album:album, err: err});
-                    await albumArtStorage.addMissing(key)
-                    resolve(!stop);
-                }
-            } else {
-                try {
-                    const path = await MPDConnection.current().albumart(songs[0].file, album.artist, album.name, (offset, size) => {
+            await albumArtStorage.updateState(key, STARTED);
+            try {
+                let path;
+                if (options.useHTTP) {
+                    path = await MPDConnection.current().albumartFromURL(songs[0].file, options.port, album.artist, album.name);
+                } else {
+                    path = await MPDConnection.current().albumart(songs[0].file, album.artist, album.name, (offset, size) => {
                         const percentageDowloaded = Math.round((offset / size) * 100);
                         const sizeInK = Math.round(size / 1024);
                         albumArtEventEmiiter.emit('OnAlbumArtStatus', {album: album, size: sizeInK, percentageDowloaded: percentageDowloaded});
                     });
-                    albumArt[key] = path.path;
-                    if (!artistArt[album.artist]) {
-                        artistArt[album.artist] = path.path;
-                    }
-                    albumArtEventEmiiter.emit('OnAlbumArtEnd', album);
-                    resolve(!stop);
-                } catch(err) {
-                    albumArtEventEmiiter.emit('OnAlbumArtError', {album:album, err: err});
-                    if (err === "ACK [50@0] {albumart} No file exists") {
-                        await albumArtStorage.addMissing(key)
-                    }
-                    resolve(!stop);
                 }
+                albumArt[key] = path;
+                if (!artistArt[album.artist]) {
+                    artistArt[album.artist] = path;
+                }
+                albumArtEventEmiiter.emit('OnAlbumArtEnd', album);
+                await albumArtStorage.updateState(key, COMPLETE);
+                resolve(!stop);
+            } catch (err) {
+                console.log(err);
+                albumArtEventEmiiter.emit('OnAlbumArtError', {album:album, err: err});
+                await albumArtStorage.updateState(key, ERROR);
+                resolve(!stop);
             }
         } else {
             resolve(!stop);
@@ -78,25 +72,38 @@ async function getAlbumArt(album, options) {
 const loader = async (options) => {
     if (options.enabled && MPDConnection.isConnected() && MPDConnection.current().isAlbumArtSupported()) {
         let albums = [];
-        const missing = await albumArtStorage.getMissing();
+        const state = await albumArtStorage.getState();
         const allAlbums = await MPDConnection.current().getAllAlbums();
         const files = await MPDConnection.current().listAlbumArtDir();
         allAlbums.forEach((album) => {
             const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
             const filename = 'albumart_'+key+".png";
-            if (files.includes(filename)) {
-                const full = MPDConnection.current().getAlbumArtDir()+'/'+filename;
-                albumArt[key] = full;
-                if (!artistArt[album.artist]) {
-                    artistArt[album.artist] = full;
+            const full = MPDConnection.current().getAlbumArtDir()+'/'+filename;
+
+            let add = true;
+
+            if (state[key]) {
+                if (state[key] === ERROR) {
+                    return;
                 }
+                add = state[key] === STARTED;
+            }
+
+            if (files.includes(filename) && add) {
+                MPDConnection.current().deleteAlbumArt(filename);                
+            }
+
+            if (add) {
+                albums.push(album);
             } else {
-                if (!missing.includes(key)) {
-                    albums.push(album);
+                albumArt[key] = full;
+                if (files.includes(filename) && !artistArt[album.artist]) {
+                    artistArt[album.artist] = full;
                 }
             }
         });
         queueSize = albums.length;
+        console.log("queueSize = "+queueSize);
         albums.reduce((p, album) => {
             return p.then((continueOn) => {
                 queueSize--;
@@ -168,32 +175,36 @@ class AlbumArtStorage {
 
     async disable() {
         AsyncStorage.setItem('@MPD:albumart_enabled', "false");
-        AsyncStorage.setItem('@MPD:albumart_missing', "[]");
     }
 
-    async getMissing() {
-        let missing;
+    async clearCache() {
+        AsyncStorage.setItem('@MPD:albumart_state', "{}");
+    }
+
+    async getState() {
+        let state;
+
         try {
-            let missingStr = await AsyncStorage.getItem('@MPD:albumart_missing');
-            missing = JSON.parse(missingStr);
-            if (missing === null) {
-                missing = [];
-                AsyncStorage.setItem('@MPD:albumart_missing', JSON.stringify(missing));
+            let stateStr = await AsyncStorage.getItem('@MPD:albumart_state');
+
+            if (stateStr === null) {
+                state = {};
+                AsyncStorage.setItem('@MPD:albumart_state', JSON.stringify(state));
+            } else {
+                state = JSON.parse(stateStr);
             }
-            //console.log(missing);
         } catch(err) {
-            //console.log("missing is not found");
             console.log(err);
-            missing = [];
-            AsyncStorage.setItem('@MPD:albumart_missing', JSON.stringify(missing));
+            state = {};
+            AsyncStorage.setItem('@MPD:albumart_state', JSON.stringify(state));
         }
-        return missing;
+        return state;
     }
 
-    async addMissing(missingEntry) {
-        let missing = await this.getMissing();
-        missing.push(missingEntry);
-        return AsyncStorage.setItem('@MPD:albumart_missing', JSON.stringify(missing));
+    async updateState(key, entry) {
+        let state = await this.getState();
+        state[key] = entry;
+        return AsyncStorage.setItem('@MPD:albumart_state', JSON.stringify(state));
     }
 
     async isEnabled() {
@@ -259,15 +270,7 @@ export default {
         return promise;
     },
     clearCache: () => {
-        albumArtStorage.isEnabled().then((enabled) => {
-            if (enabled === "true") {
-                for (let key in albumArt) {
-                    const path = albumArt[key];
-                    //console.log("deleting path for ["+key+"] ["+path+"]");
-                    MPDConnection.current().deleteAlbumArt(path);
-                }
-            }
-        });
+        albumArtStorage.clearCache();
     },
     enable: () => {
         stop = false;

@@ -48,10 +48,15 @@ import javax.annotation.Nullable;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.util.Base64;
 import android.util.Log;
 import android.os.Environment;
-import android.os.AsyncTask;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+
+import okhttp3.Response;
 
 public class SocketConnectionModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
     private static final byte[] errPrefix = new byte[] {0x41, 0x43, 0x4b, 0x20, 0x5b};
@@ -167,6 +172,50 @@ public class SocketConnectionModule extends ReactContextBaseJavaModule implement
                 } catch (IOException e) {}
             }
         }
+    }
+
+    @ReactMethod
+    public void writeAlbumArtFromURL(String filename, String urlString, Promise promise) {
+        OkHttpClient client = new OkHttpClient();
+        File albumArtFile = new File(documentDir, filename);
+
+        Request request = new Request.Builder()
+                .url(urlString)
+                .addHeader("Accept", "application/json")
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                promise.reject(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    BufferedOutputStream os = null;
+                    try {
+                        os = new BufferedOutputStream(new FileOutputStream(albumArtFile, false));
+                        byte[] bytes = response.body().bytes();
+                        Log.d("SockectConnection", "writing image file " + filename + " len: " + bytes.length + " to " + urlString);
+                        os.write(bytes);
+                        promise.resolve(albumArtFile.getPath());
+                    } catch (IOException e) {
+                        Log.d("SockectConnection", "Album Art error : "+e.getLocalizedMessage());
+                        promise.reject(e);
+                    } finally {
+                        if (os != null) {
+                            try { os.close(); } catch (IOException e) {}
+                        }
+                    }
+                } else {
+                    Log.d("SockectConnection", "Album Art error : "+response.code()+" "+response.message());
+                    promise.reject(Integer.toString(response.code()), response.message());
+                }
+                response.body().close();
+            }
+        });
     }
 
     @Override

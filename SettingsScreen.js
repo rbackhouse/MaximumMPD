@@ -16,7 +16,8 @@
 */
 
 import React from 'react';
-import { View, Picker, Modal, Text, StyleSheet, Alert, Linking, TextInput, Switch } from 'react-native';
+import { View, Picker, Modal, Text, StyleSheet, Alert, Linking, TextInput, Switch, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { Button as ReactButton } from 'react-native';
 import SettingsList from 'react-native-settings-list';
 import { Input, Button } from 'react-native-elements'
 import MPDConnection from './MPDConnection';
@@ -113,11 +114,10 @@ class AlbumArtModal extends React.Component {
 
     onPortChange(value) {
         let port = parseInt(value);
-        if (isNaN(port)) {
-            port = 0;
+        if (!isNaN(port)) {
+            this.setState({port: port});
+            AlbumArt.setHTTPSPort(port);
         }
-        this.setState({port: port});
-        AlbumArt.setHTTPSPort(port);
     }
 
     render() {
@@ -130,17 +130,18 @@ class AlbumArtModal extends React.Component {
                 visible={visible}
                 onRequestClose={() => {
             }}>
-            <View style={{marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'flex-start'}}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <View style={{marginTop: 25, flex: .8, flexDirection: 'column', justifyContent: 'flex-start'}}>
                 <View style={{ flex: .1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Album Art</Text>
                 </View>
                 <View style={{flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15}}>
-                    <View style={{flex: .80}}>
+                    <View style={{flex: .5, alignItems: 'flex-start'}}>
                         <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
                             Enable
                         </Text>
                     </View>
-                    <View style={{flex: .20}}>
+                    <View style={{flex: .5, alignItems: 'flex-end'}}>
                         <Switch
                             onValueChange={(value) => this.onAlbumArtChange(value)}
                             value={this.state.albumart}
@@ -148,12 +149,12 @@ class AlbumArtModal extends React.Component {
                     </View>
                 </View>
                 <View style={{flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15}}>
-                    <View style={{flex: .80}}>
+                    <View style={{flex: .5, alignItems: 'flex-start'}}>
                         <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
-                        Use HTTP
+                            Use HTTP
                         </Text>
                     </View>
-                    <View style={{flex: .20}}>
+                    <View style={{flex: .5, alignItems: 'flex-end'}}>
                         <Switch
                             onValueChange={(value) => this.onUseHTTPSChange(value)}
                             value={this.state.useHTTP}
@@ -161,19 +162,19 @@ class AlbumArtModal extends React.Component {
                     </View>
                 </View>
                 <View style={{flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15 }}>
-                    <View style={{flex: .3}}>
+                    <View style={{flex: .5, alignItems: 'flex-start'}}>
                         <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
-                            HTTP Port : 
+                            HTTP Port
                         </Text>
                     </View>
-                    <View style={{flex: .7}}>
+                    <View style={{flex: .5, alignItems: 'flex-end'}}>
                         <TextInput keyboardType='numeric' 
                                 placeholder="HTTP Port"
                                 onChangeText={(port) => this.onPortChange(port)}
                                 defaultValue={""+this.state.port}
                                 editable={this.state.useHTTP}
                                 style={{
-                                    width: 100,
+                                    width: 75,
                                     height: 35,
                                     borderColor: '#e3e5e5',
                                     borderWidth: 1                            
@@ -182,16 +183,32 @@ class AlbumArtModal extends React.Component {
                         </TextInput>
                     </View>
                 </View>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'}}>
+                <View style={{flex: .2, flexDirection: 'row', alignItems: 'center', margin: 15}}>
+                    <View style={{flex: .5, alignItems: 'flex-start'}}>
+                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                            Clear Cache
+                        </Text>
+                    </View>
+                    <View style={{flex: .5, alignItems: 'flex-end'}}>
+                        <Button
+                            onPress={() => {this.clearAlbumArt();}}
+                            title="Clear"
+                            icon={{name: 'trash',  size: 15, type: 'font-awesome'}}
+                            raised={true}
+                            type="outline"
+                        />
+                    </View>
+                </View>
+                <View style={{flex: .2, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'}}>
                     <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>{queueText}</Text>
                 </View>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'}}>
+                <View style={{flex: .2, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'}}>
                     <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>{this.state.status}</Text>
                 </View>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'}}>
+                <View style={{flex: .2, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'}}>
                     <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>{this.state.downloadStatus}</Text>
                 </View>
-                <View style={{ flex: .6, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                <View style={{ flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
                     <Button
                         onPress={() => {this.onOk();}}
                         title="Ok"
@@ -201,6 +218,7 @@ class AlbumArtModal extends React.Component {
                     />
                 </View>
             </View>
+            </TouchableWithoutFeedback>
             </Modal>
         );
     }
