@@ -104,7 +104,7 @@ RCT_EXPORT_METHOD(listAlbumArtDir:(RCTPromiseResolveBlock)resolve rejecter:(RCTP
   if (error != nil) {
     reject(@"albumart", @"Album Art error", error);
   } else {
-    NSLog(@"albumart files [%@]", files);
+    //NSLog(@"albumart files [%@]", files);
     resolve(files);
   }
 }
@@ -149,10 +149,10 @@ RCT_EXPORT_METHOD(writeAlbumArtFromURL:(NSString *)filename
       //NSLog(@"statusCode %ld msg: %@", (long)httpResponse.statusCode, [NSHTTPURLResponse localizedStringForStatusCode:httpResponse.statusCode]);
             
       if (error != nil) {
-        NSLog(@"Album Art file not found %@ to %@ err: %@", url, filename, error);
-        reject(@"albumart", @"Album Art not found", error);
+        NSLog(@"Album Art file error %@ to %@ err: %@", url, filename, error);
+        reject(@"albumart", @"Album Art error", error);
       } else if (httpResponse.statusCode != 200) {
-        NSLog(@"Album Art file not found %@ to %@ [%ld] [%@]", url, filename, (long)httpResponse.statusCode, [NSHTTPURLResponse localizedStringForStatusCode:httpResponse.statusCode]);
+        //NSLog(@"Album Art file not found %@ to %@ [%ld] [%@]", url, filename, (long)httpResponse.statusCode, [NSHTTPURLResponse localizedStringForStatusCode:httpResponse.statusCode]);
         reject(@"albumart", @"Album Art not found", NULL);
       } else {
         //NSLog(@"writing image file %@ to %@", urlString, filename);

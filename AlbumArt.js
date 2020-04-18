@@ -61,7 +61,11 @@ async function getAlbumArt(album, options) {
                 console.log(err);
                 albumArtEventEmiiter.emit('OnAlbumArtError', {album:album, err: err});
                 await albumArtStorage.updateState(key, ERROR);
-                resolve(!stop);
+                if (err.message && err.message === "Album Art error") {
+                    resolve(false);
+                } else {
+                    resolve(!stop);
+                }
             }
         } else {
             resolve(!stop);
