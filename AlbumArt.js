@@ -121,15 +121,33 @@ const loader = async (options) => {
     }
 }
 
+const migrate = async () => {
+    let missingStr = await AsyncStorage.getItem('@MPD:albumart_missing');
+    if (missingStr !== null) {
+        let state = {};
+        const files = await MPDConnection.current().listAlbumArtDir();
+        files.forEach((file) => {
+            let key = file;
+            key = key.substring('albumart_'.length, key.indexOf('.png'));
+            //console.log("file = "+file+" key = "+key);
+            state[key] = COMPLETE;
+        });
+        await AsyncStorage.setItem('@MPD:albumart_state', JSON.stringify(state));
+        await AsyncStorage.removeItem('@MPD:albumart_missing');
+    }
+}
+
 const onConnect = MPDConnection.getEventEmitter().addListener(
     "OnConnect",
     () => {
         albumArtStorage.isEnabled().then((enabled) => {
             if (enabled === "true") {
                 stop = false;
-                albumArtStorage.getOptions()
-                .then((options) => {
-                    loader(options);
+                migrate().then(() => {
+                    albumArtStorage.getOptions()
+                    .then((options) => {
+                        loader(options);
+                    });
                 });
             }
         });
