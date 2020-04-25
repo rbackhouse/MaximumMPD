@@ -74,7 +74,8 @@ async function getAlbumArt(album, options) {
 }
 
 const loader = async (options) => {
-    if (options.enabled && MPDConnection.isConnected() && MPDConnection.current().isAlbumArtSupported()) {
+    const isAlbumArtSupported = options.useHTTP || MPDConnection.current().isAlbumArtSupported();
+    if (options.enabled && MPDConnection.isConnected() && isAlbumArtSupported) {
         let albums = [];
         const state = await albumArtStorage.getState();
         const allAlbums = await MPDConnection.current().getAllAlbums();
