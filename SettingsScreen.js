@@ -32,6 +32,8 @@ class AlbumArtModal extends React.Component {
         count: '',
         port: 8080,
         useHTTP: false,
+        urlPrefix: "",
+        filename: ""
     }
 
     onOk() {
@@ -72,7 +74,7 @@ class AlbumArtModal extends React.Component {
         );
         AlbumArt.getOptions()
         .then((options) => {
-            this.setState({albumart: options.enabled, useHTTP: options.useHTTP, port: options.port});
+            this.setState({albumart: options.enabled, useHTTP: options.useHTTP, port: options.port, urlPrefix: options.urlPrefix, filename: options.fileName});
         });
     }
 
@@ -120,6 +122,16 @@ class AlbumArtModal extends React.Component {
         }
     }
 
+    onURLPrefixChange(value) {
+        this.setState({urlPrefix: value});
+        AlbumArt.setURLPrefix(value);
+    }
+
+    onFilenameChange(value) {
+        this.setState({filename: value});
+        AlbumArt.setFileName(value);
+    }
+
     render() {
         const visible = this.props.visible;
         const queueText = "Queue : "+this.state.count;
@@ -131,7 +143,7 @@ class AlbumArtModal extends React.Component {
                 onRequestClose={() => {
             }}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={{marginTop: 25, flex: .8, flexDirection: 'column', justifyContent: 'flex-start'}}>
+            <View style={{marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'flex-start'}}>
                 <View style={{ flex: .1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Album Art</Text>
                 </View>
@@ -168,7 +180,7 @@ class AlbumArtModal extends React.Component {
                         </Text>
                     </View>
                     <View style={{flex: .5, alignItems: 'flex-end'}}>
-                        <TextInput keyboardType='numeric' 
+                        <TextInput keyboardType='number-pad' 
                                 placeholder="HTTP Port"
                                 onChangeText={(port) => this.onPortChange(port)}
                                 defaultValue={""+this.state.port}
@@ -179,6 +191,52 @@ class AlbumArtModal extends React.Component {
                                     borderColor: '#e3e5e5',
                                     borderWidth: 1                            
                                 }} 
+                                inputStyle={styles.label}>
+                        </TextInput>
+                    </View>
+                </View>
+                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15 }}>
+                    <View style={{flex: .5, alignItems: 'flex-start'}}>
+                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                            HTTP URL Prefix
+                        </Text>
+                    </View>
+                    <View style={{flex: .5, alignItems: 'flex-end'}}>
+                        <TextInput keyboardType='default' 
+                                placeholder="HTTP URL Prefix"
+                                onChangeText={(urlPrefix) => this.onURLPrefixChange(urlPrefix)}
+                                defaultValue={""+this.state.urlPrefix}
+                                editable={this.state.useHTTP}
+                                style={{
+                                    width: 150,
+                                    height: 35,
+                                    borderColor: '#e3e5e5',
+                                    borderWidth: 1                            
+                                }} 
+                                autoCapitalize='none'
+                                inputStyle={styles.label}>
+                        </TextInput>
+                    </View>
+                </View>
+                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15 }}>
+                    <View style={{flex: .5, alignItems: 'flex-start'}}>
+                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                            Album Art Filename
+                        </Text>
+                    </View>
+                    <View style={{flex: .5, alignItems: 'flex-end'}}>
+                        <TextInput keyboardType='default' 
+                                placeholder="Album Art Filename"
+                                onChangeText={(filename) => this.onFilenameChange(filename)}
+                                defaultValue={""+this.state.filename}
+                                editable={this.state.useHTTP}
+                                style={{
+                                    width: 150,
+                                    height: 35,
+                                    borderColor: '#e3e5e5',
+                                    borderWidth: 1                            
+                                }} 
+                                autoCapitalize='none'
                                 inputStyle={styles.label}>
                         </TextInput>
                     </View>
@@ -348,7 +406,7 @@ class AboutModal extends React.Component {
                     <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>About Maximum MPD</Text>
                     </View>
-                    <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Version: 2.9</Text>
+                    <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Version: 3.0</Text>
                     <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Author: Richard Backhouse</Text>
                     <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Various Images provided by Icons8 (https://icons8.com)</Text>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>

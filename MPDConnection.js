@@ -1261,11 +1261,20 @@ class MPDConnection {
         return promise;
     }
     
-    albumartFromURL(uri, port, artist, album) {
+    albumartFromURL(uri, port, artist, album, prefix, suffix) {
         const filename = 'albumart_'+this.toAlbumArtFilename(artist, album)+".png";
-        let path = uri.substring(0, uri.lastIndexOf('/'));
-        path += "/cover.png";        
-        const url = "http://"+this.host+":"+port+"/"+encodeURI(path);
+        let path = uri.substring(0, uri.lastIndexOf('/'))+"/";
+        let url = "http://"+this.host+":"+port;
+        if (prefix && prefix !== "") {
+            url += prefix;
+        }
+        url += "/";
+        if (suffix && suffix !== "") {
+            path += suffix;
+        } else {
+            path += "cover.png";        
+        }
+        url += encodeURI(path);
         return SocketConnection.writeAlbumArtFromURL(filename, url);
     }
 

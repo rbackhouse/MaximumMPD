@@ -42,7 +42,7 @@ async function getAlbumArt(album, options) {
             try {
                 let path;
                 if (options.useHTTP) {
-                    path = await MPDConnection.current().albumartFromURL(songs[0].file, options.port, album.artist, album.name);
+                    path = await MPDConnection.current().albumartFromURL(songs[0].file, options.port, album.artist, album.name, options.urlPrefix, options.fileName);
                 } else {
                     path = await MPDConnection.current().albumart(songs[0].file, album.artist, album.name, (offset, size) => {
                         const percentageDowloaded = Math.round((offset / size) * 100);
@@ -242,7 +242,7 @@ class AlbumArtStorage {
         let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
         let options;
         if (optionsStr === null) {
-            options = {useHTTP: false, port: 8080};
+            options = {useHTTP: false, port: 8080, urlPrefix: "", fileName: ""};
             await AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify(options));
         } else {
             options = JSON.parse(optionsStr);
@@ -254,19 +254,36 @@ class AlbumArtStorage {
         } else {
             options.enabled = enabled === "true" ? true : false;
         }
+        if (!options.urlPrefix) {
+            options.urlPrefix = "";
+            options.fileName = "";
+            await AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify(options));
+        }
         return options; 
     }
 
     async setHTTPSPort(port) {
         let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
         let options = JSON.parse(optionsStr);
-        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({useHTTP: options.useHTTP, port: port}));
+        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({useHTTP: options.useHTTP, port: port, urlPrefix: options.urlPrefix, fileName: options.fileName}));
     }
 
     async setUseHTTP(useHTTP) {
         let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
         let options = JSON.parse(optionsStr);
-        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({useHTTP: useHTTP, port: options.port}));
+        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({useHTTP: useHTTP, port: options.port, urlPrefix: options.urlPrefix, fileName: options.fileName}));
+    }
+
+    async setURLPrefix(urlPrefix) {
+        let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
+        let options = JSON.parse(optionsStr);
+        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({useHTTP: options.useHTTP, port: options.port, urlPrefix: urlPrefix, fileName: options.fileName}));
+    }
+
+    async setFileName(fileName) {
+        let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
+        let options = JSON.parse(optionsStr);
+        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({useHTTP: options.useHTTP, port: options.port, urlPrefix: options.urlPrefix, fileName: fileName}));
     }
 }
 
@@ -317,6 +334,12 @@ export default {
     },
     setUseHTTP: (useHTTP) => {
         return albumArtStorage.setUseHTTP(useHTTP);
+    },
+    setURLPrefix: (urlPrefix) => {
+        return albumArtStorage.setURLPrefix(urlPrefix);
+    },
+    setFileName: (fileName) => {
+        return albumArtStorage.setFileName(fileName);
     },
     getAlbumArtForArtists: () => {
         let promise = new Promise((resolve, reject) => {
