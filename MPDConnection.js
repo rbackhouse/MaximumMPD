@@ -138,6 +138,7 @@ class MPDConnection {
     				if (callback) {
     					callback();
     				}
+                    this._loadFileSuffixes();
     			} else if (state == "internalConnected") {
                     this.albumArtDir = status.albumArtDir;
     				this.queue = [];
@@ -222,7 +223,6 @@ class MPDConnection {
                     console.log("new protocol");
                 }
                 */
-                this._loadFileSuffixes();
             }
         );
 
