@@ -249,6 +249,11 @@ export default class ConnectionsScreen extends React.Component {
         this.setState({modalVisible: true});
     }
 
+    onRescan() {
+        this.setState({discovered: []});
+        MPDConnection.rescan();
+    }
+
     addConnection = (name, host, port, password) => {
         if (name === "") {
             Alert.alert(
@@ -390,6 +395,9 @@ export default class ConnectionsScreen extends React.Component {
                 }
 
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
+                    <ActionButton.Item buttonColor='#1abc9c' title="Rescan" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onRescan();}}>
+                        <IonIcon name="ios-refresh" size={20} color="white"/>
+                    </ActionButton.Item>
                     <ActionButton.Item buttonColor='#3498db' title="Add Connection" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onAdd();}}>
                         <Icon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>

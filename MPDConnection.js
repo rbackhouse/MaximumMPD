@@ -89,6 +89,7 @@ class Discoverer {
 
     stopListening() {
         this.subscription.remove();
+        BonjourListener.stopListening();
     }
 
     getDiscoveredList() {
@@ -1791,5 +1792,9 @@ export default {
     },
     getEventEmitter: function() {
         return mpdEventEmiiter;
+    },
+    rescan: function() {
+        discoverer.stopListening();
+        discoverer.startListening();
     }
 }

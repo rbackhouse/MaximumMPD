@@ -37,6 +37,10 @@ RCT_EXPORT_METHOD(listen:(NSString *)type port:(NSString *)domain) {
   [self.serviceBrowser searchForServicesOfType:type inDomain:domain];
 }
 
+RCT_EXPORT_METHOD(stopListening) {
+  [self.serviceBrowser stop];
+}
+
 - (NSArray<NSString *> *)supportedEvents {
   return @[@"OnDiscover"];
 }
