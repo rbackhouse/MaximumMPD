@@ -88,7 +88,11 @@ export default class FilesScreen extends React.Component {
         this.didFocusSubscription = this.props.navigation.addListener(
             'didFocus',
             payload => {
-                //this.load();
+                let uri;
+                if (this.state.dirs.length > 0) {
+                    uri = this.state.dirs[this.state.dirs.length-1];
+                }
+                this.load(uri);
             }
         );
     }
