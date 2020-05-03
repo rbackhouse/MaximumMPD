@@ -145,10 +145,12 @@ const onConnect = MPDConnection.getEventEmitter().addListener(
             if (enabled === "true") {
                 stop = false;
                 migrate().then(() => {
-                    albumArtStorage.getOptions()
-                    .then((options) => {
-                        loader(options);
-                    });
+                    setTimeout(() => {
+                        albumArtStorage.getOptions()
+                        .then((options) => {
+                            loader(options);
+                        });
+                    }, 2000);
                 });
             }
         });
