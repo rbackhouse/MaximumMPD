@@ -90,8 +90,17 @@ export default class ArtistsScreen extends React.Component {
         );
         this.onAlbumArtEnd = AlbumArt.getEventEmitter().addListener(
             "OnAlbumArtEnd",
-            () => {
-                this.updateAlbumArt();
+            (album) => {
+                let idx = this.state.fullset.findIndex((a) => {a.name === album.artist});
+                if (idx !== -1 && this.state.fullset[idx].imagePath === undefined) {
+                    this.state.fullset[idx].imagePath = "file ://"+album.path;
+                    this.setState({artists: this.state.artists, fullset: this.state.fullset});
+                }
+                idx = this.state.albumsFullset.findIndex((a) => {a.name === album.name && a.artist === album.artist});
+                if (idx !== -1) {
+                    this.state.albumsFullset[idx].imagePath = "file://"+album.path;
+                    this.setState({albums: this.subset(this.state.albumsFullset), albumsFullset: this.state.albumsFullset});
+                }
             }
         );
         this.onAlbumArtError = AlbumArt.getEventEmitter().addListener(

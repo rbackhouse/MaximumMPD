@@ -40,19 +40,18 @@ async function getAlbumArt(album, options) {
             const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
             await albumArtStorage.updateState(key, STARTED);
             try {
-                let path;
                 if (options.useHTTP) {
-                    path = await MPDConnection.current().albumartFromURL(songs[0].file, options.port, album.artist, album.name, options.urlPrefix, options.fileName);
+                    await MPDConnection.current().albumartFromURL(songs[0].file, options.port, album.artist, album.name, options.urlPrefix, options.fileName);
                 } else {
-                    path = await MPDConnection.current().albumart(songs[0].file, album.artist, album.name, (offset, size) => {
+                    await MPDConnection.current().albumart(songs[0].file, album.artist, album.name, (offset, size) => {
                         const percentageDowloaded = Math.round((offset / size) * 100);
                         const sizeInK = Math.round(size / 1024);
                         albumArtEventEmiiter.emit('OnAlbumArtStatus', {album: album, size: sizeInK, percentageDowloaded: percentageDowloaded});
                     });
                 }
-                albumArt[key] = path;
+                albumArt[key] = album.path;
                 if (!artistArt[album.artist]) {
-                    artistArt[album.artist] = path;
+                    artistArt[album.artist] = album.path;
                 }
                 albumArtEventEmiiter.emit('OnAlbumArtEnd', album);
                 await albumArtStorage.updateState(key, COMPLETE);
@@ -84,6 +83,7 @@ const loader = async (options) => {
             const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
             const filename = 'albumart_'+key+".png";
             const full = MPDConnection.current().getAlbumArtDir()+'/'+filename;
+            album.path = full;
 
             let add = true;
 
@@ -108,17 +108,23 @@ const loader = async (options) => {
             }
         });
         queueSize = albums.length;
-        console.log("queueSize = "+queueSize);
-        albums.reduce((p, album) => {
-            return p.then((continueOn) => {
-                queueSize--;
-                if (continueOn) {
-                    return getAlbumArt(album, options);
-                } else {
-                    return Promise.resolve(false);
-                }
-            });
-        }, Promise.resolve(true));
+        if (queueSize > 0) {
+            albums.reduce((p, album) => {
+                return p.then((continueOn) => {
+                    queueSize--;
+                    if (queueSize === 0) {
+                        albumArtEventEmiiter.emit('OnAlbumArtComplete', {});
+                    }
+                    if (continueOn) {
+                        return getAlbumArt(album, options);
+                    } else {
+                        return Promise.resolve(false);
+                    }
+                });
+            }, Promise.resolve(true));
+        } else {
+            albumArtEventEmiiter.emit('OnAlbumArtComplete', {});
+        }
     }
 }
 
