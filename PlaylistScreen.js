@@ -254,7 +254,7 @@ export default class PlaylistScreen extends React.Component {
                 this.setState({totalTime: ""});
             }
             MPDConnection.current().getStatus((status) => {
-                if (status.song) {
+                if (status.song && this.listRef) {
                     let viewPosition = 0.5;
                     const playlistlength = parseInt(status.playlistlength);
                     const song = parseInt(status.song);
