@@ -88,6 +88,11 @@ public class BonjourListenerModule extends ReactContextBaseJavaModule {
         nsdManager.discoverServices("_mpd._tcp.", NsdManager.PROTOCOL_DNS_SD, discoveryListener);
     }
 
+    @ReactMethod
+    public void stopListening() {
+        nsdManager.stopServiceDiscovery(discoveryListener);
+    }
+
     private void startResolveListener(NsdServiceInfo service) {
         final NsdServiceInfo _service = service;
         nsdManager.resolveService(service, new NsdManager.ResolveListener() {
