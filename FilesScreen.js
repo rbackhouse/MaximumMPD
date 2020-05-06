@@ -362,7 +362,16 @@ export default class FilesScreen extends React.Component {
                                     <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center'}, styles.rowFront]}>
                                         <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                                         <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
-                                            <Text style={styles.item}>{file}</Text>
+                                            {item.artist &&
+                                                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>{item.artist}</Text>
+                                            }
+                                            {item.album &&
+                                                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>{item.album}</Text>
+                                            }
+                                            {item.title &&
+                                                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>{item.title}</Text>
+                                            }
+                                            <Text numberOfLines={1} ellipsizeMode='middle' style={styles.file}>{file}</Text>
                                         </View>
                                         <Icon name="ios-swap" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                                     </View>
@@ -378,7 +387,7 @@ export default class FilesScreen extends React.Component {
                                     <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
                                         <Icon name="ios-folder" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                                         <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
-                                            <Text style={styles.item}>{dir}</Text>
+                                            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{dir}</Text>
                                         </View>
                                         <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
                                     </View>
@@ -416,6 +425,10 @@ const styles = StyleSheet.create({
     item: {
         fontFamily: 'GillSans-Italic',
         padding: 10
+    },
+    file: {
+        fontFamily: 'GillSans-Italic',
+        padding: 2
     },
     sectionHeader: {
         paddingTop: 2,

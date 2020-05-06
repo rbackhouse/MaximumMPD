@@ -1166,14 +1166,17 @@ class MPDConnection {
 		const processor = (data) => {
 			const lines = MPDConnection._lineSplit(data);
 			let dirs = [];
-			let files = [];
+            let files = [];
+            let f;
             lines.forEach((line) => {
 				if (line.indexOf(FILE_PREFIX) === 0) {
+                    f = undefined;
 					const file = line.substring(FILE_PREFIX.length);
                     for (let suffix of this.fileSuffixes) {
 						if (MPDConnection._endsWith(file, suffix)) {
-							const b64file = this.toBase64(file);
-							files.push({file: file, b64file: b64file});
+                            const b64file = this.toBase64(file);
+                            f = {file: file, b64file: b64file};
+							files.push(f);
                             break;
 						}
 					}
@@ -1186,6 +1189,18 @@ class MPDConnection {
                     if (playlist.indexOf('.cue', playlist.length - '.cue'.length) !== -1) {
                         const b64file = this.toBase64(playlist);
                         files.push({file: playlist, b64file: b64file});
+                    }
+                } else if (line.indexOf(ARTIST_PREFIX) === 0) {
+                    if (f) {
+                        f.artist = line.substring(ARTIST_PREFIX.length);
+                    }
+                } else if (line.indexOf(ALBUM_PREFIX) === 0) {
+                    if (f) {
+                        f.album = line.substring(ALBUM_PREFIX.length);
+                    }
+                } else if (line.indexOf(TITLE_PREFIX) === 0) {
+                    if (f) {
+                        f.title = line.substring(TITLE_PREFIX.length);
                     }
 				}
 			});
