@@ -1015,7 +1015,7 @@ class MPDConnection {
             .then((filelist) => {
     			let cmd = "command_list_begin\n";
     			filelist.files.forEach((fileEntry) => {
-    				if (fileEntry.file.indexOf('.cue', fileEntry.file.length - '.cue'.length) === -1) {
+                    if (!this.isPlaylistFile(fileEntry.file)) {
     					cmd += "playlistadd \""+playlist+"\"  \""+fileEntry.file+"\"\n";
     				}
     			});
@@ -1044,7 +1044,7 @@ class MPDConnection {
                     cmd += "clear\n";
                 }
     			filelist.files.forEach((fileEntry) => {
-    				if (fileEntry.file.indexOf('.cue', fileEntry.file.length - '.cue'.length) === -1) {
+                    if (!this.isPlaylistFile(fileEntry.file)) {
                         cmd += "add \""+fileEntry.file+"\"\n";
     				}
     			});
@@ -1186,9 +1186,8 @@ class MPDConnection {
 					dirs.push({dir: dir, b64dir: b64dir});
                 } else if (line.indexOf(PLAYLIST_PREFIX) === 0) {
                     const playlist = line.substring(PLAYLIST_PREFIX.length);
-                    if (playlist.indexOf('.cue', playlist.length - '.cue'.length) !== -1) {
-                        const b64file = this.toBase64(playlist);
-                        files.push({file: playlist, b64file: b64file});
+                    if (this.isPlaylistFile(playlist)) {
+                        files.push({file: playlist, b64file: this.toBase64(playlist)})
                     }
                 } else if (line.indexOf(ARTIST_PREFIX) === 0) {
                     if (f) {
@@ -1425,6 +1424,17 @@ class MPDConnection {
         return this.createPromise("playlistdelete \""+name+"\" "+pos);
     }
 
+    isPlaylistFile(file) {
+        isPlaylist = false;
+        for (let suffix of this.playlistSuffixes) {
+            if (MPDConnection._endsWith(file, suffix)) {
+                isPlaylist = true;
+                break;
+            }
+        }
+        return isPlaylist;
+    }
+
 	getOutputs() {
 		const processor = (data) => {
 			const lines = MPDConnection._lineSplit(data);
@@ -1612,7 +1622,8 @@ class MPDConnection {
     }
 
 	_loadFileSuffixes() {
-		this.fileSuffixes = ['cue'];
+        this.playlistSuffixes = ['cue', 'pls', 'asx', 'xspf'];
+		this.fileSuffixes = [];
 		const processor = (data) => {
 			const lines = MPDConnection._lineSplit(data);
 			lines.forEach((line) => {

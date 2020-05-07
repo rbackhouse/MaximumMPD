@@ -192,7 +192,7 @@ export default class FilesScreen extends React.Component {
 
         this.setState({loading: true});
 
-        if (item.file.indexOf('.cue', item.file.length - '.cue'.length) !== -1) {
+        if (MPDConnection.current().isPlaylistFile(item.file)) {
             MPDConnection.current().loadPlayList(decodeURIComponent(path))
             .then(() => {
                 this.setState({loading: false});
@@ -220,11 +220,15 @@ export default class FilesScreen extends React.Component {
     }
 
     playlist(rowMap, item) {
-
         if (rowMap[item.b64file]) {
 			rowMap[item.b64file].closeRow();
 		}
-        if (item.file.indexOf('.cue', item.file.length - '.cue'.length) !== -1) {
+        if (MPDConnection.current().isPlaylistFile(item.file)) {
+            Alert.alert(
+                "MPD Error",
+                "Cannot add a Playlist to a Playlist"
+            );
+
             return;
         }
         this.setState({modalVisible: true, selectedItem: item.b64file});
@@ -428,7 +432,9 @@ const styles = StyleSheet.create({
     },
     file: {
         fontFamily: 'GillSans-Italic',
-        padding: 2
+        paddingLeft: 10,
+        paddingTop: 2,
+        paddingBottom: 2
     },
     sectionHeader: {
         paddingTop: 2,
@@ -459,6 +465,8 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		backgroundColor: '#FFFFFF',
 		justifyContent: 'center',
+		paddingTop: 3,
+		paddingBottom: 3,
 	},
 	rowBack: {
 		alignItems: 'center',
@@ -467,6 +475,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		paddingLeft: 15,
+		paddingTop: 3,
+		paddingBottom: 3,
 	},
 	backRightBtn: {
 		alignItems: 'center',
