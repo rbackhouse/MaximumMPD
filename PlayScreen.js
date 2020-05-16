@@ -98,9 +98,10 @@ export default class PlayScreen extends React.Component {
         this.onStatus = MPDConnection.getEventEmitter().addListener(
             "OnStatus",
             (status) => {
-                let currentsong = -1;
+                let currenttitle = "";
+
                 if (this.state.status) {
-                    currentsong = this.state.status.song;
+                    currenttitle = this.state.status.currentsong.name !== undefined ? this.state.status.currentsong.name : this.state.status.currentsong.title;
                 } else {
                     let volume = parseInt(status.volume);
                     this.setState({volume:volume});
@@ -114,10 +115,13 @@ export default class PlayScreen extends React.Component {
                 this.setState({status: status, isPlaying: status.state === "play"});
                 //this.setState({status: status, volume: parseInt(status.volume), isPlaying: status.state === "play"});
                 if (status.song) {
-                    if (currentsong !== status.song) {
+                    const title = status.currentsong.name !== undefined ? status.currentsong.name : status.currentsong.title;
+                    if (currenttitle !== title) {
                         this.setState({imagePath: '', searchedForAlbumArt: false});
                     }
+
                     if (!this.state.searchedForAlbumArt && this.state.imagePath.length < 1) {
+                        console.log("searching for album art");
                         AlbumArt.getAlbumArt(status.currentsong.artist, status.currentsong.album)
                         .then((path) => {
                             if (path) {
