@@ -281,21 +281,16 @@ export default class SongsScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={{
-                  height: 1,
-                  width: "90%",
-                  backgroundColor: "#CED0CE",
-                  marginLeft: "5%"
-                }}
+                style={styles.separator}
             />
         );
     };
 
     render() {
         return (
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
-                    <View style={{flex: .75}}>
+            <View style={styles.container1}>
+                <View style={styles.container2}>
+                    <View style={styles.container3}>
                         <SearchBar
                             clearIcon
                             lightTheme
@@ -304,18 +299,18 @@ export default class SongsScreen extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                            containerStyle={{backgroundColor: 'white'}}
-                            inputContainerStyle={{backgroundColor: '#EBECEC'}}
-                            inputStyle={{backgroundColor: '#EBECEC'}}
+                            containerStyle={styles.searchbarContainer}
+                            inputContainerStyle={styles.searchbarInputContainer}
+                            inputStyle={styles.searchbarInput}
                     />
                     </View>
-                    <View style={{flex: .25}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                    <View style={styles.container4}>
+                        <Text style={styles.text}>
                             Total : {this.state.songs.length}
                         </Text>
                     </View>
                 </View>
-                <View style={{flex: .9, flexDirection: 'row', alignItems: 'stretch' }}>
+                <View style={styles.container5}>
                 <SwipeListView
 					useFlatList
                     data={this.state.songs}
@@ -332,15 +327,15 @@ export default class SongsScreen extends React.Component {
                                     <Text style={styles.backTextWhite}>Playlist</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}, styles.rowFront]}>
-                                <View style={{paddingLeft: 10}}/>
+                            <View style={[styles.container6, styles.rowFront]}>
+                                <View style={styles.paddingLeft}/>
                                 {this.state.imagePath.length < 1 &&
-                                    <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
+                                    <Image style={styles.albumart} source={require('./images/icons8-cd-filled-50.png')}/>
                                 }
                                 {this.state.imagePath.length > 0 &&
-                                    <Image style={{width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: this.state.imagePath}}/>
+                                    <Image style={styles.noalbumart} source={{uri: this.state.imagePath}}/>
                                 }
-                                <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                                <View style={styles.container7}>
                                     <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.title}</Text>
                                     {item.artist !== undefined &&
                                         <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.artist}</Text>
@@ -350,7 +345,7 @@ export default class SongsScreen extends React.Component {
                                     }
                                     <Text style={styles.item}>Track: {item.track} Time: {item.time}</Text>
                                 </View>
-                                <Icon name="ios-swap" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                                <Icon name="ios-swap" size={20} color="black" style={styles.icon}/>
                             </View>
                         </SwipeRow>
                     );}}
@@ -440,5 +435,79 @@ const styles = StyleSheet.create({
 	backRightBtnRight: {
 		backgroundColor: 'darkgray',
 		right: 0
-	}
+    },
+    container1: { 
+        flex: 1, 
+        justifyContent: 'flex-start', 
+        alignItems: 'stretch' 
+    },
+    container2: {
+        flex: .1, 
+        flexDirection: 'row', 
+        alignItems: 'center'
+    },
+    container3: {
+        flex: .75
+    },
+    container4: {
+        flex: .25
+    },
+    container5: {
+        flex: .9, 
+        flexDirection: 'row', 
+        alignItems: 'stretch' 
+    },
+    separator: {
+        height: 1,
+        width: "90%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "5%"
+    },
+    text: {
+        fontSize: 15,
+        fontFamily: 'GillSans-Italic'
+    },
+    paddingLeft: {
+        paddingLeft: 10
+    },
+    albumart: {
+        width: 20, 
+        height: 20, 
+        paddingLeft: 20, 
+        paddingRight: 35, 
+        resizeMode: 'contain'
+    },
+    noalbumart: {
+        width: 55, 
+        height: 55, 
+        paddingLeft: 20, 
+        paddingRight: 20, 
+        resizeMode: 'contain'
+    },
+    container6: {
+        flex: 1, 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        justifyContent:'space-between'
+    },
+    container7: { 
+        flex: 1, 
+        flexDirection: 'column', 
+        justifyContent: 'space-evenly', 
+        alignItems: 'stretch', 
+        padding: 5
+    },
+    icon: { 
+        paddingLeft: 20, 
+        paddingRight: 20 
+    },
+    searchbarContainer: {
+        backgroundColor: 'white'
+    },
+    searchbarInputContainer: {
+        backgroundColor: '#EBECEC'
+    },
+    searchbarInput: { 
+        backgroundColor: '#EBECEC'
+    }
 });
