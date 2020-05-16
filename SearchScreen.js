@@ -153,13 +153,13 @@ export default class SearchScreen extends React.Component {
         }
     }
 
-    queue(rowMap, item) {
+    queue(rowMap, item, autoplay) {
         if (rowMap[item.key]) {
 			rowMap[item.key].closeRow();
 		}
 
         this.setState({loading: true});
-        MPDConnection.current().addSongToPlayList(decodeURIComponent(Base64.atob(item.b64file)))
+        MPDConnection.current().addSongToPlayList(decodeURIComponent(Base64.atob(item.b64file)), autoplay)
         .then(() => {
             this.setState({loading: false});
         })
@@ -243,9 +243,12 @@ export default class SearchScreen extends React.Component {
                         const item = data.item;
                         if (item.title) {
                             return (
-                                <SwipeRow rightOpenValue={-150}>
+                                <SwipeRow leftOpenValue={75} rightOpenValue={-150}>
                                     <View style={styles.rowBack}>
-                                        <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.queue(map, item) }>
+                                        <TouchableOpacity style={styles.backLeftBtn} onPress={ _ => this.queue(map, item, true) }>
+                                            <Text style={styles.backTextWhite}>Play</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.queue(map, item, false) }>
                                             <Text style={styles.backTextWhite}>Queue</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.playlist(map, item) }>
@@ -364,5 +367,14 @@ const styles = StyleSheet.create({
         bottom: 0,
         justifyContent: 'center',
         alignItems: 'center'
-    }
+    },
+	backLeftBtn: {
+		alignItems: 'center',
+		bottom: 0,
+		justifyContent: 'center',
+		position: 'absolute',
+		top: 0,
+		width: 75,
+		backgroundColor: '#F08080'
+	}
 });

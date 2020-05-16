@@ -184,7 +184,7 @@ export default class FilesScreen extends React.Component {
         }
     };
 
-    queue(rowMap, item) {
+    queue(rowMap, item, autoplay) {
         if (rowMap[item.b64file]) {
 			rowMap[item.b64file].closeRow();
 		}
@@ -193,6 +193,14 @@ export default class FilesScreen extends React.Component {
         this.setState({loading: true});
 
         if (MPDConnection.current().isPlaylistFile(item.file)) {
+            if (MPDConnection.current().isPlaylistFile(item.file)) {
+                Alert.alert(
+                    "MPD Error",
+                    "Cannot autoplay a Playlist"
+                );    
+                return;
+            }
+    
             MPDConnection.current().loadPlayList(decodeURIComponent(path))
             .then(() => {
                 this.setState({loading: false});
@@ -205,7 +213,7 @@ export default class FilesScreen extends React.Component {
                 );
             });
         } else {
-            MPDConnection.current().addSongToPlayList(decodeURIComponent(path))
+            MPDConnection.current().addSongToPlayList(decodeURIComponent(path), autoplay)
             .then(() => {
                 this.setState({loading: false});
             })
@@ -354,9 +362,12 @@ export default class FilesScreen extends React.Component {
                             }
 
                             return (
-                                <SwipeRow rightOpenValue={-150}>
+                                <SwipeRow leftOpenValue={75} rightOpenValue={-150}>
                                     <View style={styles.rowBack}>
-                                        <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.queue(map, item) }>
+                                        <TouchableOpacity style={styles.backLeftBtn} onPress={ _ => this.queue(map, item, true) }>
+                                            <Text style={styles.backTextWhite}>Play</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.queue(map, item, false) }>
                                             <Text style={styles.backTextWhite}>Queue</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.playlist(map, item) }>
@@ -493,5 +504,14 @@ const styles = StyleSheet.create({
 	backRightBtnRight: {
 		backgroundColor: 'darkgray',
 		right: 0
+    },
+	backLeftBtn: {
+		alignItems: 'center',
+		bottom: 0,
+		justifyContent: 'center',
+		position: 'absolute',
+		top: 0,
+		width: 75,
+		backgroundColor: '#F08080'
 	}
 });

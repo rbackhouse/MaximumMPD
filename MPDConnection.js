@@ -992,8 +992,17 @@ class MPDConnection {
 
     }
 
-	addSongToPlayList(song) {
-        return this.createPromise("add \""+song+"\"");
+	addSongToPlayList(song, autoplay) {
+        if (autoplay) {
+            let cmd = "command_list_begin\n";
+            cmd += "clear\n";
+            cmd += "add \""+song+"\"\n";
+            cmd += "play\n";
+            cmd += "command_list_end";
+            return this.createPromise(cmd);    
+        } else {
+            return this.createPromise("add \""+song+"\"");
+        }
 	}
 
     addSongToNamedPlayList(song, playlist) {
