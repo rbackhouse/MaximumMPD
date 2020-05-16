@@ -16,9 +16,11 @@
 */
 
 import React from 'react';
-import { StyleSheet, ActivityIndicator, View } from 'react-native';
+import { StyleSheet, ActivityIndicator, View, TouchableOpacity } from 'react-native';
 import Icon  from 'react-native-vector-icons/Ionicons';
 import FAIcon  from 'react-native-vector-icons/FontAwesome';
+import MaterialIcon from 'react-native-vector-icons/dist/MaterialIcons';
+
 import { createStackNavigator, createBottomTabNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
 import HeaderButtons from 'react-navigation-header-buttons';
 
@@ -88,8 +90,6 @@ class Header extends React.Component {
                 icon = "link";
                 break;
         }
-        this.state.connectionState === 2 ? "red" : "gray";
-        this.state.isConnected ? "link" : "unlink";
         return (
             <View>
             {isConnecting &&
@@ -105,16 +105,39 @@ class Header extends React.Component {
     }
 }
 
+class SortHeader extends React.Component {
+    render() {
+        const { navigation } = this.props;
+        return (
+            <View>
+                <TouchableOpacity onPress={navigation.getParam('sort')}>
+                    <MaterialIcon name="sort" size={20} color="gray" style={{ paddingRight: 15 }}/>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+}
+
 const PlayStack = createStackNavigator(
     {
-        Play: { screen: PlayScreen },
-        PlaylistDetails: { screen: PlaylistDetails },
-        Artists: { screen: ArtistsScreen },
-        Albums: { screen: AlbumsScreen},
-        Songs: { screen: SongsScreen}
+        Play: { 
+            screen: PlayScreen 
+        },
+        PlaylistDetails: { 
+            screen: PlaylistDetails 
+        },
+        Artists: { 
+            screen: ArtistsScreen 
+        },
+        Albums: { 
+            screen: AlbumsScreen
+        },
+        Songs: { 
+            screen: SongsScreen
+        }
     },
     {
-        navigationOptions: ({ navigation }) => ({
+        defaultNavigationOptions: ({ navigation }) => ({
             headerRight: (
                 <Header navigation={navigation}></Header>
             ),
@@ -125,12 +148,24 @@ const PlayStack = createStackNavigator(
 
 const BrowseStack = createStackNavigator(
     {
-        Artists: { screen: ArtistsScreen },
-        Albums: { screen: AlbumsScreen},
-        Songs: { screen: SongsScreen}
+        Artists: { 
+            screen: ArtistsScreen,
+            navigationOptions: ({ navigation }) => ({
+                headerRight: (
+                    <SortHeader navigation={navigation}></SortHeader>
+                ),
+                headerBackTitle: null
+            })
+        },
+        Albums: { 
+            screen: AlbumsScreen
+        },
+        Songs: { 
+            screen: SongsScreen
+        }
     },
     {
-        navigationOptions: ({ navigation }) => ({
+        defaultNavigationOptions: ({ navigation }) => ({
             headerRight: (
                 <Header navigation={navigation}></Header>
             ),
@@ -141,12 +176,18 @@ const BrowseStack = createStackNavigator(
 
 const SearchStack = createStackNavigator(
     {
-        Search: { screen: SearchScreen },
-        Albums: { screen: AlbumsScreen},
-        Songs: { screen: SongsScreen}
+        Search: { 
+            screen: SearchScreen 
+        },
+        Albums: { 
+            screen: AlbumsScreen
+        },
+        Songs: { 
+            screen: SongsScreen
+        }
     },
     {
-        navigationOptions: ({ navigation }) => ({
+        defaultNavigationOptions: ({ navigation }) => ({
             headerRight: (
                 <Header navigation={navigation}></Header>
             ),
@@ -157,27 +198,35 @@ const SearchStack = createStackNavigator(
 
 const FilesStack = createStackNavigator(
     {
-        Files: { screen: FilesScreen }
-    },
-    {
-        navigationOptions: ({ navigation }) => ({
-            headerRight: (
-                <Header navigation={navigation}></Header>
-            ),
-            headerBackTitle: null
-        })
+        Files: { 
+            screen: FilesScreen,
+            navigationOptions: ({ navigation }) => ({
+                headerRight: (
+                    <SortHeader navigation={navigation}></SortHeader>
+                ),
+                headerBackTitle: null
+            })    
+        }
     }
 );
 
 const SettingsStack = createStackNavigator(
     {
-        Settings: { screen: SettingsScreen },
-        Connections: { screen: ConnectionsScreen },
-        Outputs: { screen: OutputsScreen },
-        Debug: { screen: DebugScreen }
+        Settings: { 
+            screen: SettingsScreen 
+        },
+        Connections: { 
+            screen: ConnectionsScreen 
+        },
+        Outputs: { 
+            screen: OutputsScreen 
+        },
+        Debug: { 
+            screen: DebugScreen 
+        }
     },
     {
-        navigationOptions: ({ navigation }) => ({
+        defaultNavigationOptions: ({ navigation }) => ({
             headerRight: (
                 <Header navigation={navigation}></Header>
             ),

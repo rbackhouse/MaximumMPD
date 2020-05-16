@@ -55,7 +55,8 @@ export default class ArtistsScreen extends React.Component {
           realTotal: 0,
           maxListSize: 0,
           grid: false,
-          numColumns: 1
+          numColumns: 1,
+          defaultSort: true
         };
     }
 
@@ -73,6 +74,7 @@ export default class ArtistsScreen extends React.Component {
         });
 
         const { navigation } = this.props;
+        navigation.setParams({ sort: this.sort });
 
         this.load();
 
@@ -231,6 +233,32 @@ export default class ArtistsScreen extends React.Component {
             this.setState({albums: this.subset(this.state.albumsFullset), searchAlbumValue: text});
         }
     }
+
+    sort = () => {
+        if (this.state.selectedTab === 1) {
+            this.setState({defaultSort: !this.state.defaultSort});
+            this.state.albums.sort((a,b) => {
+                if (!this.state.defaultSort) {
+                    if (a.name < b.name) {
+                        return -1;
+                    } else if (a.name > b.name) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                } else {
+                    if (a.artist < b.artist) {
+                        return -1;
+                    } else if (a.artist > b.artist) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }    
+                }
+            });
+            this.setState({albums: this.state.albums});
+        }
+    };
 
     onPress(item) {
         const { navigation } = this.props;

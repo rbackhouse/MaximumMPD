@@ -50,7 +50,8 @@ export default class FilesScreen extends React.Component {
           loading: false,
           modalVisible: false,
           selectedItem: "",
-          searchValue: ""
+          searchValue: "",
+          defaultSort: true
         };
     }
 
@@ -61,6 +62,8 @@ export default class FilesScreen extends React.Component {
         }
 
         this.props.navigation.setParams({ backlinkHandler: this.backlinkHandler });
+        this.props.navigation.setParams({ sort: this.sort });
+
         this.load();
 
         this.onConnect = MPDConnection.getEventEmitter().addListener(
@@ -103,6 +106,30 @@ export default class FilesScreen extends React.Component {
         this.didBlurSubscription.remove();
         this.didFocusSubscription.remove();
     }
+
+    sort = () => {
+        this.setState({defaultSort: !this.state.defaultSort});
+        this.state.files.sort((a,b) => {
+            if (this.state.defaultSort && a.title && b.title) {
+                if (a.title < b.title) {
+                    return -1;
+                } else if (a.title > b.title) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            } else {
+				if (a.file < b.file) {
+					return -1;
+				} else if (a.file > b.file) {
+					return 1;
+				} else {
+					return 0;
+				}
+            }
+        });
+        this.setState({files: this.state.files});
+    };
 
     backlinkHandler = () => {
         if (this.state.dirs.length > 0) {
