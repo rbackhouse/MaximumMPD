@@ -56,7 +56,9 @@ export default class ArtistsScreen extends React.Component {
           maxListSize: 0,
           grid: false,
           numColumns: 1,
-          defaultSort: true
+          defaultArtistSort: true,
+          defaultAlbumSort: true,
+          defaultGenreSort: true
         };
     }
 
@@ -181,7 +183,15 @@ export default class ArtistsScreen extends React.Component {
                     name: genre
                 });
             }
-
+            genreList.sort((a,b) => {
+				if (a.name < b.name) {
+					return -1;
+				} else if (a.name > b.name) {
+					return 1;
+				} else {
+					return 0;
+				}
+            });
             this.setState({genres: genreList, genresFullset: genreList, genreMap: genres});
         })
         .catch((err) => {
@@ -235,28 +245,63 @@ export default class ArtistsScreen extends React.Component {
     }
 
     sort = () => {
-        if (this.state.selectedTab === 1) {
-            this.setState({defaultSort: !this.state.defaultSort});
-            this.state.albums.sort((a,b) => {
-                if (!this.state.defaultSort) {
-                    if (a.name < b.name) {
-                        return -1;
-                    } else if (a.name > b.name) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
-                } else {
-                    if (a.artist < b.artist) {
-                        return -1;
-                    } else if (a.artist > b.artist) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }    
+        if (this.state.selectedTab === 0) {
+            const useDefault = !this.state.defaultArtistSort;
+            this.setState({defaultArtistSort: useDefault});
+            this.state.artists.sort((a,b) => {
+                let artist1 = a.name;
+                let artist2 = b.name;
+                let split = artist1.split(' ');
+                if (split.length > 1 && split[0].toLowerCase() === "the" && split[1].toLowerCase() !== "the") {
+                    split.shift();
+                    artist1 = split.join(' ');
                 }
+                split = artist2.split(' ');
+                if (split.length > 1 && split[0].toLowerCase() === "the" && split[1].toLowerCase() !== "the") {
+                    split.shift();
+                    artist2 = split.join(' ');
+                }
+				if (artist1 < artist2) {
+					return useDefault ? -1 : 1;
+				} else if (artist1 > artist2) {
+					return useDefault ? 1 : -1;
+				} else {
+					return 0;
+				}
+            });
+            this.setState({artists: this.state.artists});
+        } else if (this.state.selectedTab === 1) {
+            const useDefault = !this.state.defaultAlbumSort;
+            this.setState({defaultAlbumSort: useDefault});
+            this.state.albums.sort((a,b) => {
+                comp1 = a.name;
+                comp2 = b.name;
+                if (!useDefault) {
+                    comp1 = a.artist;
+                    comp2 = b.artist;
+                }
+                if (comp1 < comp2) {
+                    return -1;
+                } else if (comp1 > comp2) {
+                    return 1;
+                } else {
+                    return 0;
+                }    
             });
             this.setState({albums: this.state.albums});
+        } else if (this.state.selectedTab === 2) {
+            const useDefault = !this.state.defaultGenreSort;
+            this.setState({defaultGenreSort: useDefault});
+            this.state.genres.sort((a,b) => {
+				if (a.name < b.name) {
+					return useDefault ? -1 : 1;
+				} else if (a.name > b.name) {
+					return useDefault ? 1 : -1;
+				} else {
+					return 0;
+				}
+            });
+            this.setState({genres: this.state.genres});
         }
     };
 

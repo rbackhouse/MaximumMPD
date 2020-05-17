@@ -108,24 +108,22 @@ export default class FilesScreen extends React.Component {
     }
 
     sort = () => {
-        this.setState({defaultSort: !this.state.defaultSort});
+        const useDefault = !this.state.defaultSort;
+        this.setState({defaultSort: useDefault});
         this.state.files.sort((a,b) => {
-            if (this.state.defaultSort && a.title && b.title) {
-                if (a.title < b.title) {
-                    return -1;
-                } else if (a.title > b.title) {
-                    return 1;
-                } else {
-                    return 0;
-                }
+            let comp1 = a.file;
+            let comp2 = b.file;
+
+            if (!useDefault && a.title && b.title) {
+                comp1 = a.title;
+                comp2 = b.title;
+            }
+            if (comp1 < comp2) {
+                return -1;
+            } else if (comp1 > comp2) {
+                return 1;
             } else {
-				if (a.file < b.file) {
-					return -1;
-				} else if (a.file > b.file) {
-					return 1;
-				} else {
-					return 0;
-				}
+                return 0;
             }
         });
         this.setState({files: this.state.files});
@@ -178,8 +176,7 @@ export default class FilesScreen extends React.Component {
         this.setState({loading: true});
         MPDConnection.current().listFiles(path)
         .then((files) => {
-            this.setState({loading: false});
-            this.setState({files: [...files.files, ...files.dirs], fullset: [...files.files, ...files.dirs]});
+            this.setState({loading: false, defaultSort: true, files: [...files.files, ...files.dirs], fullset: [...files.files, ...files.dirs]});
             if (this.state.dirs.length < 1) {
                 this.props.navigation.setParams({ showBackbutton: false });
             } else {

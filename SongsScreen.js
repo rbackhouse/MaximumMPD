@@ -52,7 +52,8 @@ export default class SongsScreen extends React.Component {
           modalVisible: false,
           selectedItem: "",
           imagePath: "",
-          searchValue: ""
+          searchValue: "",
+          defaultSort: true
         };
     }
 
@@ -61,6 +62,7 @@ export default class SongsScreen extends React.Component {
         const artist = navigation.getParam('artist');
         const album = navigation.getParam('album');
         const genre = navigation.getParam('genre');
+        navigation.setParams({ sort: this.sort });
 
         this.setState({loading: true});
 
@@ -277,6 +279,30 @@ export default class SongsScreen extends React.Component {
             });
         }
     }
+
+    sort = () => {
+        const useDefault = !this.state.defaultSort;
+        this.setState({defaultSort: useDefault});
+        this.state.songs.sort((a,b) => {
+            let comp1 = a.file;
+            let comp2 = b.file;
+            if (!useDefault && a.title && b.title) {
+                comp1 = a.title;
+                comp2 = b.title;
+            } else if (a.track && b.track) {
+                comp1 = a.track;
+                comp2 = b.track;
+            }
+            if (comp1 < comp2) {
+                return -1;
+            } else if (comp1 > comp2) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+        this.setState({songs: this.state.songs});
+    };
 
     renderSeparator = () => {
         return (
