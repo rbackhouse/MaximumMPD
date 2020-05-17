@@ -125,15 +125,6 @@ const PlayStack = createStackNavigator(
         },
         PlaylistDetails: { 
             screen: PlaylistDetails 
-        },
-        Artists: { 
-            screen: ArtistsScreen 
-        },
-        Albums: { 
-            screen: AlbumsScreen
-        },
-        Songs: { 
-            screen: SongsScreen
         }
     },
     {
@@ -149,16 +140,16 @@ const PlayStack = createStackNavigator(
 const BrowseStack = createStackNavigator(
     {
         Artists: { 
-            screen: ArtistsScreen,
+            screen: ArtistsScreen
+        },
+        Albums: { 
+            screen: AlbumsScreen,
             navigationOptions: ({ navigation }) => ({
                 headerRight: (
-                    <SortHeader navigation={navigation}></SortHeader>
+                    <Header navigation={navigation}></Header>
                 ),
                 headerBackTitle: null
             })
-        },
-        Albums: { 
-            screen: AlbumsScreen
         },
         Songs: { 
             screen: SongsScreen
@@ -167,7 +158,7 @@ const BrowseStack = createStackNavigator(
     {
         defaultNavigationOptions: ({ navigation }) => ({
             headerRight: (
-                <Header navigation={navigation}></Header>
+                <SortHeader navigation={navigation}></SortHeader>
             ),
             headerBackTitle: null
         })
@@ -183,7 +174,13 @@ const SearchStack = createStackNavigator(
             screen: AlbumsScreen
         },
         Songs: { 
-            screen: SongsScreen
+            screen: SongsScreen,
+            navigationOptions: ({ navigation }) => ({
+                headerRight: (
+                    <SortHeader navigation={navigation}></SortHeader>
+                ),
+                headerBackTitle: null
+            })    
         }
     },
     {
