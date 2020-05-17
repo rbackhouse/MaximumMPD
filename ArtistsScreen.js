@@ -276,7 +276,7 @@ export default class ArtistsScreen extends React.Component {
             this.state.albums.sort((a,b) => {
                 comp1 = a.name;
                 comp2 = b.name;
-                if (!useDefault) {
+                if (!useDefault && a.artist && b.artist) {
                     comp1 = a.artist;
                     comp2 = b.artist;
                 }

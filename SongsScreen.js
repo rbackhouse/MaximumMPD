@@ -290,8 +290,13 @@ export default class SongsScreen extends React.Component {
                 comp1 = a.title;
                 comp2 = b.title;
             } else if (a.track && b.track) {
-                comp1 = a.track;
-                comp2 = b.track;
+                try {
+                    comp1 = parseInt(a.track);
+                    comp2 = parseInt(b.track);
+                } catch (err) {
+                    comp1 = a.title;
+                    comp2 = b.title;
+                }
             }
             if (comp1 < comp2) {
                 return -1;
