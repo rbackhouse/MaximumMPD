@@ -221,7 +221,8 @@ export default class FilesScreen extends React.Component {
                 Alert.alert(
                     "MPD Error",
                     "Cannot autoplay a Playlist"
-                );    
+                );
+                this.setState({loading: false});
                 return;
             }
     
