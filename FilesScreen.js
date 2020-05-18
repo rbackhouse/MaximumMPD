@@ -111,19 +111,27 @@ export default class FilesScreen extends React.Component {
         const useDefault = !this.state.defaultSort;
         this.setState({defaultSort: useDefault});
         this.state.files.sort((a,b) => {
-            let comp1 = a.file;
-            let comp2 = b.file;
+            let comp1 = a.file || a.dir;
+            let comp2 = b.file || b.dir;
 
             if (!useDefault && a.title && b.title) {
                 comp1 = a.title;
                 comp2 = b.title;
-            }
-            if (comp1 < comp2) {
-                return -1;
-            } else if (comp1 > comp2) {
-                return 1;
+                if (comp1 < comp2) {
+                    return -1;
+                } else if (comp1 > comp2) {
+                    return 1;
+                } else {
+                    return 0;
+                }
             } else {
-                return 0;
+                if (comp1 < comp2) {
+                    return useDefault ? -1 : 1;
+                } else if (comp1 > comp2) {
+                    return useDefault ? 1 : -1;
+                } else {
+                    return 0;
+                }                
             }
         });
         this.setState({files: this.state.files});
