@@ -225,7 +225,7 @@ export default class FilesScreen extends React.Component {
         this.setState({loading: true});
 
         if (MPDConnection.current().isPlaylistFile(item.file)) {
-            if (MPDConnection.current().isPlaylistFile(item.file)) {
+            if (autoplay) {
                 Alert.alert(
                     "MPD Error",
                     "Cannot autoplay a Playlist"
