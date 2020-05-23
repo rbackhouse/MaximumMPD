@@ -178,13 +178,8 @@ export default class AlbumsScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={{
-                  height: 1,
-                  width: "90%",
-                  backgroundColor: "#CED0CE",
-                  marginLeft: "5%"
-                }}
-            />
+                style={styles.separator}
+        />
         );
     };
 
@@ -194,21 +189,21 @@ export default class AlbumsScreen extends React.Component {
                 <View onLayout={(event) => {
                     const {x, y, width, height} = event.nativeEvent.layout;
                     this.rowHeight = height+1;
-                }} style={{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', height: 65 }}>
-                    <View style={{paddingLeft: 10}}/>
+                }} style={styles.container1}>
+                    <View style={styles.paddingLeft}/>
                     {item.imagePath === undefined &&
-                        <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
+                        <Image style={styles.albumart} source={require('./images/icons8-cd-filled-50.png')}/>
                     }
                     {item.imagePath !== undefined &&
-                        <Image style={{width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
+                        <Image style={styles.noalbumart} source={{uri: item.imagePath}}/>
                     }
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                    <View style={styles.container2}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
                     {item.date !== undefined &&
                         <Text style={styles.item}>({item.date})</Text>
                     }
-                    <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                    <Icon name="ios-more" size={20} color="black" style={styles.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -217,23 +212,30 @@ export default class AlbumsScreen extends React.Component {
     renderGridAlbumItem = ({item}) => {
         const size = Dimensions.get('window').width/this.state.numColumns;
         const gridStyles = StyleSheet.create({
-          itemContainer: {
-            width: size,
-            height: size,
-            alignItems: 'center'
-          }
+            itemContainer: {
+                width: size,
+                height: size,
+                alignItems: 'center'
+            },
+            albumartbig: {
+                width: size-30, 
+                height: size-30, 
+                paddingLeft: 5, 
+                paddingRight: 5, 
+                resizeMode: 'contain'
+            }
         });
 
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                 <View style={gridStyles.itemContainer}>
                     {item.imagePath === undefined &&
-                        <Image style={{width: size-30, height: size-30, paddingLeft: 5, paddingRight: 5, resizeMode: 'contain'}} source={require('./images/cd-large.png')}/>
+                        <Image style={gridStyles.albumartbig} source={require('./images/cd-large.png')}/>
                     }
                     {item.imagePath !== undefined &&
-                        <Image style={{width: size-30, height: size-30, paddingLeft: 5, paddingRight: 5, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
+                        <Image style={gridStyles.albumartbig} source={{uri: item.imagePath}}/>
                     }
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5}}>
+                    <View style={styles.container3}>
                         <Text numberOfLines={1} ellipsizeMode='tail' style={styles.albumGridItem}>{item.name}</Text>
                         {item.date !== undefined &&
                             <Text style={styles.albumGridItem}>({item.date})</Text>
@@ -250,9 +252,9 @@ export default class AlbumsScreen extends React.Component {
 
     render() {
         return (
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
-                    <View style={{flex: .75}}>
+            <View style={styles.container4}>
+                <View style={styles.container5}>
+                    <View style={styles.container6}>
                         <SearchBar
                             clearIcon
                             lightTheme
@@ -261,19 +263,19 @@ export default class AlbumsScreen extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                            containerStyle={{backgroundColor: 'white'}}
-                            inputContainerStyle={{backgroundColor: '#EBECEC'}}
-                            inputStyle={{backgroundColor: '#EBECEC'}}
+                            containerStyle={styles.searchbarContainer}
+                            inputContainerStyle={styles.searchbarInputContainer}
+                            inputStyle={styles.searchbarInput}
                         />
                     </View>
-                    <View style={{flex: .25}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                    <View style={styles.container7}>
+                        <Text style={styles.text}>
                             Total : {this.state.albums.length}
                         </Text>
                     </View>
                 </View>
                 {this.state.grid === false &&
-                    <View style={{flex: .9, flexDirection: 'row', alignItems: 'flex-start' }}>
+                    <View style={styles.container8}>
                     <FlatList
                         data={this.state.albums}
                         renderItem={this.renderItem}
@@ -287,7 +289,7 @@ export default class AlbumsScreen extends React.Component {
                     </View>
                 }
                 {this.state.grid === true &&
-                    <View style={{flex: .9, flexDirection: 'row', alignItems: 'flex-start' }}>
+                    <View style={styles.container8}>
                     <FlatList
                         data={this.state.albums}
                         renderItem={this.renderGridAlbumItem}
@@ -362,5 +364,53 @@ const styles = StyleSheet.create({
     row: {
         flex: 1,
         justifyContent: "space-around"
-    }
+    },
+    searchbarContainer: {
+        backgroundColor: 'white'
+    },
+    searchbarInputContainer: {
+        backgroundColor: '#EBECEC'
+    },
+    searchbarInput: { 
+        backgroundColor: '#EBECEC'
+    },
+    separator: {
+        height: 1,
+        width: "90%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "5%"
+    },
+    text: {
+        fontSize: 15,
+        fontFamily: 'GillSans-Italic'
+    },
+    paddingLeft: {
+        paddingLeft: 10
+    },
+    albumart: {
+        width: 20, 
+        height: 20, 
+        paddingLeft: 20, 
+        paddingRight: 35, 
+        resizeMode: 'contain'
+    },
+    noalbumart: {
+        width: 55, 
+        height: 55, 
+        paddingLeft: 20, 
+        paddingRight: 20, 
+        resizeMode: 'contain'
+    },
+    icon: { 
+        paddingLeft: 20, 
+        paddingRight: 20 
+    },
+    container1: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', height: 65 },
+    container2: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
+    container3: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5},
+    container4: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
+    container5: {flex: .1, flexDirection: 'row', alignItems: 'center'},
+    container6: {flex: .75},
+    container7: {flex: .25},
+    container8: {flex: .9, flexDirection: 'row', alignItems: 'flex-start' }
 });
