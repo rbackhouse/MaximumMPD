@@ -201,21 +201,16 @@ export default class SearchScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={{
-                  height: 1,
-                  width: "90%",
-                  backgroundColor: "#CED0CE",
-                  marginLeft: "5%"
-                }}
+                style={styles.separator}
             />
         );
     };
 
     render() {
         return (
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
-                    <View style={{flex: 1}}>
+            <View style={styles.container1}>
+                <View style={styles.container2}>
+                    <View style={styles.container3}>
                         <SearchBar
                             clearIcon
                             lightTheme
@@ -224,13 +219,13 @@ export default class SearchScreen extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                            containerStyle={{backgroundColor: 'white'}}
-                            inputContainerStyle={{backgroundColor: '#EBECEC'}}
-                            inputStyle={{backgroundColor: '#EBECEC'}}
+                            containerStyle={styles.searchbarContainer}
+                            inputContainerStyle={styles.searchbarInputContainer}
+                            inputStyle={styles.searchbarInput}
                     />
                     </View>
                 </View>
-                <View style={{flex: .9, flexDirection: 'row', alignItems: 'stretch' }}>
+                <View style={styles.container4}>
                 <SwipeListView
                     useSectionList
                     sections={[
@@ -255,40 +250,40 @@ export default class SearchScreen extends React.Component {
                                             <Text style={styles.backTextWhite}>Playlist</Text>
                                         </TouchableOpacity>
                                     </View>
-                                    <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center'}, styles.rowFront]}>
-                                        <View style={{paddingLeft: 10}}/>
+                                    <View style={[styles.container6, styles.rowFront]}>
+                                        <View style={styles.paddingLeft}/>
                                         {item.imagePath === undefined &&
-                                            <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
+                                            <Image style={styles.albumart} source={require('./images/icons8-cd-filled-50.png')}/>
                                         }
                                         {item.imagePath !== undefined &&
-                                            <Image style={{width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
+                                            <Image style={styles.noalbumart} source={{uri: item.imagePath}}/>
                                         }
-                                        <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                                        <View style={styles.container5}>
                                             {item.title && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.title}</Text>}
                                             {item.artist && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.artist}</Text>}
                                             {item.album && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.album}</Text>}
                                             {item.time && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.time}</Text>}
                                         </View>
-                                        <Icon name="ios-swap" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                                        <Icon name="ios-swap" size={20} color="black" style={styles.icon}/>
                                     </View>
                                 </SwipeRow>
                             );
                         } else {
                             return (
                                 <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                                    <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', height: 65}}>
-                                        <View style={{paddingLeft: 10}}/>
+                                    <View style={styles.container7}>
+                                        <View style={styles.paddingLeft}/>
                                         {item.imagePath === undefined &&
-                                            <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
+                                            <Image style={styles.albumart} source={require('./images/icons8-cd-filled-50.png')}/>
                                         }
                                         {item.imagePath !== undefined &&
-                                            <Image style={{width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
+                                            <Image style={styles.noalbumart} source={{uri: item.imagePath}}/>
                                         }
-                                        <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                                        <View style={styles.container5}>
                                             {item.artist && <Text style={styles.item}>{item.artist}</Text>}
                                             {item.album && <Text style={styles.item}>{item.album}</Text>}
                                         </View>
-                                        <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                                        <Icon name="ios-more" size={20} color="black" style={styles.icon}/>
                                     </View>
                                 </TouchableOpacity>
                             );
@@ -376,5 +371,48 @@ const styles = StyleSheet.create({
 		top: 0,
 		width: 75,
 		backgroundColor: '#F08080'
-	}
+    },
+    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
+    container2: {flex: .1, flexDirection: 'row', alignItems: 'center'},
+    container3: {flex: 1},
+    container4: {flex: .9, flexDirection: 'row', alignItems: 'stretch' },
+    container5: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
+    container6: {flex: 1, flexDirection: 'row', alignItems: 'center'},
+    container7: {flex: 1, flexDirection: 'row', alignItems: 'center', height: 65},
+    searchbarContainer: {
+        backgroundColor: 'white'
+    },
+    searchbarInputContainer: {
+        backgroundColor: '#EBECEC'
+    },
+    searchbarInput: { 
+        backgroundColor: '#EBECEC'
+    },
+    separator: {
+        height: 1,
+        width: "90%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "5%"
+    },
+    paddingLeft: {
+        paddingLeft: 10
+    },
+    albumart: {
+        width: 20, 
+        height: 20, 
+        paddingLeft: 20, 
+        paddingRight: 35, 
+        resizeMode: 'contain'
+    },
+    noalbumart: {
+        width: 55, 
+        height: 55, 
+        paddingLeft: 20, 
+        paddingRight: 20, 
+        resizeMode: 'contain'
+    },
+    icon: { 
+        paddingLeft: 20, 
+        paddingRight: 20 
+    }
 });
