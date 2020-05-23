@@ -334,12 +334,7 @@ export default class FilesScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={{
-                  height: 1,
-                  width: "90%",
-                  backgroundColor: "#CED0CE",
-                  marginLeft: "5%"
-                }}
+                style={styles.separator}
             />
         );
     };
@@ -359,9 +354,9 @@ export default class FilesScreen extends React.Component {
         });
 
         return (
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{flex: .5}}>
+            <View style={styles.container1}>
+                <View style={styles.container2}>
+                    <View style={styles.container3}>
                         <SearchBar
                             clearIcon
                             lightTheme
@@ -370,18 +365,18 @@ export default class FilesScreen extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                            containerStyle={{backgroundColor: 'white'}}                            
-                            inputContainerStyle={{backgroundColor: '#EBECEC'}}
-                            inputStyle={{backgroundColor: '#EBECEC'}}
+                            containerStyle={styles.searchbarContainer}
+                            inputContainerStyle={styles.searchbarInputContainer}
+                            inputStyle={styles.searchbarInput}
                     />
                     </View>
-                    <View style={{flex: .5}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                    <View style={styles.container3}>
+                        <Text style={styles.text}>
                             Directories : {dirCount} Files: {fileCount}
                         </Text>
                     </View>
                 </View>
-                <View style={{flex: .9, flexDirection: 'row', alignItems: 'flex-start' }}>
+                <View style={styles.container4}>
                 <SwipeListView
 					useFlatList
                     data={this.state.files}
@@ -407,9 +402,9 @@ export default class FilesScreen extends React.Component {
                                             <Text style={styles.backTextWhite}>Playlist</Text>
                                         </TouchableOpacity>
                                     </View>
-                                    <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center'}, styles.rowFront]}>
-                                        <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
-                                        <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                                    <View style={[styles.container5, styles.rowFront]}>
+                                        <Icon name="ios-musical-notes" size={20} color="black" style={styles.icon}/>
+                                        <View style={styles.container6}>
                                             {item.artist &&
                                                 <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>{item.artist}</Text>
                                             }
@@ -421,7 +416,7 @@ export default class FilesScreen extends React.Component {
                                             }
                                             <Text numberOfLines={1} ellipsizeMode='middle' style={styles.file}>{file}</Text>
                                         </View>
-                                        <Icon name="ios-swap" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                                        <Icon name="ios-swap" size={20} color="black" style={styles.icon}/>
                                     </View>
                                 </SwipeRow>
                             );
@@ -432,12 +427,12 @@ export default class FilesScreen extends React.Component {
                             }
                             return (
                                 <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                                    <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                                        <Icon name="ios-folder" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
-                                        <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                                    <View style={styles.container7}>
+                                        <Icon name="ios-folder" size={20} color="black" style={styles.icon}/>
+                                        <View style={styles.container6}>
                                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{dir}</Text>
                                         </View>
-                                        <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                                        <Icon name="ios-more" size={20} color="black" style={styles.icon}/>
                                     </View>
                                 </TouchableOpacity>
                             );
@@ -546,5 +541,32 @@ const styles = StyleSheet.create({
 		top: 0,
 		width: 75,
 		backgroundColor: '#F08080'
-	}
+    },
+    separator: {
+        height: 1,
+        width: "90%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "5%"
+    },
+    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
+    container2: {flex: .1, flexDirection: 'row', alignItems: 'center' },
+    container3: {flex: .5},
+    container4: {flex: .9, flexDirection: 'row', alignItems: 'flex-start' },
+    container5: {flex: 1, flexDirection: 'row', alignItems: 'center'},
+    container6: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
+    container7: {flex: 1, flexDirection: 'row', alignItems: 'center'},
+    text: {fontSize: 15,fontFamily: 'GillSans-Italic'},
+    icon: { 
+        paddingLeft: 20, 
+        paddingRight: 20 
+    },
+    searchbarContainer: {
+        backgroundColor: 'white'
+    },
+    searchbarInputContainer: {
+        backgroundColor: '#EBECEC'
+    },
+    searchbarInput: { 
+        backgroundColor: '#EBECEC'
+    }
 });
