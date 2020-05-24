@@ -666,7 +666,7 @@ export default class SettingsScreen extends React.Component {
         const crossfadeValue = this.state.crossfade + " seconds";
         const maxListSize = ""+this.state.maxListSize;
         return (
-            <View style={styles.container8}>
+            <View style={styles.container7}>
                 <SettingsList borderColor='#c8c7cc' defaultItemSize={50}>
                     <SettingsList.Header headerStyle={{marginTop:15}}/>
                     <SettingsList.Item
@@ -799,7 +799,7 @@ const styles = StyleSheet.create({
     },
     text1: {fontSize: 15,fontFamily: 'GillSans-Italic'},
     text2: {fontSize: 20, fontFamily: 'GillSans-Italic'},
-    flextStart: {flex: .5, alignItems: 'flex-start'},
+    flexStart: {flex: .5, alignItems: 'flex-start'},
     flexEnd: {flex: .5, alignItems: 'flex-end'},
     flex1: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
     flex2: {flex: .2, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'},
@@ -810,7 +810,7 @@ const styles = StyleSheet.create({
     container4: {flex: .2, flexDirection: 'row', alignItems: 'center', margin: 15},
     container5: {marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'flex-start'},
     container6: {flex: .1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    container8: {backgroundColor:'#EFEFF4',flex:1},
+    container7: {backgroundColor:'#EFEFF4',flex:1},
     textInput1: {
         width: 75,
         height: 35,
