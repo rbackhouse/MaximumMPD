@@ -79,12 +79,7 @@ export default class NewPlaylistModal extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={{
-                  height: 1,
-                  width: "90%",
-                  backgroundColor: "#CED0CE",
-                  marginLeft: "5%"
-                }}
+                style={styles.separator}
             />
         );
     };
@@ -92,12 +87,12 @@ export default class NewPlaylistModal extends React.Component {
     renderItem = ({item}) => {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                    <Icon name="ios-list" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                <View style={styles.container1}>
+                    <Icon name="ios-list" size={20} color="black" style={styles.icon}/>
+                    <View style={styles.container2}>
                         <Text style={styles.item}>{item}</Text>
                     </View>
-                    <Icon name="ios-add-circle" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                    <Icon name="ios-add-circle" size={20} color="black" style={styles.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -113,19 +108,19 @@ export default class NewPlaylistModal extends React.Component {
                 visible={visible}
                 onShow={() => {this.load();}}
             >
-                <View style={{marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'space-around'}}>
-                    <View style={{ flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', marginBottom: 20 }}>
-                        <View style={{ flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Select or Create New Playlist</Text>
+                <View style={styles.container3}>
+                    <View style={styles.container4}>
+                        <View style={styles.container5}>
+                            <Text style={styles.text1}>Select or Create New Playlist</Text>
                         </View>
-                        <View style={{ flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={{fontSize: 16, fontFamily: 'GillSans-Italic'}}>Provide name below OR Select from List</Text>
+                        <View style={styles.container6}>
+                            <Text style={styles.text2}>Provide name below OR Select from List</Text>
                         </View>
                     </View>
-                    <View style={{ flex: .1, justifyContent: 'flex-start', alignItems: 'stretch'}}>
+                    <View style={styles.container7}>
                         <Input placeholder="Click here to enter name" label="Create New Playlist" autoCapitalize="none" onChangeText={(playlistName) => { this.setState({playlistName}); playlistName.length < 1 ?  this.setState({createDisabled: true}) : this.setState({createDisabled: false}); }} style={styles.entryField} inputStyle={styles.label} labelStyle={styles.label}></Input>
                     </View>
-                    <View style={{ flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                    <View style={styles.container8}>
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Create"
@@ -142,9 +137,9 @@ export default class NewPlaylistModal extends React.Component {
                             type="outline"
                         />
                     </View>
-                    <View style={{ flex: .6, justifyContent: 'flex-start', alignItems: 'stretch'}}>
-                        <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
-                            <View style={{flex: .75}}>
+                    <View style={styles.container9}>
+                        <View style={styles.container10}>
+                            <View style={styles.container11}>
                                 <SearchBar
                                     round
                                     clearIcon
@@ -153,18 +148,18 @@ export default class NewPlaylistModal extends React.Component {
                                     placeholder='Search'
                                     onChangeText={this.search}
                                     value={this.state.searchValue}
-                                    containerStyle={{backgroundColor: "#fff"}}
-                                    inputContainerStyle={{backgroundColor: '#EBECEC'}}
-                                    inputStyle={{backgroundColor: "#EBECEC"}}                                    
+                                    containerStyle={styles.searchbarContainer}
+                                    inputContainerStyle={styles.searchbarInputContainer}
+                                    inputStyle={styles.searchbarInput}
                                 />
                             </View>
-                            <View style={{flex: .25}}>
-                                <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                            <View style={styles.container12}>
+                                <Text style={styles.text3}>
                                     Total : {this.state.playlists.length}
                                 </Text>
                             </View>
                         </View>
-                        <View style={{flex: .9, flexDirection: 'row', alignItems: 'flex-start' }}>
+                        <View style={styles.container13}>
                         <FlatList
                             data={this.state.playlists}
                             renderItem={this.renderItem}
@@ -220,5 +215,40 @@ const styles = StyleSheet.create({
         bottom: 0,
         justifyContent: 'center',
         alignItems: 'center'
-    }
+    },
+    separator: {
+        height: 1,
+        width: "90%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "5%"
+    },
+    icon: { 
+        paddingLeft: 20, 
+        paddingRight: 20 
+    },
+    searchbarContainer: {
+        backgroundColor: 'white'
+    },
+    searchbarInputContainer: {
+        backgroundColor: '#EBECEC'
+    },
+    searchbarInput: { 
+        backgroundColor: '#EBECEC'
+    },
+    container1: {flex: 1, flexDirection: 'row', alignItems: 'center'},
+    container2: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
+    container3: {marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'space-around'},
+    container4: { flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', marginBottom: 20 },
+    container5: { flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
+    container6: { flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
+    container7: { flex: .1, justifyContent: 'flex-start', alignItems: 'stretch'},
+    container8: { flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
+    container9: { flex: .6, justifyContent: 'flex-start', alignItems: 'stretch'},
+    container10: {flex: .1, flexDirection: 'row', alignItems: 'center'},
+    container11: {flex: .75},
+    container12: {flex: .25},
+    container13: {flex: .9, flexDirection: 'row', alignItems: 'flex-start' },
+    text1: {fontSize: 20, fontFamily: 'GillSans-Italic'},
+    text2: {fontSize: 16, fontFamily: 'GillSans-Italic'},
+    text3: {fontSize: 15,fontFamily: 'GillSans-Italic'}
 });

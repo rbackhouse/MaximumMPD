@@ -59,13 +59,13 @@ class AddStreamURLModal extends React.Component {
                 visible={visible}
                 onRequestClose={() => {
             }}>
-                <View style={{marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'}}>
-                    <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Add a Stream URL</Text>
+                <View style={styles.dialog1}>
+                    <View style={styles.dialog2}>
+                        <Text style={styles.dialogtext}>Add a Stream URL</Text>
                     </View>
                     <Input label="Name" autoCapitalize="none" onChangeText={(streamName) => this.setState({streamName: streamName})} style={styles.entryField} inputStyle={styles.label} labelStyle={styles.label}></Input>
                     <Input label="Stream URL" autoCapitalize="none" onChangeText={(url) => this.setState({streamURL: url})} style={styles.entryField} inputStyle={styles.label} labelStyle={styles.label}></Input>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                    <View style={styles.dialog3}>
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
@@ -220,12 +220,7 @@ export default class PlaylistEditor extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={{
-                  height: 1,
-                  width: "90%",
-                  backgroundColor: "#CED0CE",
-                  marginLeft: "5%"
-                }}
+                style={styles.separator}
             />
         );
     };
@@ -233,12 +228,12 @@ export default class PlaylistEditor extends React.Component {
     renderItem = ({item}) => {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                    <Icon name="ios-list" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                <View style={styles.container6}>
+                    <Icon name="ios-list" size={20} color="black" style={styles.icon}/>
+                    <View style={styles.container7}>
                         <Text style={styles.item}>{item}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                    <Icon name="ios-more" size={20} color="black" style={styles.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -246,9 +241,9 @@ export default class PlaylistEditor extends React.Component {
 
     render() {
         return (
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
-                    <View style={{flex: .75}}>
+            <View style={styles.container1}>
+                <View style={styles.container2}>
+                    <View style={styles.container3}>
                         <SearchBar
                             clearIcon
                             lightTheme
@@ -258,18 +253,18 @@ export default class PlaylistEditor extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                            containerStyle={{backgroundColor: 'white'}}
-                            inputContainerStyle={{backgroundColor: '#EBECEC'}}
-                            inputStyle={{backgroundColor: '#EBECEC'}}
+                            containerStyle={styles.searchbarContainer}
+                            inputContainerStyle={styles.searchbarInputContainer}
+                            inputStyle={styles.searchbarInput}
                     />
                     </View>
-                    <View style={{flex: .25}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                    <View style={styles.container4}>
+                        <Text style={styles.text}>
                             Total : {this.state.playlists.length}
                         </Text>
                     </View>
                 </View>
-                <View style={{flex: .9, flexDirection: 'row', alignItems: 'flex-start' }}>
+                <View style={styles.container5}>
                 <FlatList
                     data={this.state.playlists}
                     renderItem={this.renderItem}
@@ -329,5 +324,39 @@ const styles = StyleSheet.create({
     actionButtonText: {
         fontSize: 13,
         fontFamily: 'GillSans-Italic'
-    }
+    },
+    searchbarContainer: {
+        backgroundColor: 'white'
+    },
+    searchbarInputContainer: {
+        backgroundColor: '#EBECEC'
+    },
+    searchbarInput: { 
+        backgroundColor: '#EBECEC'
+    },
+    separator: {
+        height: 1,
+        width: "90%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "5%"
+    },
+    icon: { 
+        paddingLeft: 20, 
+        paddingRight: 20 
+    },
+    text: {
+        fontSize: 15,
+        fontFamily: 'GillSans-Italic'
+    },
+    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
+    container2: {flex: .1, flexDirection: 'row', alignItems: 'center'},
+    container3: {flex: .75},
+    container4: {flex: .25},
+    container5: {flex: .9, flexDirection: 'row', alignItems: 'flex-start' },
+    container6: {flex: 1, flexDirection: 'row', alignItems: 'center'},
+    container7: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
+    dialog1: {marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'},
+    dialog2: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
+    dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
+    dialogtext: {fontSize: 20, fontFamily: 'GillSans-Italic'}
 });

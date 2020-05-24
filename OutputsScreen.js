@@ -116,7 +116,7 @@ export default class OutputsScreen extends React.Component {
                         title={output.name}/>
         );
         return (
-            <View style={{backgroundColor:'#EFEFF4',flex:1}}>
+            <View style={styles.container1}>
                 <SettingsList borderColor='#c8c7cc' defaultItemSize={50}>
                     <SettingsList.Header headerStyle={{marginTop:15}} headerText="Outputs"/>
                     {outputs}
@@ -140,5 +140,6 @@ const styles = StyleSheet.create({
         bottom: 0,
         justifyContent: 'center',
         alignItems: 'center'
-    }
+    },
+    container1 : {backgroundColor:'#EFEFF4',flex:1}
 });

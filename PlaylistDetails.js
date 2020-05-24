@@ -164,12 +164,7 @@ export default class PlaylistDetails extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={{
-                  height: 1,
-                  width: "90%",
-                  backgroundColor: "#CED0CE",
-                  marginLeft: "5%"
-                }}
+                style={styles.separator}
             />
         );
     };
@@ -177,9 +172,9 @@ export default class PlaylistDetails extends React.Component {
     renderItem = ({item, index}) => {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item, index)}>
-                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                    <Icon name="ios-musical-notes" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                <View style={styles.container6}>
+                    <Icon name="ios-musical-notes" size={20} color="black" style={styles.icon}/>
+                    <View style={styles.container7}>
                         {item.name !== undefined &&
                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.name}</Text>
                         }
@@ -190,7 +185,7 @@ export default class PlaylistDetails extends React.Component {
                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>Time: {item.time}</Text>
                         }
                     </View>
-                    <Icon name="ios-trash" size={28} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                    <Icon name="ios-trash" size={28} color="black" style={styles.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -198,9 +193,9 @@ export default class PlaylistDetails extends React.Component {
 
     render() {
         return (
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
-                    <View style={{flex: .75}}>
+            <View style={styles.container1}>
+                <View style={styles.container2}>
+                    <View style={styles.container3}>
                         <SearchBar
                             clearIcon
                             lightTheme
@@ -209,18 +204,18 @@ export default class PlaylistDetails extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                            containerStyle={{backgroundColor: 'white'}}
-                            inputContainerStyle={{backgroundColor: '#EBECEC'}}
-                            inputStyle={{backgroundColor: '#EBECEC'}}
+                            containerStyle={styles.searchbarContainer}
+                            inputContainerStyle={styles.searchbarInputContainer}
+                            inputStyle={styles.searchbarInput}
                     />
                     </View>
-                    <View style={{flex: .25}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                    <View style={styles.container4}>
+                        <Text style={styles.text}>
                             Total : {this.state.playlist.length}
                         </Text>
                     </View>
                 </View>
-                <View style={{flex: .9, flexDirection: 'row', alignItems: 'stretch' }}>
+                <View style={styles.container5}>
                 <FlatList
                     data={this.state.playlist}
                     renderItem={this.renderItem}
@@ -275,5 +270,35 @@ const styles = StyleSheet.create({
     actionButtonText: {
         fontSize: 13,
         fontFamily: 'GillSans-Italic'
-    }
+    },
+    searchbarContainer: {
+        backgroundColor: 'white'
+    },
+    searchbarInputContainer: {
+        backgroundColor: '#EBECEC'
+    },
+    searchbarInput: { 
+        backgroundColor: '#EBECEC'
+    },
+    separator: {
+        height: 1,
+        width: "90%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "5%"
+    },
+    icon: { 
+        paddingLeft: 20, 
+        paddingRight: 20 
+    },
+    text: {
+        fontSize: 15,
+        fontFamily: 'GillSans-Italic'
+    },
+    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
+    container2: {flex: .1, flexDirection: 'row', alignItems: 'center'},
+    container3: {flex: .75},
+    container4: {flex: .25},
+    container5: {flex: .9, flexDirection: 'row', alignItems: 'stretch' },
+    container6: {flex: 1, flexDirection: 'row', alignItems: 'center'},
+    container7: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}
 });

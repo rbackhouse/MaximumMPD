@@ -90,19 +90,14 @@ export default class DebugScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={{
-                  height: 1,
-                  width: "90%",
-                  backgroundColor: "#CED0CE",
-                  marginLeft: "5%"
-                }}
+                style={styles.separator}
             />
         );
     };
 
     renderItem = ({item}) => {
         return (
-            <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+            <View style={styles.container2}>
                 <Text style={styles.item}>{item.debug}</Text>
             </View>
         );
@@ -110,9 +105,9 @@ export default class DebugScreen extends React.Component {
 
     render() {
         return (
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center'}}>
-                    <View style={{flex: 1}}>
+            <View style={styles.container1}>
+                <View style={styles.container3}>
+                    <View style={styles.container4}>
                     <TextInput
                       style={styles.textInput}
                       placeholder="MPD Command"
@@ -183,5 +178,15 @@ const styles = StyleSheet.create({
     actionButtonText: {
         fontSize: 13,
         fontFamily: 'GillSans-Italic'
-    }
+    },
+    separator: {
+        height: 1,
+        width: "90%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "5%"
+    },
+    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
+    container2: {flex: 1, flexDirection: 'row', alignItems: 'center'},
+    container3: {flex: .1, flexDirection: 'row', alignItems: 'center'},
+    container4: {flex: 1}
 });

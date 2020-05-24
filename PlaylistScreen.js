@@ -51,9 +51,9 @@ class RandomPlaylistTypeModal extends React.Component {
                 visible={visible}
                 onRequestClose={() => {
             }}>
-                <View style={{marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'}}>
-                    <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Random Playlist Type</Text>
+                <View style={styles.dialog1}>
+                    <View style={styles.dialog2}>
+                        <Text style={styles.dialogtext}>Random Playlist Type</Text>
                     </View>
                     <Picker
                         selectedValue={this.state.type}
@@ -65,7 +65,7 @@ class RandomPlaylistTypeModal extends React.Component {
                         <Picker.Item label="By Genre" value="genre" />
                     </Picker>
                     <Input label="Value" autoCapitalize="none" value={this.state.value} onChangeText={(value) => this.setState({value})} style={styles.entryField} inputStyle={styles.label} labelStyle={styles.label}></Input>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                    <View style={styles.dialog3}>
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
@@ -288,12 +288,7 @@ export default class PlaylistScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={{
-                  height: 1,
-                  width: "90%",
-                  backgroundColor: "#CED0CE",
-                  marginLeft: "5%"
-                }}
+                style={styles.separator}
             />
         );
     };
@@ -329,9 +324,9 @@ export default class PlaylistScreen extends React.Component {
                     } else {
                         this.rowHeight = height+1;
                     }
-                }} style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                    <Icon name={editSelectIcon} size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                }} style={styles.container5}>
+                    <Icon name={editSelectIcon} size={20} color="black" style={styles.icon}/>
+                    <View style={styles.container6}>
                         {item.artist !== "" &&
                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.artist}</Text>
                         }
@@ -352,7 +347,7 @@ export default class PlaylistScreen extends React.Component {
                             <Text style={styles.item}>{audio}</Text>
                         }
                     </View>
-                    <Icon name="ios-checkmark" size={30} color="black" style={{ display: selected, paddingLeft: 20, paddingRight: 20 }}/>
+                    <Icon name="ios-checkmark" size={30} color="black" style={[{ display: selected}, styles.icon]}/>
                 </View>
             </TouchableOpacity>
         );
@@ -378,15 +373,15 @@ export default class PlaylistScreen extends React.Component {
         const playPauseIcon = this.state.isPlaying == true ? "pause" : "play";
         const playPauseLabel = this.state.isPlaying == true ? "Pause" : "Play";
         return (
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start' }}>
-                <View style={{flex: .05, flexDirection: 'row', alignItems: 'flex-start' }}>
-                    <View style={{flex: 1, justifyContent: 'center'}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic', paddingLeft: 10}}>
+            <View style={styles.container1}>
+                <View style={styles.container2}>
+                    <View style={styles.container3}>
+                        <Text style={styles.text}>
                             Total : {this.state.playlist.length}   Time : {this.state.totalTime}
                         </Text>
                     </View>
                 </View>
-                <View style={{flex: .95, flexDirection: 'row', alignItems: 'flex-start' }}>
+                <View style={styles.container4}>
                 <FlatList
                     data={this.state.playlist}
                     renderItem={this.renderItem}
@@ -494,5 +489,30 @@ const styles = StyleSheet.create({
         margin: 15,
         borderColor: '#e3e5e5',
         borderWidth: 1
-    }
+    },
+    separator: {
+        height: 1,
+        width: "90%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "5%"
+    },
+    icon: { 
+        paddingLeft: 20, 
+        paddingRight: 20 
+    },
+    text: {
+        fontSize: 15,
+        fontFamily: 'GillSans-Italic',
+        paddingLeft: 10
+    },
+    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start' },
+    container2: {flex: .05, flexDirection: 'row', alignItems: 'flex-start' },
+    container3: {flex: 1, justifyContent: 'center'},
+    container4: {flex: .95, flexDirection: 'row', alignItems: 'flex-start' },
+    container5: {flex: 1, flexDirection: 'row', alignItems: 'center'},
+    container6: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
+    dialog1: {marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'},
+    dialog2: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
+    dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
+    dialogtext: {fontSize: 20, fontFamily: 'GillSans-Italic'}
 });

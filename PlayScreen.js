@@ -407,33 +407,33 @@ export default class PlayScreen extends React.Component {
           return (
               <View style={styles.container}>
                   <View style={styles.content}>
-                      <View style={{flex: .1, width: "100%", padding: 5}}>
+                      <View style={styles.container1}>
                             <ButtonGroup
                                 onPress={(index) => {
                                     this.setState({selectedTab:index});
                                 }}
                                 selectedIndex={this.state.selectedTab}
                                 buttons={['Playing', 'Queue', 'Playlists']}
-                                containerStyle={{height: 25}}
-                                selectedButtonStyle={{backgroundColor: '#3396FF'}}
-                                selectedTextStyle={{color: 'white'}}
-                            />
+                                containerStyle={styles.containerStyle}
+                                selectedButtonStyle={styles.selectedButtonStyle}
+                                selectedTextStyle={styles.selectedTextStyle}
+                                />
                         </View>
-                      <View style={{flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center', paddingLeft: 5, paddingRight: 5}}>
-                            <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                              <Text style={{ paddingRight: 15 }}>{elapsed}</Text>
+                      <View style={styles.container2}>
+                            <View style={styles.container3}>
+                              <Text style={styles.paddingRight}>{elapsed}</Text>
                                 <Slider
                                     value={time}
                                     onValueChange={this.setPosition}
                                     maximumValue={dur}
                                     step={1}
-                                    style={{width: "80%"}}
+                                    style={styles.positionSlider}
                                     thumbTintColor="#3396FF"
                                 />
-                                <Text style={{ paddingLeft: 15 }}>{duration}</Text>
+                                <Text style={styles.paddingLeft}>{duration}</Text>
                             </View>
                       </View>
-                      <View style={{flex: .6, width: "60%", alignItems: 'center', justifyContent: 'center'}} >
+                      <View style={styles.container4} >
                           {this.state.imagePath.length < 1 &&
                               <Image style={{width: albumArtSize, height: albumArtSize}} source={require('./images/cd-large.png')}/>
                           }
@@ -441,29 +441,29 @@ export default class PlayScreen extends React.Component {
                               <Image style={{width: albumArtSize, height: albumArtSize, resizeMode: 'contain'}} source={{uri: this.state.imagePath}}/>
                           }
                       </View>
-                      <View style={{flex: .1, width: "80%", height: "15%", padding: 15, alignItems: 'center', justifyContent: 'center'}}>
+                      <View style={styles.container5}>
                           <Text numberOfLines={1} style={styles.item}>{currentsong.artist}</Text>
                           <Text numberOfLines={1} style={styles.item}>{currentsong.album}</Text>
                           <Text numberOfLines={1} style={styles.item}>{title}</Text>
                           <Text numberOfLines={1} style={styles.item}>{timeTrack}</Text>
                       </View>
-                      <View style={{flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center'}}>
-                          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+                      <View style={styles.container6}>
+                          <View style={styles.container7}>
                               <TouchableOpacity
                                   onPress={this.onMute.bind(this)}>
-                                    <Icon name="volume-off" size={20} color="grey" style={{ paddingRight: 10 }}/>
+                                    <Icon name="volume-off" size={20} color="grey" style={styles.paddingRightSmall}/>
                                 </TouchableOpacity>
                                 <Slider
                                     value={this.state.volume}
                                     onValueChange={this.setVolume}
                                     maximumValue={100}
                                     step={1}
-                                    style={{width: "85%"}}
+                                    style={styles.volumeSlider}
                                     thumbTintColor="#3396FF"
                                 />
                                 <TouchableOpacity
                                     onPress={this.onMax.bind(this)}>
-                                    <Icon name="volume-up" size={20} color="grey" style={{ paddingLeft: 10 }}/>
+                                    <Icon name="volume-up" size={20} color="grey" style={styles.paddingLeftSmall}/>
                                 </TouchableOpacity>
                             </View>
                       </View>
@@ -507,7 +507,7 @@ export default class PlayScreen extends React.Component {
                               button={<TouchableOpacity
                                onPress={this.onMore.bind(this)}>
                                       <View style={[styles.button, styles.smallButton]}>
-                                          <IonIcon name="ios-more" size={20} color="#e6e6e6" style={{ paddingLeft: 1 }}/>
+                                          <IonIcon name="ios-more" size={20} color="#e6e6e6" style={styles.iconMore}/>
                                       </View>
                               </TouchableOpacity>}
                             >
@@ -527,7 +527,7 @@ export default class PlayScreen extends React.Component {
           );
         } else if (this.state.selectedTab === 1) {
             return (
-                <View style={{flex:1}}>
+                <View style={styles.tabcontainer1}>
                     <View style={{flex: bg, width: "100%", alignItems: 'stretch', justifyContent: 'center', padding: 5}}>
                         <ButtonGroup
                             onPress={(index) => {
@@ -535,9 +535,9 @@ export default class PlayScreen extends React.Component {
                             }}
                             selectedIndex={this.state.selectedTab}
                             buttons={['Playing', 'Queue', 'Playlists']}
-                            containerStyle={{height: 25}}
-                            selectedButtonStyle={{backgroundColor: '#3396FF'}}
-                            selectedTextStyle={{color: 'white'}}
+                            containerStyle={styles.containerStyle}
+                            selectedButtonStyle={styles.selectedButtonStyle}
+                            selectedTextStyle={styles.selectedTextStyle}
                         />
                     </View>
                     <PlaylistScreen navigation={this.props.navigation}/>
@@ -545,7 +545,7 @@ export default class PlayScreen extends React.Component {
             );
         } else {
             return (
-                <View style={{flex:1}}>
+                <View style={styles.tabcontainer1}>
                     <View style={{flex: bg, width: "100%", alignItems: 'stretch', justifyContent: 'center', padding: 5}}>
                         <ButtonGroup
                             onPress={(index) => {
@@ -553,9 +553,9 @@ export default class PlayScreen extends React.Component {
                             }}
                             selectedIndex={this.state.selectedTab}
                             buttons={['Playing', 'Queue', 'Playlists']}
-                            containerStyle={{height: 25}}
-                            selectedButtonStyle={{backgroundColor: '#3396FF'}}
-                            selectedTextStyle={{color: 'white'}}
+                            containerStyle={styles.containerStyle}
+                            selectedButtonStyle={styles.selectedButtonStyle}
+                            selectedTextStyle={styles.selectedTextStyle}
                         />
                     </View>
                     <PlaylistEditor navigation={this.props.navigation}/>
@@ -630,5 +630,23 @@ const styles = StyleSheet.create({
         bottom: 0,
         justifyContent: 'center',
         alignItems: 'center'
-    }
+    },
+    tabcontainer1: {flex:1},
+    container1: {flex: .1, width: "100%", padding: 5},
+    container2: {flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center', paddingLeft: 5, paddingRight: 5},
+    container3: {flex: 1, flexDirection: 'row', alignItems: 'center'},
+    container4: {flex: .6, width: "60%", alignItems: 'center', justifyContent: 'center'},
+    container5: {flex: .1, width: "80%", height: "15%", padding: 15, alignItems: 'center', justifyContent: 'center'},
+    container6: {flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center'},
+    container7: {flex: 1, flexDirection: 'row', alignItems: 'center'},
+    containerStyle: {height: 25},
+    selectedButtonStyle: {backgroundColor: '#3396FF'},    
+    selectedTextStyle: {color: 'white'},
+    paddingRight: { paddingRight: 15 },
+    paddingLeft: { paddingLeft: 15 },
+    paddingRightSmall: { paddingRight: 10 },
+    paddingLeftSmall: { paddingLeft: 10 },
+    iconMore: { paddingLeft: 1 },
+    positionSlider: {width: "80%"},
+    volumeSlider: {width: "85%"}
 })

@@ -179,7 +179,7 @@ export default class AlbumsScreen extends React.Component {
         return (
             <View
                 style={styles.separator}
-        />
+            />
         );
     };
 

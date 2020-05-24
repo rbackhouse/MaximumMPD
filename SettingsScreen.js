@@ -143,111 +143,96 @@ class AlbumArtModal extends React.Component {
                 onRequestClose={() => {
             }}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={{marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'flex-start'}}>
-                <View style={{ flex: .1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Album Art</Text>
+            <View style={styles.container5}>
+                <View style={styles.container6}>
+                    <Text style={styles.text2}>Album Art</Text>
                 </View>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15}}>
-                    <View style={{flex: .5, alignItems: 'flex-start'}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                <View style={styles.container2}>
+                    <View style={styles.flexStart}>
+                        <Text style={styles.text1}>
                             Enable
                         </Text>
                     </View>
-                    <View style={{flex: .5, alignItems: 'flex-end'}}>
+                    <View style={styles.flexEnd}>
                         <Switch
                             onValueChange={(value) => this.onAlbumArtChange(value)}
                             value={this.state.albumart}
                         />
                     </View>
                 </View>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15}}>
-                    <View style={{flex: .5, alignItems: 'flex-start'}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                <View style={styles.container2}>
+                    <View style={styles.flexStart}>
+                        <Text style={styles.text1}>
                             Use HTTP
                         </Text>
                     </View>
-                    <View style={{flex: .5, alignItems: 'flex-end'}}>
+                    <View style={styles.flexEnd}>
                         <Switch
                             onValueChange={(value) => this.onUseHTTPSChange(value)}
                             value={this.state.useHTTP}
                         />
                     </View>
                 </View>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15 }}>
-                    <View style={{flex: .5, alignItems: 'flex-start'}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                <View style={styles.container7}>
+                    <View style={styles.flexStart}>
+                        <Text style={styles.text1}>
                             HTTP Port
                         </Text>
                     </View>
-                    <View style={{flex: .5, alignItems: 'flex-end'}}>
+                    <View style={styles.flexEnd}>
                         <TextInput keyboardType='number-pad' 
                                 placeholder="HTTP Port"
                                 onChangeText={(port) => this.onPortChange(port)}
                                 defaultValue={""+this.state.port}
                                 editable={this.state.useHTTP}
-                                style={{
-                                    width: 75,
-                                    height: 35,
-                                    borderColor: '#e3e5e5',
-                                    borderWidth: 1                            
-                                }} 
+                                style={styles.textInput1} 
                                 inputStyle={styles.label}>
                         </TextInput>
                     </View>
                 </View>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15 }}>
-                    <View style={{flex: .5, alignItems: 'flex-start'}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                <View style={styles.container7}>
+                    <View style={styles.flexStart}>
+                        <Text style={styles.text1}>
                             HTTP URL Prefix
                         </Text>
                     </View>
-                    <View style={{flex: .5, alignItems: 'flex-end'}}>
+                    <View style={styles.flexEnd}>
                         <TextInput keyboardType='default' 
                                 placeholder="HTTP URL Prefix"
                                 onChangeText={(urlPrefix) => this.onURLPrefixChange(urlPrefix)}
                                 defaultValue={""+this.state.urlPrefix}
                                 editable={this.state.useHTTP}
-                                style={{
-                                    width: 150,
-                                    height: 35,
-                                    borderColor: '#e3e5e5',
-                                    borderWidth: 1                            
-                                }} 
+                                style={styles.textInput2} 
                                 autoCapitalize='none'
                                 inputStyle={styles.label}>
                         </TextInput>
                     </View>
                 </View>
-                <View style={{flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15 }}>
-                    <View style={{flex: .5, alignItems: 'flex-start'}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                <View style={styles.container7}>
+                    <View style={styles.flexStart}>
+                        <Text style={styles.text1}>
                             Album Art Filename
                         </Text>
                     </View>
-                    <View style={{flex: .5, alignItems: 'flex-end'}}>
+                    <View style={styles.flexEnd}>
                         <TextInput keyboardType='default' 
                                 placeholder="Album Art Filename"
                                 onChangeText={(filename) => this.onFilenameChange(filename)}
                                 defaultValue={""+this.state.filename}
                                 editable={this.state.useHTTP}
-                                style={{
-                                    width: 150,
-                                    height: 35,
-                                    borderColor: '#e3e5e5',
-                                    borderWidth: 1                            
-                                }} 
+                                style={styles.textInput2} 
                                 autoCapitalize='none'
                                 inputStyle={styles.label}>
                         </TextInput>
                     </View>
                 </View>
-                <View style={{flex: .2, flexDirection: 'row', alignItems: 'center', margin: 15}}>
-                    <View style={{flex: .5, alignItems: 'flex-start'}}>
-                        <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                <View style={styles.container4}>
+                    <View style={styles.flexStart}>
+                        <Text style={styles.text1}>
                             Clear Cache
                         </Text>
                     </View>
-                    <View style={{flex: .5, alignItems: 'flex-end'}}>
+                    <View style={styles.flexEnd}>
                         <Button
                             onPress={() => {this.clearAlbumArt();}}
                             title="Clear"
@@ -257,16 +242,16 @@ class AlbumArtModal extends React.Component {
                         />
                     </View>
                 </View>
-                <View style={{flex: .2, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'}}>
+                <View style={styles.flex2}>
                     <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>{queueText}</Text>
                 </View>
-                <View style={{flex: .2, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'}}>
+                <View style={styles.flex2}>
                     <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>{this.state.status}</Text>
                 </View>
-                <View style={{flex: .2, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'}}>
+                <View style={styles.flex2}>
                     <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>{this.state.downloadStatus}</Text>
                 </View>
-                <View style={{ flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                <View style={styles.container3}>
                     <Button
                         onPress={() => {this.onOk();}}
                         title="Ok"
@@ -304,12 +289,12 @@ class CrossfadeModal extends React.Component {
                 visible={visible}
                 onRequestClose={() => {
             }}>
-                <View style={{marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'}}>
-                    <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Set Crossfade</Text>
+                <View style={styles.container1}>
+                    <View style={styles.flex3}>
+                        <Text style={styles.text2}>Set Crossfade</Text>
                     </View>
                     <Input keyboardType='numeric' label="Crossfade (Seconds)" maxLength={5} onChangeText={(crossFade) => this.setState({crossFade})} inputStyle={styles.label} labelStyle={styles.label}></Input>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                    <View style={styles.flex1}>
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
@@ -354,9 +339,9 @@ class ReplayGainModal extends React.Component {
                 visible={visible}
                 onRequestClose={() => {
             }}>
-                <View style={{marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'}}>
-                    <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Set Replay Gain</Text>
+                <View style={styles.container1}>
+                    <View style={styles.flex3}>
+                        <Text style={styles.text2}>Set Replay Gain</Text>
                     </View>
                     <Picker
                         selectedValue={this.state.replayGain}
@@ -366,7 +351,7 @@ class ReplayGainModal extends React.Component {
                         <Picker.Item label="Album" value="album" />
                         <Picker.Item label="Auto" value="auto" />
                     </Picker>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                    <View style={styles.flex1}>
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
@@ -402,14 +387,14 @@ class AboutModal extends React.Component {
                 visible={visible}
                 onRequestClose={() => {
             }}>
-                <View style={{marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'}}>
-                    <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>About Maximum MPD</Text>
+                <View style={styles.container1}>
+                    <View style={styles.flex3}>
+                        <Text style={styles.text2}>About Maximum MPD</Text>
                     </View>
-                    <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Version: 3.4</Text>
-                    <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Author: Richard Backhouse</Text>
-                    <Text style={{fontSize: 15, fontFamily: 'GillSans-Italic', padding: 15}}>Various Images provided by Icons8 (https://icons8.com)</Text>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                    <Text style={[styles.text1, {padding: 15}]}>Version: 3.4</Text>
+                    <Text style={[styles.text1, {padding: 15}]}>Author: Richard Backhouse</Text>
+                    <Text style={[styles.text1, {padding: 15}]}>Various Images provided by Icons8 (https://icons8.com)</Text>
+                    <View style={styles.flex1}>
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
@@ -454,12 +439,12 @@ class MaxListSizeModal extends React.Component {
                 visible={visible}
                 onRequestClose={() => {
             }}>
-                <View style={{marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'}}>
-                    <View style={{ flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Set Crossfade</Text>
+                <View style={styles.container1}>
+                    <View style={styles.flex3}>
+                        <Text style={styles.text2}>Set Crossfade</Text>
                     </View>
                     <Input keyboardType='numeric' label="Max List Size" maxLength={5} value={value} onChangeText={(maxListSize) => this.setState({maxListSize})} inputStyle={styles.label} labelStyle={styles.label}></Input>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                    <View style={styles.flex1}>
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Ok"
@@ -681,7 +666,7 @@ export default class SettingsScreen extends React.Component {
         const crossfadeValue = this.state.crossfade + " seconds";
         const maxListSize = ""+this.state.maxListSize;
         return (
-            <View style={{backgroundColor:'#EFEFF4',flex:1}}>
+            <View style={styles.container8}>
                 <SettingsList borderColor='#c8c7cc' defaultItemSize={50}>
                     <SettingsList.Header headerStyle={{marginTop:15}}/>
                     <SettingsList.Item
@@ -811,17 +796,32 @@ const styles = StyleSheet.create({
     status: {
         fontFamily: 'GillSans-Italic',
         margin: 15
+    },
+    text1: {fontSize: 15,fontFamily: 'GillSans-Italic'},
+    text2: {fontSize: 20, fontFamily: 'GillSans-Italic'},
+    flextStart: {flex: .5, alignItems: 'flex-start'},
+    flexEnd: {flex: .5, alignItems: 'flex-end'},
+    flex1: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
+    flex2: {flex: .2, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'},
+    flex3: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
+    container1: {marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'},
+    container2: {flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15},
+    container3: {flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
+    container4: {flex: .2, flexDirection: 'row', alignItems: 'center', margin: 15},
+    container5: {marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'flex-start'},
+    container6: {flex: .1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
+    container7: {flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15 },
+    container8: {backgroundColor:'#EFEFF4',flex:1},
+    textInput1: {
+        width: 75,
+        height: 35,
+        borderColor: '#e3e5e5',
+        borderWidth: 1                            
+    },
+    textInput2: {
+        width: 150,
+        height: 35,
+        borderColor: '#e3e5e5',
+        borderWidth: 1                            
     }
 });
-
-/*
-<SettingsList.Item
-  hasNavArrow={true}
-  title='Max List Size'
-  titleInfo={maxListSize}
-  titleInfoStyle={{fontFamily: 'GillSans-Italic'}}
-  onPress={() => this.setState({maxListSizeVisible: true})}
-/>
-
-
-*/

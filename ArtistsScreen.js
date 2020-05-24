@@ -372,12 +372,7 @@ export default class ArtistsScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={{
-                  height: 1,
-                  width: "90%",
-                  backgroundColor: "#CED0CE",
-                  marginLeft: "5%"
-                }}
+                style={styles.separator}
             />
         );
     };
@@ -388,18 +383,18 @@ export default class ArtistsScreen extends React.Component {
                 <View onLayout={(event) => {
                     const {x, y, width, height} = event.nativeEvent.layout;
                     this.artistRowHeight = height+1;
-                }} style={{flex: 1, flexDirection: 'row', alignItems: 'center', height: 65 }}>
-                    <View style={{paddingLeft: 10}}/>
+                }} style={styles.itemContainer}>
+                    <View style={styles.paddingLeft}/>
                     {item.imagePath === undefined &&
-                        <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain'}} source={require('./images/icons8-dj-30.png')}/>
+                        <Image style={styles.iconNoAlbumArt} source={require('./images/icons8-dj-30.png')}/>
                     }
                     {item.imagePath !== undefined &&
-                        <Image style={{width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
+                        <Image style={styles.iconAlbumArt} source={{uri: item.imagePath}}/>
                     }
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                    <View style={styles.itemTextContainer}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                    <Icon name="ios-more" size={20} color="black" style={styles.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -417,12 +412,12 @@ export default class ArtistsScreen extends React.Component {
                         <Text style={styles.backTextWhite}>Songs</Text>
                     </TouchableOpacity>
                 </View>
-                <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}, styles.rowFront]}>
-                    <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                <View style={[styles.genreContainer, styles.rowFront]}>
+                    <Image style={styles.iconGenre} source={require('./images/icons8-cd-filled-50.png')}/>
+                    <View style={styles.itemTextContainer}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
-                    <Icon name="ios-swap" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                    <Icon name="ios-swap" size={20} color="black" style={styles.icon}/>
                 </View>
             </SwipeRow>
         );
@@ -434,19 +429,19 @@ export default class ArtistsScreen extends React.Component {
                 <View onLayout={(event) => {
                     const {x, y, width, height} = event.nativeEvent.layout;
                     this.albumRowHeight = height+1;
-                }} style={{flex: 1, flexDirection: 'row', alignItems: 'center', height: 65 }}>
-                    <View style={{paddingLeft: 10}}/>
+                }} style={styles.itemContainer}>
+                    <View style={styles.paddingLeft}/>
                     {item.imagePath === undefined &&
-                        <Image style={{width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain'}} source={require('./images/icons8-cd-filled-50.png')}/>
+                        <Image style={styles.iconNoAlbumArt} source={require('./images/icons8-cd-filled-50.png')}/>
                     }
                     {item.imagePath !== undefined &&
-                        <Image style={{width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
+                        <Image style={styles.iconAlbumArt} source={{uri: item.imagePath}}/>
                     }
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}}>
+                    <View style={styles.itemTextContainer}>
                         <Text style={styles.albumItem}>{item.name}</Text>
                         <Text style={styles.albumItem}>{item.artist}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} color="black" style={{ paddingLeft: 20, paddingRight: 20 }}/>
+                    <Icon name="ios-more" size={20} color="black" style={styles.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -471,7 +466,7 @@ export default class ArtistsScreen extends React.Component {
                     {item.imagePath !== undefined &&
                         <Image style={{width: size-30, height: size-30, paddingLeft: 5, paddingRight: 5, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
                     }
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5, paddingLeft: 5, paddingRight: 5}}>
+                    <View style={styles.gridItem}>
                         <Text numberOfLines={1} ellipsizeMode='tail' style={styles.albumGridItem}>{item.name}</Text>
                         <Text numberOfLines={1} ellipsizeMode='tail' style={styles.albumGridItem}>{item.artist}</Text>
                     </View>
@@ -500,7 +495,7 @@ export default class ArtistsScreen extends React.Component {
         }
         if (this.state.selectedTab === 0) {
             return (
-                <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
+                <View style={styles.tabContainer}>
                     <View style={{flex: bg, width: "100%"}}>
                         <ButtonGroup
                             onPress={(index) => {
@@ -509,12 +504,12 @@ export default class ArtistsScreen extends React.Component {
                             selectedIndex={this.state.selectedTab}
                             buttons={['Artists', 'Albums', 'Genres']}
                             containerStyle={{height: 25}}
-                            selectedButtonStyle={{backgroundColor: '#3396FF'}}
-                            selectedTextStyle={{color: 'white'}}
+                            selectedButtonStyle={styles.selectedBackgroundColor}
+                            selectedTextStyle={styles.selectedTextStyle}
                         />
                     </View>
                     <View style={{flex: sb, flexDirection: 'row', alignItems: 'center'}}>
-                        <View style={{flex: .75}}>
+                        <View style={styles.flex75}>
                             <SearchBar
                                 clearIcon
                                 lightTheme
@@ -523,13 +518,13 @@ export default class ArtistsScreen extends React.Component {
                                 placeholder='Search'
                                 onChangeText={this.search}
                                 value={this.state.searchValue}
-                                containerStyle={{backgroundColor: 'white'}}
-                                inputContainerStyle={{backgroundColor: '#EBECEC'}}
-                                inputStyle={{backgroundColor: '#EBECEC'}}
+                                containerStyle={styles.searchbarContainer}
+                                inputContainerStyle={styles.searchbarInputContainer}
+                                inputStyle={styles.searchbarInput}    
                             />
                         </View>
-                        <View style={{flex: .25}}>
-                            <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                        <View style={styles.flex25}>
+                            <Text style={styles.text}>
                                 Total : {this.state.artists.length}
                             </Text>
                         </View>
@@ -555,7 +550,7 @@ export default class ArtistsScreen extends React.Component {
             );
         } else if (this.state.selectedTab === 1) {
             return (
-                <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
+                <View style={styles.tabContainer}>
                     <View style={{flex: bg, width: "100%"}}>
                         <ButtonGroup
                             onPress={(index) => {
@@ -564,12 +559,12 @@ export default class ArtistsScreen extends React.Component {
                             selectedIndex={this.state.selectedTab}
                             buttons={['Artists', 'Albums', 'Genres']}
                             containerStyle={{height: 25}}
-                            selectedButtonStyle={{backgroundColor: '#3396FF'}}
-                            selectedTextStyle={{color: 'white'}}
+                            selectedButtonStyle={styles.selectedBackgroundColor}
+                            selectedTextStyle={styles.selectedTextStyle}
                         />
                     </View>
                     <View style={{flex: sb, flexDirection: 'row', alignItems: 'center'}}>
-                        <View style={{flex: .75}}>
+                        <View style={styles.flex75}>
                             <SearchBar
                                 clearIcon
                                 lightTheme
@@ -578,13 +573,13 @@ export default class ArtistsScreen extends React.Component {
                                 placeholder='Search'
                                 onChangeText={this.searchAlbums}
                                 value={this.state.searchAlbumValue}
-                                containerStyle={{backgroundColor: 'white'}}
-                                inputContainerStyle={{backgroundColor: '#EBECEC'}}
-                                inputStyle={{backgroundColor: '#EBECEC'}}
+                                containerStyle={styles.searchbarContainer}
+                                inputContainerStyle={styles.searchbarInputContainer}
+                                inputStyle={styles.searchbarInput}
                             />
                         </View>
-                        <View style={{flex: .25}}>
-                            <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                        <View style={styles.flex25}>
+                            <Text style={styles.text}>
                                 Total : {this.state.realTotal}
                             </Text>
                         </View>
@@ -633,7 +628,7 @@ export default class ArtistsScreen extends React.Component {
             );
         } else if (this.state.selectedTab === 2) {
             return (
-                <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
+                <View style={styles.tabContainer}>
                     <View style={{flex: bg, width: "100%"}}>
                         <ButtonGroup
                             onPress={(index) => {
@@ -642,12 +637,12 @@ export default class ArtistsScreen extends React.Component {
                             selectedIndex={this.state.selectedTab}
                             buttons={['Artists', 'Albums', 'Genres']}
                             containerStyle={{height: 25}}
-                            selectedButtonStyle={{backgroundColor: '#3396FF'}}
-                            selectedTextStyle={{color: 'white'}}
+                            selectedButtonStyle={styles.selectedBackgroundColor}
+                            selectedTextStyle={styles.selectedTextStyle}
                         />
                     </View>
                     <View style={{flex: sb, flexDirection: 'row', alignItems: 'center'}}>
-                        <View style={{flex: .75}}>
+                        <View style={styles.flex75}>
                             <SearchBar
                                 clearIcon
                                 lightTheme
@@ -656,13 +651,13 @@ export default class ArtistsScreen extends React.Component {
                                 placeholder='Search'
                                 onChangeText={this.searchGenres}
                                 value={this.state.searchGenreValue}
-                                containerStyle={{backgroundColor: 'white'}}
-                                inputContainerStyle={{backgroundColor: '#EBECEC'}}
-                                inputStyle={{backgroundColor: '#EBECEC'}}
+                                containerStyle={styles.searchbarContainer}
+                                inputContainerStyle={styles.searchbarInputContainer}
+                                inputStyle={styles.searchbarInput}    
                             />
                         </View>
-                        <View style={{flex: .25}}>
-                            <Text style={{fontSize: 15,fontFamily: 'GillSans-Italic'}}>
+                        <View style={styles.flex25}>
+                            <Text style={styles.text}>
                                 Total : {this.state.genres.length}
                             </Text>
                         </View>
@@ -694,7 +689,6 @@ const styles = StyleSheet.create({
         padding: 10
     },
     albumItem: {
-        fontSize: 17,
         fontFamily: 'GillSans-Italic',
         padding: 3
     },
@@ -759,5 +753,41 @@ const styles = StyleSheet.create({
     row: {
         flex: 1,
         justifyContent: "space-around"
-    }
+    },
+    searchbarContainer: {
+        backgroundColor: 'white'
+    },
+    searchbarInputContainer: {
+        backgroundColor: '#EBECEC'
+    },
+    searchbarInput: { 
+        backgroundColor: '#EBECEC'
+    },
+    separator: {
+        height: 1,
+        width: "90%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "5%"
+    },
+    icon: { 
+        paddingLeft: 20, 
+        paddingRight: 20 
+    },
+    text: {
+        fontSize: 15,
+        fontFamily: 'GillSans-Italic'
+    },
+    flex75: {flex: .75},
+    flex25: {flex: .25},
+    tabContainer: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
+    itemContainer: {flex: 1, flexDirection: 'row', alignItems: 'center', height: 65 },
+    itemTextContainer: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
+    genreContainer: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'},
+    paddingLeft: {paddingLeft: 10},
+    selectedButtonStyle: {backgroundColor: '#3396FF'},
+    selectedTextStyle: {color: 'white'},
+    gridItem: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5, paddingLeft: 5, paddingRight: 5},
+    iconNoAlbumArt: {width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain'},
+    iconAlbumArt: {width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'},
+    iconGenre: {width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}
 });

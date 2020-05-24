@@ -19,16 +19,12 @@ import React from 'react';
 import {
     View,
     Text,
-    TextInput,
     StyleSheet,
-    SectionList,
     TouchableOpacity,
     Modal,
     Alert,
-    ActivityIndicator,
-    Animated,
-    Dimensions,
-    PanResponder } from 'react-native';
+    ActivityIndicator
+} from 'react-native';
 import MPDConnection from './MPDConnection';
 import IonIcon  from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -62,9 +58,9 @@ class AddConnectionModal extends React.Component {
                 visible={visible}
                 onRequestClose={() => {
             }}>
-                <View style={{marginTop: 22, flex: .8, flexDirection: 'column', justifyContent: 'space-around'}}>
-                    <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{fontSize: 20, fontFamily: 'GillSans-Italic'}}>Add MPD Connection</Text>
+                <View style={styles.dialog1}>
+                    <View style={styles.dialog2}>
+                        <Text style={styles.dialogtext}>Add MPD Connection</Text>
                     </View>
                     <Input label="Name" 
                             autoCapitalize="none" 
@@ -94,7 +90,7 @@ class AddConnectionModal extends React.Component {
                             inputStyle={styles.label}
                             labelStyle={styles.label}>
                     </Input>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                    <View style={styles.dialog3}>
                         <Button
                             onPress={() => {this.addConnection();}}
                             title="Add"
@@ -338,12 +334,7 @@ export default class ConnectionsScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={{
-                  height: 1,
-                  width: "86%",
-                  backgroundColor: "#CED0CE",
-                  marginLeft: "14%"
-                }}
+                style={styles.separator}
             />
         );
     };
@@ -351,7 +342,7 @@ export default class ConnectionsScreen extends React.Component {
     render() {
         const navigation = this.props.navigation;
         return (
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' }}>
+            <View style={styles.container1}>
                 <AddConnectionModal visible={this.state.modalVisible} onCancel={() => {this.onCancel();}} addConnection={this.addConnection}></AddConnectionModal>
                 <SwipeListView
 					useSectionList
@@ -375,13 +366,13 @@ export default class ConnectionsScreen extends React.Component {
                                     <Text style={styles.backTextWhite}>Connect</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={[{flex: 1, flexDirection: 'row', alignItems: 'center'}, styles.rowFront]}>
-                                <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5 }}>
+                            <View style={[styles.container3, styles.rowFront]}>
+                                <View style={styles.container2}>
                                     <Text style={styles.item}>{item.name}</Text>
                                     <Text style={styles.item}>{item.ipAddress}</Text>
                                     <Text style={styles.item}>{item.port}</Text>
                                 </View>
-                                <Icon name="check" size={15} color="black" style={{ display: selected, paddingLeft: 20, paddingRight: 20 }}/>
+                                <Icon name="check" size={15} color="black" style={[{ display: selected }, styles.icon]}/>
                             </View>
                         </SwipeRow>
                     );}}
@@ -484,5 +475,22 @@ const styles = StyleSheet.create({
 	backRightBtnRight: {
 		backgroundColor: 'darkgray',
 		right: 0
-	}
+    },
+    separator: {
+        height: 1,
+        width: "90%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "5%"
+    },
+    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
+    container2: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5 },
+    container3: {flex: 1, flexDirection: 'row', alignItems: 'center'},
+    dialog1: {marginTop: 22, flex: .8, flexDirection: 'column', justifyContent: 'space-around'},
+    dialog2: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
+    dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
+    dialogtext: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
+    icon: { 
+        paddingLeft: 20, 
+        paddingRight: 20 
+    }
 });
