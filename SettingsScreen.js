@@ -173,7 +173,7 @@ class AlbumArtModal extends React.Component {
                         />
                     </View>
                 </View>
-                <View style={styles.container7}>
+                <View style={styles.container2}>
                     <View style={styles.flexStart}>
                         <Text style={styles.text1}>
                             HTTP Port
@@ -190,7 +190,7 @@ class AlbumArtModal extends React.Component {
                         </TextInput>
                     </View>
                 </View>
-                <View style={styles.container7}>
+                <View style={styles.container2}>
                     <View style={styles.flexStart}>
                         <Text style={styles.text1}>
                             HTTP URL Prefix
@@ -208,7 +208,7 @@ class AlbumArtModal extends React.Component {
                         </TextInput>
                     </View>
                 </View>
-                <View style={styles.container7}>
+                <View style={styles.container2}>
                     <View style={styles.flexStart}>
                         <Text style={styles.text1}>
                             Album Art Filename
@@ -810,7 +810,6 @@ const styles = StyleSheet.create({
     container4: {flex: .2, flexDirection: 'row', alignItems: 'center', margin: 15},
     container5: {marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'flex-start'},
     container6: {flex: .1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    container7: {flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15 },
     container8: {backgroundColor:'#EFEFF4',flex:1},
     textInput1: {
         width: 75,
