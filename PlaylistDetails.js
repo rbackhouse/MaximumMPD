@@ -23,7 +23,7 @@ import FAIcon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
 
 import MPDConnection from './MPDConnection';
-import { styles as common, playlistDetailsStyles as styles } from './Styles';
+import { styles as common, playlistDetailsStyles as styles, iconColor } from './Styles';
 
 export default class PlaylistDetails extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -173,7 +173,7 @@ export default class PlaylistDetails extends React.Component {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item, index)}>
                 <View style={common.container3}>
-                    <Icon name="ios-musical-notes" size={20} color="black" style={common.icon}/>
+                    <Icon name="ios-musical-notes" size={20} color={iconColor} style={common.icon}/>
                     <View style={common.container4}>
                         {item.name !== undefined &&
                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.name}</Text>
@@ -185,7 +185,7 @@ export default class PlaylistDetails extends React.Component {
                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>Time: {item.time}</Text>
                         }
                     </View>
-                    <Icon name="ios-trash" size={28} color="black" style={common.icon}/>
+                    <Icon name="ios-trash" size={28} color={iconColor} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );

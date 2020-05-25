@@ -22,7 +22,7 @@ import FAIcon  from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/dist/MaterialIcons';
 
 import { createStackNavigator, createBottomTabNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
-import { styles as common, appStyles as styles } from './Styles';
+import { styles as common, appStyles as styles, bgColor, textColor } from './Styles';
 
 import PlayScreen from './PlayScreen';
 import SearchScreen from './SearchScreen';
@@ -132,7 +132,13 @@ const PlayStack = createStackNavigator(
             headerRight: (
                 <Header navigation={navigation}></Header>
             ),
-            headerBackTitle: null
+            headerBackTitle: null,
+            headerStyle: {
+                backgroundColor: bgColor
+            },
+            headerTitleStyle: {
+                color: textColor
+            }
         })
     }
 );
@@ -148,7 +154,13 @@ const BrowseStack = createStackNavigator(
                 headerRight: (
                     <Header navigation={navigation}></Header>
                 ),
-                headerBackTitle: null
+                headerBackTitle: null,
+                headerStyle: {
+                    backgroundColor: bgColor
+                },
+                headerTitleStyle: {
+                    color: textColor
+                }
             })
         },
         Songs: { 
@@ -160,7 +172,13 @@ const BrowseStack = createStackNavigator(
             headerRight: (
                 <SortHeader navigation={navigation}></SortHeader>
             ),
-            headerBackTitle: null
+            headerBackTitle: null,
+            headerStyle: {
+                backgroundColor: bgColor
+            },
+            headerTitleStyle: {
+                color: textColor
+            }
         })
     }
 );
@@ -179,7 +197,13 @@ const SearchStack = createStackNavigator(
                 headerRight: (
                     <SortHeader navigation={navigation}></SortHeader>
                 ),
-                headerBackTitle: null
+                headerBackTitle: null,
+                headerStyle: {
+                    backgroundColor: bgColor
+                },
+                headerTitleStyle: {
+                    color: textColor
+                }    
             })    
         }
     },
@@ -188,7 +212,13 @@ const SearchStack = createStackNavigator(
             headerRight: (
                 <Header navigation={navigation}></Header>
             ),
-            headerBackTitle: null
+            headerBackTitle: null,
+            headerStyle: {
+                backgroundColor: bgColor
+            },
+            headerTitleStyle: {
+                color: textColor
+            }
         })
     }
 );
@@ -201,7 +231,13 @@ const FilesStack = createStackNavigator(
                 headerRight: (
                     <SortHeader navigation={navigation}></SortHeader>
                 ),
-                headerBackTitle: null
+                headerBackTitle: null,
+                headerStyle: {
+                    backgroundColor: bgColor
+                },
+                headerTitleStyle: {
+                    color: textColor
+                }    
             })    
         }
     }
@@ -227,7 +263,13 @@ const SettingsStack = createStackNavigator(
             headerRight: (
                 <Header navigation={navigation}></Header>
             ),
-            headerBackTitle: null
+            headerBackTitle: null,
+            headerStyle: {
+                backgroundColor: bgColor
+            },
+            headerTitleStyle: {
+                color: textColor
+            }
         })
     }
 );
@@ -274,6 +316,9 @@ const MainPage = createBottomTabNavigator(
     tabBarOptions: {
       activeTintColor: 'red',
       inactiveTintColor: 'gray',
+      style: {
+          backgroundColor: bgColor
+      }
     },
     animationEnabled: false,
     swipeEnabled: false

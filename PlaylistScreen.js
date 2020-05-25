@@ -26,7 +26,7 @@ import FAIcon from 'react-native-vector-icons/FontAwesome';
 
 import MPDConnection from './MPDConnection';
 import Config from './Config';
-import { styles as common, playlistStyles as styles } from './Styles';
+import { styles as common, playlistStyles as styles, iconColor } from './Styles';
 
 class RandomPlaylistTypeModal extends React.Component {
     state = {
@@ -325,7 +325,7 @@ export default class PlaylistScreen extends React.Component {
                         this.rowHeight = height+1;
                     }
                 }} style={common.container3}>
-                    <Icon name={editSelectIcon} size={20} color="black" style={common.icon}/>
+                    <Icon name={editSelectIcon} size={20} color={iconColor} style={common.icon}/>
                     <View style={common.container4}>
                         {item.artist !== "" &&
                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.artist}</Text>
@@ -347,7 +347,7 @@ export default class PlaylistScreen extends React.Component {
                             <Text style={styles.item}>{audio}</Text>
                         }
                     </View>
-                    <Icon name="ios-checkmark" size={30} color="black" style={[{ display: selected}, common.icon]}/>
+                    <Icon name="ios-checkmark" size={30} color={iconColor} style={[{ display: selected}, common.icon]}/>
                 </View>
             </TouchableOpacity>
         );

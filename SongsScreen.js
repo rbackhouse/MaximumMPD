@@ -30,7 +30,7 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
 import NewPlaylistModal from './NewPlaylistModal';
-import { styles as common, songsStyles as styles } from './Styles';
+import { styles as common, songsStyles as styles, iconColor } from './Styles';
 
 export default class SongsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -379,7 +379,7 @@ export default class SongsScreen extends React.Component {
                                     }
                                     <Text style={styles.item}>Track: {item.track} Time: {item.time}</Text>
                                 </View>
-                                <Icon name="ios-swap" size={20} color="black" style={common.icon}/>
+                                <Icon name="ios-swap" size={20} color={iconColor} style={common.icon}/>
                             </View>
                         </SwipeRow>
                     );}}

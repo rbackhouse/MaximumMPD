@@ -26,7 +26,7 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
 import Config from './Config';
-import { styles as common, artistsStyles as styles } from './Styles';
+import { styles as common, artistsStyles as styles, iconColor } from './Styles';
 
 export default class ArtistsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -395,7 +395,7 @@ export default class ArtistsScreen extends React.Component {
                     <View style={styles.itemTextContainer}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} color="black" style={common.icon}/>
+                    <Icon name="ios-more" size={20} color={iconColor} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -418,7 +418,7 @@ export default class ArtistsScreen extends React.Component {
                     <View style={styles.itemTextContainer}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
-                    <Icon name="ios-swap" size={20} color="black" style={common.icon}/>
+                    <Icon name="ios-swap" size={20} color={iconColor} style={common.icon}/>
                 </View>
             </SwipeRow>
         );
@@ -442,7 +442,7 @@ export default class ArtistsScreen extends React.Component {
                         <Text style={styles.albumItem}>{item.name}</Text>
                         <Text style={styles.albumItem}>{item.artist}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} color="black" style={common.icon}/>
+                    <Icon name="ios-more" size={20} color={iconColor} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );

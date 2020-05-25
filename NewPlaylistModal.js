@@ -21,7 +21,7 @@ import { SearchBar, Input, Button } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import MPDConnection from './MPDConnection';
-import { styles as common, newPlaylistStyles as styles } from './Styles';
+import { styles as common, newPlaylistStyles as styles, iconColor } from './Styles';
 
 export default class NewPlaylistModal extends React.Component {
     state = {
@@ -89,11 +89,11 @@ export default class NewPlaylistModal extends React.Component {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                 <View style={common.container3}>
-                    <Icon name="ios-list" size={20} color="black" style={common.icon}/>
+                    <Icon name="ios-list" size={20} color={iconColor} style={common.icon}/>
                     <View style={common.container4}>
                         <Text style={styles.item}>{item}</Text>
                     </View>
-                    <Icon name="ios-add-circle" size={20} color="black" style={common.icon}/>
+                    <Icon name="ios-add-circle" size={20} color={iconColor} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );

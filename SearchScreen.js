@@ -25,7 +25,7 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import NewPlaylistModal from './NewPlaylistModal';
 import AlbumArt from './AlbumArt';
-import { styles as common, searchStyles as styles } from './Styles';
+import { styles as common, searchStyles as styles, iconColor } from './Styles';
 
 export default class SearchScreen extends React.Component {
 
@@ -251,7 +251,7 @@ export default class SearchScreen extends React.Component {
                                             <Text style={common.backTextWhite}>Playlist</Text>
                                         </TouchableOpacity>
                                     </View>
-                                    <View style={[common.container3, common.rowFront, {height: 85}]}>
+                                    <View style={[styles.container1, common.rowFront, {height: 85}]}>
                                         <View style={styles.paddingLeft}/>
                                         {item.imagePath === undefined &&
                                             <Image style={styles.albumart} source={require('./images/icons8-cd-filled-50.png')}/>
@@ -259,13 +259,13 @@ export default class SearchScreen extends React.Component {
                                         {item.imagePath !== undefined &&
                                             <Image style={styles.noalbumart} source={{uri: item.imagePath}}/>
                                         }
-                                        <View style={styles.container5}>
+                                        <View style={common.container4}>
                                             {item.title && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.title}</Text>}
                                             {item.artist && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.artist}</Text>}
                                             {item.album && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.album}</Text>}
                                             {item.time && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.time}</Text>}
                                         </View>
-                                        <Icon name="ios-swap" size={20} color="black" style={common.icon}/>
+                                        <Icon name="ios-swap" size={20} color={iconColor} style={common.icon}/>
                                     </View>
                                 </SwipeRow>
                             );
@@ -284,7 +284,7 @@ export default class SearchScreen extends React.Component {
                                             {item.artist && <Text style={styles.item}>{item.artist}</Text>}
                                             {item.album && <Text style={styles.item}>{item.album}</Text>}
                                         </View>
-                                        <Icon name="ios-more" size={20} color="black" style={common.icon}/>
+                                        <Icon name="ios-more" size={20} color={iconColor} style={common.icon}/>
                                     </View>
                                 </TouchableOpacity>
                             );

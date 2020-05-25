@@ -1,9 +1,15 @@
 import { StyleSheet } from 'react-native'
 
+let darkMode = false;
+
 const Colors = {
-    dark: 'black',
-    light: 'white'
+    dark: '#333',
+    light: '#fff'
 };
+
+const iconColor = darkMode ? Colors.light : Colors.dark;
+const bgColor = darkMode ? Colors.dark : Colors.light;
+const textColor = darkMode ? Colors.light : Colors.dark;
 
 const styles = StyleSheet.create({
     separator: {
@@ -14,7 +20,8 @@ const styles = StyleSheet.create({
     },
     icon: { 
         paddingLeft: 20, 
-        paddingRight: 20 
+        paddingRight: 20,
+        backgroundColor: bgColor
     },
     loading: {
         position: 'absolute',
@@ -26,7 +33,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     searchbarContainer: {
-        backgroundColor: 'white'
+        backgroundColor: bgColor
     },
     searchbarInputContainer: {
         backgroundColor: '#EBECEC'
@@ -36,7 +43,8 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 15,
-        fontFamily: 'GillSans-Italic'
+        fontFamily: 'GillSans-Italic',
+        color: textColor
     },
     actionButtonText: {
         fontSize: 13,
@@ -72,7 +80,7 @@ const styles = StyleSheet.create({
 		backgroundColor: '#F08080'
     },
     backTextWhite: {
-		color: '#FFF'
+        color: textColor
 	},
     sectionHeader: {
         paddingTop: 2,
@@ -81,7 +89,8 @@ const styles = StyleSheet.create({
         paddingBottom: 2,
         fontSize: 14,
         fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
+        color: textColor,
+        backgroundColor: bgColor,
     },
     sectionHeaderAlt: {
         paddingTop: 2,
@@ -91,11 +100,12 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontFamily: 'GillSans-Italic',
         fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
+        color: textColor,
+        backgroundColor: bgColor,
     },
     rowFront: {
 		alignItems: 'center',
-		backgroundColor: '#FFFFFF',
+		backgroundColor: bgColor,
 		justifyContent: 'center',
 	},
 	rowBack: {
@@ -108,20 +118,22 @@ const styles = StyleSheet.create({
 	},
     flex75: {flex: .75},
     flex25: {flex: .25},
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch', backgroundColor: Colors.white},
-    container2: { flex: .1, flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white },
-    container3: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white },
-    container4: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5, backgroundColor: Colors.white }
+    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch', backgroundColor: bgColor},
+    container2: { flex: .1, flexDirection: 'row', alignItems: 'center', backgroundColor: bgColor },
+    container3: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: bgColor },
+    container4: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5, backgroundColor: bgColor }
 });
 
 const albumsStyles = StyleSheet.create({
     item: {
         fontFamily: 'GillSans-Italic',
-        padding: 10
+        padding: 10,
+        color: textColor
     },
     albumGridItem: {
         fontSize: 13,
-        fontFamily: 'GillSans-Italic'
+        fontFamily: 'GillSans-Italic',
+        color: textColor
     },
     paddingLeft: {
         paddingLeft: 10
@@ -140,8 +152,8 @@ const albumsStyles = StyleSheet.create({
         paddingRight: 20, 
         resizeMode: 'contain'
     },
-    container1: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', height: 65 },
-    container3: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5 },
+    container1: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', height: 65, backgroundColor: bgColor },
+    container3: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5, backgroundColor: bgColor },
 });
 
 const appStyles = StyleSheet.create({
@@ -159,37 +171,42 @@ const appStyles = StyleSheet.create({
 const artistsStyles = StyleSheet.create({
     item: {
         fontFamily: 'GillSans-Italic',
-        padding: 10
+        padding: 10,
+        color: textColor
     },
     albumItem: {
         fontFamily: 'GillSans-Italic',
-        padding: 3
+        padding: 3,
+        color: textColor
     },
     albumGridItem: {
         fontSize: 13,
-        fontFamily: 'GillSans-Italic'
+        fontFamily: 'GillSans-Italic',
+        color: textColor
     },
-    itemContainer: {flex: 1, flexDirection: 'row', alignItems: 'center', height: 65 },
-    itemTextContainer: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
-    genreContainer: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'},
+    itemContainer: {flex: 1, flexDirection: 'row', alignItems: 'center', height: 65, backgroundColor: bgColor },
+    itemTextContainer: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5, backgroundColor: bgColor },
+    genreContainer: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', backgroundColor: bgColor},
     paddingLeft: {paddingLeft: 10},
     selectedButtonStyle: {backgroundColor: '#3396FF'},
-    selectedTextStyle: {color: 'white'},
-    gridItem: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5, paddingLeft: 5, paddingRight: 5},
-    iconNoAlbumArt: {width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain'},
-    iconAlbumArt: {width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'},
-    iconGenre: {width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain'}
+    selectedTextStyle: {color: textColor},
+    gridItem: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5, paddingLeft: 5, paddingRight: 5, backgroundColor: bgColor},
+    iconNoAlbumArt: {width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain', backgroundColor: bgColor },
+    iconAlbumArt: {width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain', backgroundColor: bgColor },
+    iconGenre: {width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain', backgroundColor: bgColor }
 });
 
 const connectionsStyles = StyleSheet.create({
     item: {
         fontFamily: 'GillSans-Italic',
-        paddingLeft: 10
+        paddingLeft: 10,
+        color: textColor
     },
     label: {
         fontSize: 17,
         fontFamily: 'GillSans-Italic',
         fontWeight: 'normal',
+        color: textColor
     },
     button: {
         alignItems: 'center',
@@ -204,10 +221,10 @@ const connectionsStyles = StyleSheet.create({
         borderColor: '#e3e5e5',
         borderWidth: 1
     },
-    dialog1: {marginTop: 22, flex: .8, flexDirection: 'column', justifyContent: 'space-around'},
-    dialog2: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-    dialogtext: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}
+    dialog1: {marginTop: 22, flex: .8, flexDirection: 'column', justifyContent: 'space-around', backgroundColor: bgColor},
+    dialog2: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor},
+    dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: bgColor },
+    dialogtext: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor, color: textColor}
 });
 
 const debugStyles = StyleSheet.create({
@@ -218,29 +235,33 @@ const debugStyles = StyleSheet.create({
       height: 50,
       fontSize: 25,
       paddingLeft: 20,
-      paddingRight: 20
+      paddingRight: 20,
+      color: textColor
     },
     item: {
         fontSize: 17,
         fontFamily: 'GillSans-Italic',
-        padding: 10
+        padding: 10,
+        color: textColor
     },
-    container3: { flex: .1, flexDirection: 'row', alignItems: 'center' },
-    container4: { flex: 1 }
+    container3: { flex: .1, flexDirection: 'row', alignItems: 'center', backgroundColor: bgColor },
+    container4: { flex: 1, backgroundColor: bgColor }
 });
 
 const filesStyles = StyleSheet.create({
     item: {
         fontFamily: 'GillSans-Italic',
-        padding: 10
+        padding: 10,
+        color: textColor
     },
     file: {
         fontFamily: 'GillSans-Italic',
         paddingLeft: 10,
         paddingTop: 2,
-        paddingBottom: 2
+        paddingBottom: 2,
+        color: textColor
     },
-    container3: { flex: .5}
+    container3: { flex: .5, backgroundColor: bgColor }
 });
 
 const newPlaylistStyles = StyleSheet.create({
@@ -254,63 +275,70 @@ const newPlaylistStyles = StyleSheet.create({
     item: {
         fontSize: 17,
         fontFamily: 'GillSans-Italic',
-        padding: 10
+        padding: 10,
+        color: textColor
     },
     label: {
         fontSize: 17,
         fontFamily: 'GillSans-Italic',
         fontWeight: 'normal',
+        color: textColor
     },
-    container3: { marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'space-around' },
-    container4: { flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', marginBottom: 20 },
-    container5: { flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-    container6: { flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-    container7: { flex: .1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container8: { flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-    container9: { flex: .6, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container10: {flex: .1, flexDirection: 'row', alignItems: 'center' },
-    container13: {flex: .9, flexDirection: 'row', alignItems: 'flex-start' },
-    text1: {fontSize: 20, fontFamily: 'GillSans-Italic'},
-    text2: {fontSize: 16, fontFamily: 'GillSans-Italic'},
-    text3: {fontSize: 15,fontFamily: 'GillSans-Italic'}
+    container3: { marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'space-around', backgroundColor: bgColor },
+    container4: { flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', marginBottom: 20, backgroundColor: bgColor },
+    container5: { flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor },
+    container6: { flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor },
+    container7: { flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', backgroundColor: bgColor },
+    container8: { flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: bgColor },
+    container9: { flex: .6, justifyContent: 'flex-start', alignItems: 'stretch', backgroundColor: bgColor },
+    container10: {flex: .1, flexDirection: 'row', alignItems: 'center', backgroundColor: bgColor },
+    container13: {flex: .9, flexDirection: 'row', alignItems: 'flex-start', backgroundColor: bgColor },
+    text1: {fontSize: 20, fontFamily: 'GillSans-Italic', color: textColor},
+    text2: {fontSize: 16, fontFamily: 'GillSans-Italic', color: textColor},
+    text3: {fontSize: 15,fontFamily: 'GillSans-Italic', color: textColor}
 });
 
 const outputsStyles = StyleSheet.create({
-    container1 : {backgroundColor:'#EFEFF4',flex:1}
+    container1 : { backgroundColor: bgColor, flex:1 }
 });
 
 const playlistDetailsStyles = StyleSheet.create({
     item: {
-        fontFamily: 'GillSans-Italic'
+        fontFamily: 'GillSans-Italic',
+        color: textColor
     },
-    container5: { flex: .9, flexDirection: 'row', alignItems: 'stretch' },
+    container5: { flex: .9, flexDirection: 'row', alignItems: 'stretch', backgroundColor: bgColor },
 });
 
 const playlistEditorStyles = StyleSheet.create({
     item: {
         fontFamily: 'GillSans-Italic',
-        padding: 10
+        padding: 10,
+        color: textColor
     },
     label: {
         fontSize: 17,
         fontFamily: 'GillSans-Italic',
         fontWeight: 'normal',
+        color: textColor
     },
-    container5: { flex: .9, flexDirection: 'row', alignItems: 'flex-start' },
-    dialog1: {marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'},
-    dialog2: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-    dialogtext: {fontSize: 20, fontFamily: 'GillSans-Italic'}
+    container5: { flex: .9, flexDirection: 'row', alignItems: 'flex-start', backgroundColor: bgColor },
+    dialog1: {marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around', backgroundColor: bgColor },
+    dialog2: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor },
+    dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: bgColor },
+    dialogtext: {fontSize: 20, fontFamily: 'GillSans-Italic', color: textColor}
 });
 
 const playlistStyles = StyleSheet.create({
     item: {
-        fontFamily: 'GillSans-Italic'
+        fontFamily: 'GillSans-Italic',
+        color: textColor
     },
     label: {
         fontSize: 17,
         fontFamily: 'GillSans-Italic',
         fontWeight: 'normal',
+        color: textColor
     },
     button: {
         width: 35,
@@ -344,24 +372,26 @@ const playlistStyles = StyleSheet.create({
         borderColor: '#e3e5e5',
         borderWidth: 1
     },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start' },
-    container2: { flex: .05, flexDirection: 'row', alignItems: 'flex-start' },
-    container3: { flex: 1, justifyContent: 'center' },
-    container4: { flex: .95, flexDirection: 'row', alignItems: 'flex-start' },
-    dialog1: {marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'},
-    dialog2: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-    dialogtext: {fontSize: 20, fontFamily: 'GillSans-Italic'}
+    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start', backgroundColor: bgColor },
+    container2: { flex: .05, flexDirection: 'row', alignItems: 'flex-start', backgroundColor: bgColor },
+    container3: { flex: 1, justifyContent: 'center', backgroundColor: bgColor },
+    container4: { flex: .95, flexDirection: 'row', alignItems: 'flex-start', backgroundColor: bgColor },
+    dialog1: {marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around', backgroundColor: bgColor },
+    dialog2: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor },
+    dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: bgColor },
+    dialogtext: {fontSize: 20, fontFamily: 'GillSans-Italic', color: textColor}
 });
 
 const playStyles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: bgColor
     },
     content: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center', 
+        backgroundColor: bgColor
     },
     button: {
         backgroundColor: '#3396FF',
@@ -405,19 +435,21 @@ const playStyles = StyleSheet.create({
     },
     item: {
         fontSize: 18,
-        fontFamily: 'GillSans-Italic'
+        fontFamily: 'GillSans-Italic',
+        color: textColor
     },
     meniItem: {
         fontSize: 16,
-        fontFamily: 'GillSans-Italic'
+        fontFamily: 'GillSans-Italic',
+        color: textColor
     },
-    tabcontainer1: {flex:1},
-    container1: { flex: .1, width: "100%", padding: 5 },
-    container2: { flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center', paddingLeft: 5, paddingRight: 5 },
-    container4: { flex: .6, width: "60%", alignItems: 'center', justifyContent: 'center' },
-    container5: { flex: .1, width: "80%", height: "15%", padding: 15, alignItems: 'center', justifyContent: 'center' },
-    container6: { flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center' },
-    containerStyle: {height: 25},
+    tabcontainer1: { flex:1, backgroundColor: bgColor },
+    container1: { flex: .1, width: "100%", padding: 5, backgroundColor: bgColor },
+    container2: { flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center', paddingLeft: 5, paddingRight: 5, backgroundColor: bgColor },
+    container4: { flex: .6, width: "60%", alignItems: 'center', justifyContent: 'center', backgroundColor: bgColor },
+    container5: { flex: .1, width: "80%", height: "15%", padding: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: bgColor },
+    container6: { flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center', backgroundColor: bgColor },
+    containerStyle: { height: 25, backgroundColor: bgColor },
     selectedButtonStyle: {backgroundColor: '#3396FF'},    
     selectedTextStyle: {color: 'white'},
     paddingRight: { paddingRight: 15 },
@@ -432,11 +464,13 @@ const playStyles = StyleSheet.create({
 const searchStyles = StyleSheet.create({
     item: {
         fontFamily: 'GillSans-Italic',
-        paddingLeft: 10
+        paddingLeft: 10,
+        color: textColor
     },
-    container3: { flex: 1 },
-    container4: { flex: .9, flexDirection: 'row', alignItems: 'stretch' },
-    container7: { flex: 1, flexDirection: 'row', alignItems: 'center', height: 65 },
+    container1: { flex: 1, flexDirection: 'row', backgroundColor: bgColor },
+    container3: { flex: 1, backgroundColor: bgColor },
+    container4: { flex: .9, flexDirection: 'row', alignItems: 'stretch', backgroundColor: bgColor },
+    container7: { flex: 1, flexDirection: 'row', alignItems: 'center', height: 65, backgroundColor: bgColor },
     paddingLeft: {
         paddingLeft: 10
     },
@@ -467,24 +501,26 @@ const settingsStyles = StyleSheet.create({
     label: {
         fontFamily: 'GillSans-Italic',
         fontWeight: 'normal',
+        color: textColor
     },
     status: {
         fontFamily: 'GillSans-Italic',
-        margin: 15
+        margin: 15,
+        color: textColor
     },
-    text1: {fontSize: 15,fontFamily: 'GillSans-Italic'},
-    text2: {fontSize: 20, fontFamily: 'GillSans-Italic'},
+    text1: {fontSize: 15,fontFamily: 'GillSans-Italic', color: textColor},
+    text2: {fontSize: 20, fontFamily: 'GillSans-Italic', color: textColor},
     flexStart: {flex: .5, alignItems: 'flex-start'},
     flexEnd: {flex: .5, alignItems: 'flex-end'},
     flex1: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
     flex2: {flex: .2, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'},
     flex3: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    container1: { marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around' },
-    container2: { flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15 },
-    container3: { flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-    container4: { flex: .2, flexDirection: 'row', alignItems: 'center', margin: 15 },
-    container5: { marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'flex-start' },
-    container6: { flex: .1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+    container1: { marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around', backgroundColor: bgColor },
+    container2: { flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15, backgroundColor: bgColor },
+    container3: { flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: bgColor },
+    container4: { flex: .2, flexDirection: 'row', alignItems: 'center', margin: 15, backgroundColor: bgColor },
+    container5: { marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'flex-start', backgroundColor: bgColor },
+    container6: { flex: .1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor },
     container7: { backgroundColor:'#EFEFF4',flex:1 },
     textInput1: {
         width: 75,
@@ -503,6 +539,7 @@ const settingsStyles = StyleSheet.create({
 const songsStyles = StyleSheet.create({
     item: {
         fontFamily: 'GillSans-Italic',
+        color: textColor
     },
     paddingLeft: {
         paddingLeft: 10
@@ -512,32 +549,36 @@ const songsStyles = StyleSheet.create({
         height: 20, 
         paddingLeft: 20, 
         paddingRight: 35, 
-        resizeMode: 'contain'
+        resizeMode: 'contain',
+        backgroundColor: bgColor
     },
     noalbumart: {
         width: 55, 
         height: 55, 
         paddingLeft: 20, 
         paddingRight: 20, 
-        resizeMode: 'contain'
+        resizeMode: 'contain',
+        backgroundColor: bgColor
     },
-    container5: { flex: .9, flexDirection: 'row', alignItems: 'stretch' },
-    container6: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between' },
+    container5: { flex: .9, flexDirection: 'row', alignItems: 'stretch', backgroundColor: bgColor },
+    container6: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', backgroundColor: bgColor },
 });
 
 const welcomeStyles = StyleSheet.create({
     title: {
         fontSize: 30,
         fontFamily: 'GillSans-Italic',
-        padding: 10
+        padding: 10,
+        color: textColor
     },
     intro: {
         fontSize: 16,
         fontFamily: 'GillSans-Italic',
         paddingLeft: 10,
         paddingRight: 10,
+        color: textColor
     },
-    container2: { flex: .3, alignItems: 'center', justifyContent: 'center', paddingTop: 10 }
+    container2: { flex: .3, alignItems: 'center', justifyContent: 'center', paddingTop: 10, backgroundColor: bgColor }
 });
 
 export { 
@@ -557,5 +598,8 @@ export {
     searchStyles,
     settingsStyles,
     songsStyles,
-    welcomeStyles
+    welcomeStyles,
+    bgColor,
+    textColor,
+    iconColor
 }; 

@@ -26,7 +26,7 @@ import MPDConnection from './MPDConnection';
 import AlbumArt from './AlbumArt';
 import NewPlaylistModal from './NewPlaylistModal';
 import Config from './Config';
-import { styles as common, albumsStyles as styles } from './Styles';
+import { styles as common, albumsStyles as styles, iconColor } from './Styles';
 
 export default class AlbumsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -202,7 +202,7 @@ export default class AlbumsScreen extends React.Component {
                     {item.date !== undefined &&
                         <Text style={styles.item}>({item.date})</Text>
                     }
-                    <Icon name="ios-more" size={20} color="black" style={common.icon}/>
+                    <Icon name="ios-more" size={20} color={iconColor} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );
