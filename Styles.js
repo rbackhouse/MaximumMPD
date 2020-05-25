@@ -1,25 +1,20 @@
 import { StyleSheet } from 'react-native'
 
-const styles = StyleSheet.create({
-});
+const Colors = {
+    dark: 'black',
+    light: 'white'
+};
 
-const albumsStyles = StyleSheet.create({
-    item: {
-        fontFamily: 'GillSans-Italic',
-        padding: 10
+const styles = StyleSheet.create({
+    separator: {
+        height: 1,
+        width: "90%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "5%"
     },
-    albumGridItem: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
+    icon: { 
+        paddingLeft: 20, 
+        paddingRight: 20 
     },
     loading: {
         position: 'absolute',
@@ -30,14 +25,6 @@ const albumsStyles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    row: {
-        flex: 1,
-        justifyContent: "space-around"
-    },
     searchbarContainer: {
         backgroundColor: 'white'
     },
@@ -47,14 +34,93 @@ const albumsStyles = StyleSheet.create({
     searchbarInput: { 
         backgroundColor: '#EBECEC'
     },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
     text: {
         fontSize: 15,
+        fontFamily: 'GillSans-Italic'
+    },
+    actionButtonText: {
+        fontSize: 13,
+        fontFamily: 'GillSans-Italic'
+    },
+    row: {
+        flex: 1,
+        justifyContent: "space-around"
+    },
+	backRightBtn: {
+		alignItems: 'center',
+		bottom: 0,
+		justifyContent: 'center',
+		position: 'absolute',
+		top: 0,
+		width: 75
+    },
+	backRightBtnLeft: {
+		backgroundColor: 'grey',
+		right: 75
+	},    
+	backRightBtnRight: {
+		backgroundColor: 'darkgray',
+		right: 0
+	},
+	backLeftBtn: {
+		alignItems: 'center',
+		bottom: 0,
+		justifyContent: 'center',
+		position: 'absolute',
+		top: 0,
+		width: 75,
+		backgroundColor: '#F08080'
+    },
+    backTextWhite: {
+		color: '#FFF'
+	},
+    sectionHeader: {
+        paddingTop: 2,
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingBottom: 2,
+        fontSize: 14,
+        fontWeight: 'bold',
+        backgroundColor: 'rgba(247,247,247,1.0)',
+    },
+    sectionHeaderAlt: {
+        paddingTop: 2,
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingBottom: 2,
+        fontSize: 17,
+        fontFamily: 'GillSans-Italic',
+        fontWeight: 'bold',
+        backgroundColor: 'rgba(247,247,247,1.0)',
+    },
+    rowFront: {
+		alignItems: 'center',
+		backgroundColor: '#FFFFFF',
+		justifyContent: 'center',
+	},
+	rowBack: {
+		alignItems: 'center',
+		backgroundColor: '#DDD',
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		paddingLeft: 15,
+	},
+    flex75: {flex: .75},
+    flex25: {flex: .25},
+    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch', backgroundColor: Colors.white},
+    container2: { flex: .1, flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white },
+    container3: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white },
+    container4: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5, backgroundColor: Colors.white }
+});
+
+const albumsStyles = StyleSheet.create({
+    item: {
+        fontFamily: 'GillSans-Italic',
+        padding: 10
+    },
+    albumGridItem: {
+        fontSize: 13,
         fontFamily: 'GillSans-Italic'
     },
     paddingLeft: {
@@ -74,18 +140,8 @@ const albumsStyles = StyleSheet.create({
         paddingRight: 20, 
         resizeMode: 'contain'
     },
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    },
-    container1: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', height: 65 },
-    container2: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
-    container3: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5},
-    container4: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container5: {flex: .1, flexDirection: 'row', alignItems: 'center'},
-    container6: {flex: .75},
-    container7: {flex: .25},
-    container8: {flex: .9, flexDirection: 'row', alignItems: 'flex-start' }
+    container1: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', height: 65 },
+    container3: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5 },
 });
 
 const appStyles = StyleSheet.create({
@@ -113,90 +169,6 @@ const artistsStyles = StyleSheet.create({
         fontSize: 13,
         fontFamily: 'GillSans-Italic'
     },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    backTextWhite: {
-		color: '#FFF'
-	},
-    rowFront: {
-		alignItems: 'center',
-		backgroundColor: '#FFFFFF',
-		justifyContent: 'center',
-	},
-	rowBack: {
-		alignItems: 'center',
-		backgroundColor: '#DDD',
-		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingLeft: 15,
-	},
-	backRightBtn: {
-		alignItems: 'center',
-		bottom: 0,
-		justifyContent: 'center',
-		position: 'absolute',
-		top: 0,
-		width: 75
-	},
-	backRightBtnLeft: {
-		backgroundColor: 'grey',
-		right: 75
-	},
-	backRightBtnRight: {
-		backgroundColor: 'darkgray',
-		right: 0
-	},
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    row: {
-        flex: 1,
-        justifyContent: "space-around"
-    },
-    searchbarContainer: {
-        backgroundColor: 'white'
-    },
-    searchbarInputContainer: {
-        backgroundColor: '#EBECEC'
-    },
-    searchbarInput: { 
-        backgroundColor: '#EBECEC'
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    },
-    text: {
-        fontSize: 15,
-        fontFamily: 'GillSans-Italic'
-    },
-    flex75: {flex: .75},
-    flex25: {flex: .25},
-    tabContainer: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
     itemContainer: {flex: 1, flexDirection: 'row', alignItems: 'center', height: 65 },
     itemTextContainer: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
     genreContainer: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'},
@@ -219,16 +191,6 @@ const connectionsStyles = StyleSheet.create({
         fontFamily: 'GillSans-Italic',
         fontWeight: 'normal',
     },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 17,
-        fontFamily: 'GillSans-Italic',
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
     button: {
         alignItems: 'center',
         backgroundColor: '#3396FF',
@@ -242,68 +204,10 @@ const connectionsStyles = StyleSheet.create({
         borderColor: '#e3e5e5',
         borderWidth: 1
     },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    backTextWhite: {
-		color: '#FFF'
-	},
-	rowFront: {
-		alignItems: 'center',
-		backgroundColor: '#FFFFFF',
-		justifyContent: 'center',
-	},
-	rowBack: {
-		alignItems: 'center',
-		backgroundColor: '#DDD',
-		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingLeft: 15,
-	},
-	backRightBtn: {
-		alignItems: 'center',
-		bottom: 0,
-		justifyContent: 'center',
-		position: 'absolute',
-		top: 0,
-		width: 75
-	},
-	backRightBtnLeft: {
-		backgroundColor: 'grey',
-		right: 75
-	},
-	backRightBtnRight: {
-		backgroundColor: 'darkgray',
-		right: 0
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container2: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5 },
-    container3: {flex: 1, flexDirection: 'row', alignItems: 'center'},
     dialog1: {marginTop: 22, flex: .8, flexDirection: 'column', justifyContent: 'space-around'},
     dialog2: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
     dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-    dialogtext: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    }
+    dialogtext: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}
 });
 
 const debugStyles = StyleSheet.create({
@@ -321,38 +225,8 @@ const debugStyles = StyleSheet.create({
         fontFamily: 'GillSans-Italic',
         padding: 10
     },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container2: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container3: {flex: .1, flexDirection: 'row', alignItems: 'center'},
-    container4: {flex: 1}
+    container3: { flex: .1, flexDirection: 'row', alignItems: 'center' },
+    container4: { flex: 1 }
 });
 
 const filesStyles = StyleSheet.create({
@@ -366,100 +240,7 @@ const filesStyles = StyleSheet.create({
         paddingTop: 2,
         paddingBottom: 2
     },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    backTextWhite: {
-		color: '#FFF'
-	},
-    rowFront: {
-		alignItems: 'center',
-		backgroundColor: '#FFFFFF',
-		justifyContent: 'center',
-		paddingTop: 3,
-		paddingBottom: 3,
-	},
-	rowBack: {
-		alignItems: 'center',
-		backgroundColor: '#DDD',
-		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingLeft: 15,
-		paddingTop: 3,
-		paddingBottom: 3,
-	},
-	backRightBtn: {
-		alignItems: 'center',
-		bottom: 0,
-		justifyContent: 'center',
-		position: 'absolute',
-		top: 0,
-		width: 75
-	},
-	backRightBtnLeft: {
-		backgroundColor: 'grey',
-		right: 75
-	},
-	backRightBtnRight: {
-		backgroundColor: 'darkgray',
-		right: 0
-    },
-	backLeftBtn: {
-		alignItems: 'center',
-		bottom: 0,
-		justifyContent: 'center',
-		position: 'absolute',
-		top: 0,
-		width: 75,
-		backgroundColor: '#F08080'
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container2: {flex: .1, flexDirection: 'row', alignItems: 'center' },
-    container3: {flex: .5},
-    container4: {flex: .9, flexDirection: 'row', alignItems: 'flex-start' },
-    container5: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container6: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
-    container7: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    text: {fontSize: 15,fontFamily: 'GillSans-Italic'},
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    },
-    searchbarContainer: {
-        backgroundColor: 'white'
-    },
-    searchbarInputContainer: {
-        backgroundColor: '#EBECEC'
-    },
-    searchbarInput: { 
-        backgroundColor: '#EBECEC'
-    }
+    container3: { flex: .5}
 });
 
 const newPlaylistStyles = StyleSheet.create({
@@ -480,55 +261,14 @@ const newPlaylistStyles = StyleSheet.create({
         fontFamily: 'GillSans-Italic',
         fontWeight: 'normal',
     },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    },
-    searchbarContainer: {
-        backgroundColor: 'white'
-    },
-    searchbarInputContainer: {
-        backgroundColor: '#EBECEC'
-    },
-    searchbarInput: { 
-        backgroundColor: '#EBECEC'
-    },
-    container1: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container2: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
-    container3: {marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'space-around'},
+    container3: { marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'space-around' },
     container4: { flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', marginBottom: 20 },
-    container5: { flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    container6: { flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    container7: { flex: .1, justifyContent: 'flex-start', alignItems: 'stretch'},
+    container5: { flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+    container6: { flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+    container7: { flex: .1, justifyContent: 'flex-start', alignItems: 'stretch' },
     container8: { flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-    container9: { flex: .6, justifyContent: 'flex-start', alignItems: 'stretch'},
-    container10: {flex: .1, flexDirection: 'row', alignItems: 'center'},
-    container11: {flex: .75},
-    container12: {flex: .25},
+    container9: { flex: .6, justifyContent: 'flex-start', alignItems: 'stretch' },
+    container10: {flex: .1, flexDirection: 'row', alignItems: 'center' },
     container13: {flex: .9, flexDirection: 'row', alignItems: 'flex-start' },
     text1: {fontSize: 20, fontFamily: 'GillSans-Italic'},
     text2: {fontSize: 16, fontFamily: 'GillSans-Italic'},
@@ -536,15 +276,6 @@ const newPlaylistStyles = StyleSheet.create({
 });
 
 const outputsStyles = StyleSheet.create({
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
     container1 : {backgroundColor:'#EFEFF4',flex:1}
 });
 
@@ -552,58 +283,7 @@ const playlistDetailsStyles = StyleSheet.create({
     item: {
         fontFamily: 'GillSans-Italic'
     },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    searchbarContainer: {
-        backgroundColor: 'white'
-    },
-    searchbarInputContainer: {
-        backgroundColor: '#EBECEC'
-    },
-    searchbarInput: { 
-        backgroundColor: '#EBECEC'
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    },
-    text: {
-        fontSize: 15,
-        fontFamily: 'GillSans-Italic'
-    },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container2: {flex: .1, flexDirection: 'row', alignItems: 'center'},
-    container3: {flex: .75},
-    container4: {flex: .25},
-    container5: {flex: .9, flexDirection: 'row', alignItems: 'stretch' },
-    container6: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container7: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5}
+    container5: { flex: .9, flexDirection: 'row', alignItems: 'stretch' },
 });
 
 const playlistEditorStyles = StyleSheet.create({
@@ -616,58 +296,7 @@ const playlistEditorStyles = StyleSheet.create({
         fontFamily: 'GillSans-Italic',
         fontWeight: 'normal',
     },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    searchbarContainer: {
-        backgroundColor: 'white'
-    },
-    searchbarInputContainer: {
-        backgroundColor: '#EBECEC'
-    },
-    searchbarInput: { 
-        backgroundColor: '#EBECEC'
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    },
-    text: {
-        fontSize: 15,
-        fontFamily: 'GillSans-Italic'
-    },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container2: {flex: .1, flexDirection: 'row', alignItems: 'center'},
-    container3: {flex: .75},
-    container4: {flex: .25},
-    container5: {flex: .9, flexDirection: 'row', alignItems: 'flex-start' },
-    container6: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container7: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
+    container5: { flex: .9, flexDirection: 'row', alignItems: 'flex-start' },
     dialog1: {marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'},
     dialog2: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
     dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
@@ -682,15 +311,6 @@ const playlistStyles = StyleSheet.create({
         fontSize: 17,
         fontFamily: 'GillSans-Italic',
         fontWeight: 'normal',
-    },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
     },
     button: {
         width: 35,
@@ -712,23 +332,10 @@ const playlistStyles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
     actionButtonIcon: {
         fontSize: 20,
         height: 22,
         color: 'white',
-    },
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
     },
     entryField: {
         width: 150,
@@ -737,27 +344,10 @@ const playlistStyles = StyleSheet.create({
         borderColor: '#e3e5e5',
         borderWidth: 1
     },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    },
-    text: {
-        fontSize: 15,
-        fontFamily: 'GillSans-Italic',
-        paddingLeft: 10
-    },
     container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start' },
-    container2: {flex: .05, flexDirection: 'row', alignItems: 'flex-start' },
-    container3: {flex: 1, justifyContent: 'center'},
-    container4: {flex: .95, flexDirection: 'row', alignItems: 'flex-start' },
-    container5: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container6: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
+    container2: { flex: .05, flexDirection: 'row', alignItems: 'flex-start' },
+    container3: { flex: 1, justifyContent: 'center' },
+    container4: { flex: .95, flexDirection: 'row', alignItems: 'flex-start' },
     dialog1: {marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'},
     dialog2: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
     dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
@@ -821,23 +411,12 @@ const playStyles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'GillSans-Italic'
     },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
     tabcontainer1: {flex:1},
-    container1: {flex: .1, width: "100%", padding: 5},
-    container2: {flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center', paddingLeft: 5, paddingRight: 5},
-    container3: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container4: {flex: .6, width: "60%", alignItems: 'center', justifyContent: 'center'},
-    container5: {flex: .1, width: "80%", height: "15%", padding: 15, alignItems: 'center', justifyContent: 'center'},
-    container6: {flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center'},
-    container7: {flex: 1, flexDirection: 'row', alignItems: 'center'},
+    container1: { flex: .1, width: "100%", padding: 5 },
+    container2: { flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center', paddingLeft: 5, paddingRight: 5 },
+    container4: { flex: .6, width: "60%", alignItems: 'center', justifyContent: 'center' },
+    container5: { flex: .1, width: "80%", height: "15%", padding: 15, alignItems: 'center', justifyContent: 'center' },
+    container6: { flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center' },
     containerStyle: {height: 25},
     selectedButtonStyle: {backgroundColor: '#3396FF'},    
     selectedTextStyle: {color: 'white'},
@@ -855,90 +434,9 @@ const searchStyles = StyleSheet.create({
         fontFamily: 'GillSans-Italic',
         paddingLeft: 10
     },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 17,
-        fontFamily: 'GillSans-Italic',
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    backTextWhite: {
-		color: '#FFF'
-	},
-    rowFront: {
-		alignItems: 'center',
-		backgroundColor: '#FFFFFF',
-		justifyContent: 'center',
-        height: 85
-	},
-	rowBack: {
-		alignItems: 'center',
-		backgroundColor: '#DDD',
-		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingLeft: 15,
-        height: 85
-	},
-	backRightBtn: {
-		alignItems: 'center',
-		bottom: 0,
-		justifyContent: 'center',
-		position: 'absolute',
-		top: 0,
-		width: 75
-	},
-	backRightBtnLeft: {
-		backgroundColor: 'grey',
-		right: 75
-	},
-	backRightBtnRight: {
-		backgroundColor: 'darkgray',
-		right: 0
-	},
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-	backLeftBtn: {
-		alignItems: 'center',
-		bottom: 0,
-		justifyContent: 'center',
-		position: 'absolute',
-		top: 0,
-		width: 75,
-		backgroundColor: '#F08080'
-    },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container2: {flex: .1, flexDirection: 'row', alignItems: 'center'},
-    container3: {flex: 1},
-    container4: {flex: .9, flexDirection: 'row', alignItems: 'stretch' },
-    container5: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
-    container6: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container7: {flex: 1, flexDirection: 'row', alignItems: 'center', height: 65},
-    searchbarContainer: {
-        backgroundColor: 'white'
-    },
-    searchbarInputContainer: {
-        backgroundColor: '#EBECEC'
-    },
-    searchbarInput: { 
-        backgroundColor: '#EBECEC'
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
+    container3: { flex: 1 },
+    container4: { flex: .9, flexDirection: 'row', alignItems: 'stretch' },
+    container7: { flex: 1, flexDirection: 'row', alignItems: 'center', height: 65 },
     paddingLeft: {
         paddingLeft: 10
     },
@@ -955,10 +453,6 @@ const searchStyles = StyleSheet.create({
         paddingLeft: 20, 
         paddingRight: 20, 
         resizeMode: 'contain'
-    },
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
     }
 });
 
@@ -985,13 +479,13 @@ const settingsStyles = StyleSheet.create({
     flex1: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
     flex2: {flex: .2, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'},
     flex3: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    container1: {marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'},
-    container2: {flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15},
-    container3: {flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-    container4: {flex: .2, flexDirection: 'row', alignItems: 'center', margin: 15},
-    container5: {marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'flex-start'},
-    container6: {flex: .1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    container7: {backgroundColor:'#EFEFF4',flex:1},
+    container1: { marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around' },
+    container2: { flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15 },
+    container3: { flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
+    container4: { flex: .2, flexDirection: 'row', alignItems: 'center', margin: 15 },
+    container5: { marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'flex-start' },
+    container6: { flex: .1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+    container7: { backgroundColor:'#EFEFF4',flex:1 },
     textInput1: {
         width: 75,
         height: 35,
@@ -1010,93 +504,6 @@ const songsStyles = StyleSheet.create({
     item: {
         fontFamily: 'GillSans-Italic',
     },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    backTextWhite: {
-		color: '#FFF'
-	},
-    rowFront: {
-		alignItems: 'center',
-		backgroundColor: '#FFFFFF',
-		justifyContent: 'center',
-        height: 85
-	},
-	rowBack: {
-		alignItems: 'center',
-		backgroundColor: '#DDD',
-		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingLeft: 15,
-        height: 85
-	},
-	backRightBtn: {
-		alignItems: 'center',
-		bottom: 0,
-		justifyContent: 'center',
-		position: 'absolute',
-		top: 0,
-		width: 75
-	},
-	backRightBtnLeft: {
-		backgroundColor: 'grey',
-		right: 75
-	},
-	backRightBtnRight: {
-		backgroundColor: 'darkgray',
-		right: 0
-    },
-    container1: { 
-        flex: 1, 
-        justifyContent: 'flex-start', 
-        alignItems: 'stretch' 
-    },
-    container2: {
-        flex: .1, 
-        flexDirection: 'row', 
-        alignItems: 'center'
-    },
-    container3: {
-        flex: .75
-    },
-    container4: {
-        flex: .25
-    },
-    container5: {
-        flex: .9, 
-        flexDirection: 'row', 
-        alignItems: 'stretch' 
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    text: {
-        fontSize: 15,
-        fontFamily: 'GillSans-Italic'
-    },
     paddingLeft: {
         paddingLeft: 10
     },
@@ -1114,41 +521,8 @@ const songsStyles = StyleSheet.create({
         paddingRight: 20, 
         resizeMode: 'contain'
     },
-    container6: {
-        flex: 1, 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        justifyContent:'space-between'
-    },
-    container7: { 
-        flex: 1, 
-        flexDirection: 'column', 
-        justifyContent: 'space-evenly', 
-        alignItems: 'stretch', 
-        padding: 5
-    },
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    },
-    searchbarContainer: {
-        backgroundColor: 'white'
-    },
-    searchbarInputContainer: {
-        backgroundColor: '#EBECEC'
-    },
-    searchbarInput: { 
-        backgroundColor: '#EBECEC'
-    },
-	backLeftBtn: {
-		alignItems: 'center',
-		bottom: 0,
-		justifyContent: 'center',
-		position: 'absolute',
-		top: 0,
-		width: 75,
-		backgroundColor: '#F08080'
-	}
+    container5: { flex: .9, flexDirection: 'row', alignItems: 'stretch' },
+    container6: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between' },
 });
 
 const welcomeStyles = StyleSheet.create({
@@ -1163,8 +537,7 @@ const welcomeStyles = StyleSheet.create({
         paddingLeft: 10,
         paddingRight: 10,
     },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container2 : {flex: .3, alignItems: 'center', justifyContent: 'center', paddingTop: 10}
+    container2: { flex: .3, alignItems: 'center', justifyContent: 'center', paddingTop: 10 }
 });
 
 export { 

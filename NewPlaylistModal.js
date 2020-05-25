@@ -80,7 +80,7 @@ export default class NewPlaylistModal extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={styles.separator}
+                style={common.separator}
             />
         );
     };
@@ -88,12 +88,12 @@ export default class NewPlaylistModal extends React.Component {
     renderItem = ({item}) => {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                <View style={styles.container1}>
-                    <Icon name="ios-list" size={20} color="black" style={styles.icon}/>
-                    <View style={styles.container2}>
+                <View style={common.container3}>
+                    <Icon name="ios-list" size={20} color="black" style={common.icon}/>
+                    <View style={common.container4}>
                         <Text style={styles.item}>{item}</Text>
                     </View>
-                    <Icon name="ios-add-circle" size={20} color="black" style={styles.icon}/>
+                    <Icon name="ios-add-circle" size={20} color="black" style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -140,7 +140,7 @@ export default class NewPlaylistModal extends React.Component {
                     </View>
                     <View style={styles.container9}>
                         <View style={styles.container10}>
-                            <View style={styles.container11}>
+                            <View style={common.flex75}>
                                 <SearchBar
                                     round
                                     clearIcon
@@ -149,12 +149,12 @@ export default class NewPlaylistModal extends React.Component {
                                     placeholder='Search'
                                     onChangeText={this.search}
                                     value={this.state.searchValue}
-                                    containerStyle={styles.searchbarContainer}
-                                    inputContainerStyle={styles.searchbarInputContainer}
-                                    inputStyle={styles.searchbarInput}
+                                    containerStyle={common.searchbarContainer}
+                                    inputContainerStyle={common.searchbarInputContainer}
+                                    inputStyle={common.searchbarInput}
                                 />
                             </View>
-                            <View style={styles.container12}>
+                            <View style={common.flex25}>
                                 <Text style={styles.text3}>
                                     Total : {this.state.playlists.length}
                                 </Text>
@@ -164,14 +164,14 @@ export default class NewPlaylistModal extends React.Component {
                         <FlatList
                             data={this.state.playlists}
                             renderItem={this.renderItem}
-                            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                            renderSectionHeader={({section}) => <Text style={common.sectionHeader}>{section.title}</Text>}
                             keyExtractor={item => item}
                             ItemSeparatorComponent={this.renderSeparator}
                         />
                         </View>
                     </View>
                     {this.state.loading &&
-                        <View style={styles.loading}>
+                        <View style={common.loading}>
                             <ActivityIndicator size="large" color="#0000ff"/>
                         </View>
                     }

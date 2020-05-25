@@ -164,7 +164,7 @@ export default class PlaylistDetails extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={styles.separator}
+                style={common.separator}
             />
         );
     };
@@ -172,9 +172,9 @@ export default class PlaylistDetails extends React.Component {
     renderItem = ({item, index}) => {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item, index)}>
-                <View style={styles.container6}>
-                    <Icon name="ios-musical-notes" size={20} color="black" style={styles.icon}/>
-                    <View style={styles.container7}>
+                <View style={common.container3}>
+                    <Icon name="ios-musical-notes" size={20} color="black" style={common.icon}/>
+                    <View style={common.container4}>
                         {item.name !== undefined &&
                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.name}</Text>
                         }
@@ -185,7 +185,7 @@ export default class PlaylistDetails extends React.Component {
                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>Time: {item.time}</Text>
                         }
                     </View>
-                    <Icon name="ios-trash" size={28} color="black" style={styles.icon}/>
+                    <Icon name="ios-trash" size={28} color="black" style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -193,9 +193,9 @@ export default class PlaylistDetails extends React.Component {
 
     render() {
         return (
-            <View style={styles.container1}>
-                <View style={styles.container2}>
-                    <View style={styles.container3}>
+            <View style={common.container1}>
+                <View style={common.container2}>
+                    <View style={common.flex75}>
                         <SearchBar
                             clearIcon
                             lightTheme
@@ -204,13 +204,13 @@ export default class PlaylistDetails extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                            containerStyle={styles.searchbarContainer}
-                            inputContainerStyle={styles.searchbarInputContainer}
-                            inputStyle={styles.searchbarInput}
+                            containerStyle={common.searchbarContainer}
+                            inputContainerStyle={common.searchbarInputContainer}
+                            inputStyle={common.searchbarInput}
                     />
                     </View>
-                    <View style={styles.container4}>
-                        <Text style={styles.text}>
+                    <View style={common.flex25}>
+                        <Text style={common.text}>
                             Total : {this.state.playlist.length}
                         </Text>
                     </View>
@@ -219,24 +219,24 @@ export default class PlaylistDetails extends React.Component {
                 <FlatList
                     data={this.state.playlist}
                     renderItem={this.renderItem}
-                    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                    renderSectionHeader={({section}) => <Text style={common.sectionHeader}>{section.title}</Text>}
                     keyExtractor={item => ""+item.pos}
                     ItemSeparatorComponent={this.renderSeparator}
                 />
                 </View>
                 {this.state.loading &&
-                    <View style={styles.loading}>
+                    <View style={common.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
-                    <ActionButton.Item buttonColor='#1abc9c' title="Play Now" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onLoad(true);}}>
+                    <ActionButton.Item buttonColor='#1abc9c' title="Play Now" size={40} textStyle={common.actionButtonText} onPress={() => {this.onLoad(true);}}>
                         <FAIcon name="play" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onLoad();}}>
+                    <ActionButton.Item buttonColor='#3498db' title="Queue" size={40} textStyle={common.actionButtonText} onPress={() => {this.onLoad();}}>
                         <Icon name="ios-checkmark" size={30} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#1abc9c' title="Delete" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onDelete();}}>
+                    <ActionButton.Item buttonColor='#1abc9c' title="Delete" size={40} textStyle={common.actionButtonText} onPress={() => {this.onDelete();}}>
                         <Icon name="ios-trash" size={23} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>

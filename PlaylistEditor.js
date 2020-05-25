@@ -220,7 +220,7 @@ export default class PlaylistEditor extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={styles.separator}
+                style={common.separator}
             />
         );
     };
@@ -228,12 +228,12 @@ export default class PlaylistEditor extends React.Component {
     renderItem = ({item}) => {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                <View style={styles.container6}>
-                    <Icon name="ios-list" size={20} color="black" style={styles.icon}/>
-                    <View style={styles.container7}>
+                <View style={common.container3}>
+                    <Icon name="ios-list" size={20} color="black" style={common.icon}/>
+                    <View style={common.container4}>
                         <Text style={styles.item}>{item}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} color="black" style={styles.icon}/>
+                    <Icon name="ios-more" size={20} color="black" style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -241,9 +241,9 @@ export default class PlaylistEditor extends React.Component {
 
     render() {
         return (
-            <View style={styles.container1}>
-                <View style={styles.container2}>
-                    <View style={styles.container3}>
+            <View style={common.container1}>
+                <View style={common.container2}>
+                    <View style={common.flex75}>
                         <SearchBar
                             clearIcon
                             lightTheme
@@ -253,38 +253,38 @@ export default class PlaylistEditor extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                            containerStyle={styles.searchbarContainer}
-                            inputContainerStyle={styles.searchbarInputContainer}
-                            inputStyle={styles.searchbarInput}
+                            containerStyle={common.searchbarContainer}
+                            inputContainerStyle={common.searchbarInputContainer}
+                            inputStyle={common.searchbarInput}
                     />
                     </View>
-                    <View style={styles.container4}>
-                        <Text style={styles.text}>
+                    <View style={common.flex25}>
+                        <Text style={common.text}>
                             Total : {this.state.playlists.length}
                         </Text>
                     </View>
                 </View>
-                <View style={styles.container5}>
+                <View style={common.container4}>
                 <FlatList
                     data={this.state.playlists}
                     renderItem={this.renderItem}
-                    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                    renderSectionHeader={({section}) => <Text style={common.sectionHeader}>{section.title}</Text>}
                     keyExtractor={item => item}
                     ItemSeparatorComponent={this.renderSeparator}
                 />
                 </View>
                 {this.state.loading &&
-                    <View style={styles.loading}>
+                    <View style={common.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }
                 <NewPlaylistModal visible={this.state.modalVisible} onSet={(name) => {this.createNewPlaylist(name)}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
                 <AddStreamURLModal visible={this.state.addStreamURLVisible} onSet={(name, url) => {this.addStreamURL(name, url)}} onCancel={() => this.setState({addStreamURLVisible: false})}></AddStreamURLModal>
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
-                    <ActionButton.Item buttonColor='#1abc9c' title="Add Stream URL" size={40} textStyle={styles.actionButtonText} onPress={() => {this.setState({addStreamURLVisible: true});}}>
+                    <ActionButton.Item buttonColor='#1abc9c' title="Add Stream URL" size={40} textStyle={common.actionButtonText} onPress={() => {this.setState({addStreamURLVisible: true});}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#9b59b6' title="Playlist from Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.fromQueue();}}>
+                    <ActionButton.Item buttonColor='#9b59b6' title="Playlist from Queue" size={40} textStyle={common.actionButtonText} onPress={() => {this.fromQueue();}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>

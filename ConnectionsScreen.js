@@ -334,7 +334,7 @@ export default class ConnectionsScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={styles.separator}
+                style={common.separator}
             />
         );
     };
@@ -342,7 +342,7 @@ export default class ConnectionsScreen extends React.Component {
     render() {
         const navigation = this.props.navigation;
         return (
-            <View style={styles.container1}>
+            <View style={common.container1}>
                 <AddConnectionModal visible={this.state.modalVisible} onCancel={() => {this.onCancel();}} addConnection={this.addConnection}></AddConnectionModal>
                 <SwipeListView
 					useSectionList
@@ -356,40 +356,40 @@ export default class ConnectionsScreen extends React.Component {
                         const selected = this.state.selected.get(item.name+item.ipAddress+item.port) === true ? "flex" : "none";
                         return (
                         <SwipeRow rightOpenValue={openVal}>
-                            <View style={styles.rowBack}>
+                            <View style={common.rowBack}>
                                 {data.section.title === "Configured" &&
-                                    <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.deleteRow(map, item) }>
-                                        <Text style={styles.backTextWhite}>Delete</Text>
+                                    <TouchableOpacity style={[common.backRightBtn, common.backRightBtnLeft]} onPress={ _ => this.deleteRow(map, item) }>
+                                        <Text style={common.backTextWhite}>Delete</Text>
                                     </TouchableOpacity>
                                 }
-                                <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.connectRow(map, item) }>
-                                    <Text style={styles.backTextWhite}>Connect</Text>
+                                <TouchableOpacity style={[common.backRightBtn, common.backRightBtnRight]} onPress={ _ => this.connectRow(map, item) }>
+                                    <Text style={common.backTextWhite}>Connect</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={[styles.container3, styles.rowFront]}>
-                                <View style={styles.container2}>
+                            <View style={[common.container3, common.rowFront]}>
+                                <View style={common.container4}>
                                     <Text style={styles.item}>{item.name}</Text>
                                     <Text style={styles.item}>{item.ipAddress}</Text>
                                     <Text style={styles.item}>{item.port}</Text>
                                 </View>
-                                <Icon name="check" size={15} color="black" style={[{ display: selected }, styles.icon]}/>
+                                <Icon name="check" size={15} color="black" style={[{ display: selected }, common.icon]}/>
                             </View>
                         </SwipeRow>
                     );}}
-                    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                    renderSectionHeader={({section}) => <Text style={common.sectionHeaderAlt}>{section.title}</Text>}
                     ItemSeparatorComponent={this.renderSeparator}
 				/>
                 {this.state.loading &&
-                    <View style={styles.loading}>
+                    <View style={common.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }
 
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
-                    <ActionButton.Item buttonColor='#1abc9c' title="Rescan" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onRescan();}}>
+                    <ActionButton.Item buttonColor='#1abc9c' title="Rescan" size={40} textStyle={common.actionButtonText} onPress={() => {this.onRescan();}}>
                         <IonIcon name="ios-refresh" size={20} color="white"/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Add Connection" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onAdd();}}>
+                    <ActionButton.Item buttonColor='#3498db' title="Add Connection" size={40} textStyle={common.actionButtonText} onPress={() => {this.onAdd();}}>
                         <Icon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>

@@ -202,15 +202,15 @@ export default class SearchScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={styles.separator}
+                style={common.separator}
             />
         );
     };
 
     render() {
         return (
-            <View style={styles.container1}>
-                <View style={styles.container2}>
+            <View style={common.container1}>
+                <View style={common.container2}>
                     <View style={styles.container3}>
                         <SearchBar
                             clearIcon
@@ -220,9 +220,9 @@ export default class SearchScreen extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                            containerStyle={styles.searchbarContainer}
-                            inputContainerStyle={styles.searchbarInputContainer}
-                            inputStyle={styles.searchbarInput}
+                            containerStyle={common.searchbarContainer}
+                            inputContainerStyle={common.searchbarInputContainer}
+                            inputStyle={common.searchbarInput}
                     />
                     </View>
                 </View>
@@ -240,18 +240,18 @@ export default class SearchScreen extends React.Component {
                         if (item.title) {
                             return (
                                 <SwipeRow leftOpenValue={75} rightOpenValue={-150}>
-                                    <View style={styles.rowBack}>
-                                        <TouchableOpacity style={styles.backLeftBtn} onPress={ _ => this.queue(map, item, true) }>
-                                            <Text style={styles.backTextWhite}>Play</Text>
+                                    <View style={[common.rowBack, {height: 85}]}>
+                                        <TouchableOpacity style={common.backLeftBtn} onPress={ _ => this.queue(map, item, true) }>
+                                            <Text style={common.backTextWhite}>Play</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.queue(map, item, false) }>
-                                            <Text style={styles.backTextWhite}>Queue</Text>
+                                        <TouchableOpacity style={[common.backRightBtn, common.backRightBtnLeft]} onPress={ _ => this.queue(map, item, false) }>
+                                            <Text style={common.backTextWhite}>Queue</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.playlist(map, item) }>
-                                            <Text style={styles.backTextWhite}>Playlist</Text>
+                                        <TouchableOpacity style={[common.backRightBtn, common.backRightBtnRight]} onPress={ _ => this.playlist(map, item) }>
+                                            <Text style={common.backTextWhite}>Playlist</Text>
                                         </TouchableOpacity>
                                     </View>
-                                    <View style={[styles.container6, styles.rowFront]}>
+                                    <View style={[common.container3, common.rowFront, {height: 85}]}>
                                         <View style={styles.paddingLeft}/>
                                         {item.imagePath === undefined &&
                                             <Image style={styles.albumart} source={require('./images/icons8-cd-filled-50.png')}/>
@@ -265,7 +265,7 @@ export default class SearchScreen extends React.Component {
                                             {item.album && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.album}</Text>}
                                             {item.time && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.time}</Text>}
                                         </View>
-                                        <Icon name="ios-swap" size={20} color="black" style={styles.icon}/>
+                                        <Icon name="ios-swap" size={20} color="black" style={common.icon}/>
                                     </View>
                                 </SwipeRow>
                             );
@@ -280,24 +280,24 @@ export default class SearchScreen extends React.Component {
                                         {item.imagePath !== undefined &&
                                             <Image style={styles.noalbumart} source={{uri: item.imagePath}}/>
                                         }
-                                        <View style={styles.container5}>
+                                        <View style={common.container4}>
                                             {item.artist && <Text style={styles.item}>{item.artist}</Text>}
                                             {item.album && <Text style={styles.item}>{item.album}</Text>}
                                         </View>
-                                        <Icon name="ios-more" size={20} color="black" style={styles.icon}/>
+                                        <Icon name="ios-more" size={20} color="black" style={common.icon}/>
                                     </View>
                                 </TouchableOpacity>
                             );
                         }
                     }}
-                    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                    renderSectionHeader={({section}) => <Text style={common.sectionHeaderAlt}>{section.title}</Text>}
                     ItemSeparatorComponent={this.renderSeparator}
                 />
                 </View>
                 <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
 
                 {this.state.loading &&
-                    <View style={styles.loading}>
+                    <View style={common.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }

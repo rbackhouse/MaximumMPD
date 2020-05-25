@@ -23,7 +23,7 @@ import { styles as common, welcomeStyles as styles } from './Styles';
 export default class WelcomeScreen extends React.Component {
     render() {
         return (
-            <View style={styles.container1}>
+            <View style={common.container1}>
                 <View style={styles.container2}>
                     <Text style={styles.title}>Maximum MPD</Text>
                     <Text style={styles.intro}>Connect by swiping left on either a Discovered or Configured MPD server.

@@ -21,10 +21,8 @@ import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
-import { StackActions, NavigationActions } from 'react-navigation';
 
 import MPDConnection from './MPDConnection';
-import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
 import NewPlaylistModal from './NewPlaylistModal';
 import Config from './Config';
@@ -179,7 +177,7 @@ export default class AlbumsScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={styles.separator}
+                style={common.separator}
             />
         );
     };
@@ -198,13 +196,13 @@ export default class AlbumsScreen extends React.Component {
                     {item.imagePath !== undefined &&
                         <Image style={styles.noalbumart} source={{uri: item.imagePath}}/>
                     }
-                    <View style={styles.container2}>
+                    <View style={common.container4}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
                     {item.date !== undefined &&
                         <Text style={styles.item}>({item.date})</Text>
                     }
-                    <Icon name="ios-more" size={20} color="black" style={styles.icon}/>
+                    <Icon name="ios-more" size={20} color="black" style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -253,9 +251,9 @@ export default class AlbumsScreen extends React.Component {
 
     render() {
         return (
-            <View style={styles.container4}>
-                <View style={styles.container5}>
-                    <View style={styles.container6}>
+            <View style={common.container1}>
+                <View style={common.container2}>
+                    <View style={common.flex75}>
                         <SearchBar
                             clearIcon
                             lightTheme
@@ -264,23 +262,23 @@ export default class AlbumsScreen extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                            containerStyle={styles.searchbarContainer}
-                            inputContainerStyle={styles.searchbarInputContainer}
-                            inputStyle={styles.searchbarInput}
+                            containerStyle={common.searchbarContainer}
+                            inputContainerStyle={common.searchbarInputContainer}
+                            inputStyle={common.searchbarInput}
                         />
                     </View>
-                    <View style={styles.container7}>
-                        <Text style={styles.text}>
+                    <View style={common.flex25}>
+                        <Text style={common.text}>
                             Total : {this.state.albums.length}
                         </Text>
                     </View>
                 </View>
                 {this.state.grid === false &&
-                    <View style={styles.container8}>
+                    <View style={common.container4}>
                     <FlatList
                         data={this.state.albums}
                         renderItem={this.renderItem}
-                        renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                        renderSectionHeader={({section}) => <Text style={common.sectionHeader}>{section.title}</Text>}
                         keyExtractor={item => item.name}
                         ItemSeparatorComponent={this.renderSeparator}
                         key={this.state.numColumns}
@@ -290,28 +288,28 @@ export default class AlbumsScreen extends React.Component {
                     </View>
                 }
                 {this.state.grid === true &&
-                    <View style={styles.container8}>
+                    <View style={common.container4}>
                     <FlatList
                         data={this.state.albums}
                         renderItem={this.renderGridAlbumItem}
                         keyExtractor={item => item.name}
                         numColumns={this.state.numColumns}
-                        columnWrapperStyle={styles.row}
+                        columnWrapperStyle={common.row}
                         key={this.state.numColumns}
                     />
                     </View>
                 }
                 {this.state.loading &&
-                    <View style={styles.loading}>
+                    <View style={common.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }
                 <NewPlaylistModal visible={this.state.modalVisible} onSet={(name) => {this.finishAdd(name);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
-                    <ActionButton.Item buttonColor='#3498db' title="List View" size={40} textStyle={styles.actionButtonText} onPress={() => {this.setState({grid: false, numColumns: 1});}}>
+                    <ActionButton.Item buttonColor='#3498db' title="List View" size={40} textStyle={common.actionButtonText} onPress={() => {this.setState({grid: false, numColumns: 1});}}>
                         <Icon name="ios-list" size={20} color="white"/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#9b59b6' title="Grid View" size={40} textStyle={styles.actionButtonText} onPress={() => {
+                    <ActionButton.Item buttonColor='#9b59b6' title="Grid View" size={40} textStyle={common.actionButtonText} onPress={() => {
                         const {height, width} = Dimensions.get('window');
                         numColumns = width > 375 ? 3 : 2;
                         this.setState({grid: true, numColumns: numColumns});
@@ -319,10 +317,10 @@ export default class AlbumsScreen extends React.Component {
                         <Icon name="ios-grid" size={20} color="white"/>
                     </ActionButton.Item>
 
-                    <ActionButton.Item buttonColor='#3498db' title="Add to Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(false);}}>
+                    <ActionButton.Item buttonColor='#3498db' title="Add to Queue" size={40} textStyle={common.actionButtonText} onPress={() => {this.addAll(false);}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#9b59b6' title="Add to Playlist" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(true);}}>
+                    <ActionButton.Item buttonColor='#9b59b6' title="Add to Playlist" size={40} textStyle={common.actionButtonText} onPress={() => {this.addAll(true);}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>

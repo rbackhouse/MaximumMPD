@@ -421,7 +421,7 @@ export default class PlayScreen extends React.Component {
                                 />
                         </View>
                       <View style={styles.container2}>
-                            <View style={styles.container3}>
+                            <View style={common.container3}>
                               <Text style={styles.paddingRight}>{elapsed}</Text>
                                 <Slider
                                     value={time}
@@ -449,7 +449,7 @@ export default class PlayScreen extends React.Component {
                           <Text numberOfLines={1} style={styles.item}>{timeTrack}</Text>
                       </View>
                       <View style={styles.container6}>
-                          <View style={styles.container7}>
+                          <View style={common.container3}>
                               <TouchableOpacity
                                   onPress={this.onMute.bind(this)}>
                                     <Icon name="volume-off" size={20} color="grey" style={styles.paddingRightSmall}/>
@@ -520,7 +520,7 @@ export default class PlayScreen extends React.Component {
                   </View>
                   <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
                   {this.state.loading &&
-                      <View style={styles.loading}>
+                      <View style={common.loading}>
                           <ActivityIndicator size="large" color="#0000ff"/>
                       </View>
                   }

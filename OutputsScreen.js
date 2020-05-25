@@ -123,7 +123,7 @@ export default class OutputsScreen extends React.Component {
                     {outputs}
                 </SettingsList>
                 {this.state.loading &&
-                    <View style={styles.loading}>
+                    <View style={common.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }

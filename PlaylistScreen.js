@@ -288,7 +288,7 @@ export default class PlaylistScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={styles.separator}
+                style={common.separator}
             />
         );
     };
@@ -324,9 +324,9 @@ export default class PlaylistScreen extends React.Component {
                     } else {
                         this.rowHeight = height+1;
                     }
-                }} style={styles.container5}>
-                    <Icon name={editSelectIcon} size={20} color="black" style={styles.icon}/>
-                    <View style={styles.container6}>
+                }} style={common.container3}>
+                    <Icon name={editSelectIcon} size={20} color="black" style={common.icon}/>
+                    <View style={common.container4}>
                         {item.artist !== "" &&
                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.artist}</Text>
                         }
@@ -347,7 +347,7 @@ export default class PlaylistScreen extends React.Component {
                             <Text style={styles.item}>{audio}</Text>
                         }
                     </View>
-                    <Icon name="ios-checkmark" size={30} color="black" style={[{ display: selected}, styles.icon]}/>
+                    <Icon name="ios-checkmark" size={30} color="black" style={[{ display: selected}, common.icon]}/>
                 </View>
             </TouchableOpacity>
         );
@@ -376,7 +376,7 @@ export default class PlaylistScreen extends React.Component {
             <View style={styles.container1}>
                 <View style={styles.container2}>
                     <View style={styles.container3}>
-                        <Text style={styles.text}>
+                        <Text style={[common.text, {paddingLeft: 10}]}>
                             Total : {this.state.playlist.length}   Time : {this.state.totalTime}
                         </Text>
                     </View>
@@ -385,7 +385,7 @@ export default class PlaylistScreen extends React.Component {
                 <FlatList
                     data={this.state.playlist}
                     renderItem={this.renderItem}
-                    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                    renderSectionHeader={({section}) => <Text style={common.sectionHeader}>{section.title}</Text>}
                     keyExtractor={item => ""+item.id}
                     ItemSeparatorComponent={this.renderSeparator}
                     extraData={this.state.selected}
@@ -394,30 +394,30 @@ export default class PlaylistScreen extends React.Component {
                 />
                 </View>
                 {this.state.loading &&
-                    <View style={styles.loading}>
+                    <View style={common.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
-                    <ActionButton.Item size={actionButtonSize} buttonColor='#3498db' title="Edit/Select" textStyle={styles.actionButtonText} onPress={this.onEdit.bind(this)}>
+                    <ActionButton.Item size={actionButtonSize} buttonColor='#3498db' title="Edit/Select" textStyle={common.actionButtonText} onPress={this.onEdit.bind(this)}>
                         <FAIcon name="edit" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item size={actionButtonSize} buttonColor='#3498db' title="Random Playlist" textStyle={styles.actionButtonText} onPress={() => this.doRandom()}>
+                    <ActionButton.Item size={actionButtonSize} buttonColor='#3498db' title="Random Playlist" textStyle={common.actionButtonText} onPress={() => this.doRandom()}>
                         <FAIcon name="random" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item size={actionButtonSize} buttonColor='#1abc9c' title="Clear Queue" textStyle={styles.actionButtonText} onPress={this.onClear.bind(this)}>
+                    <ActionButton.Item size={actionButtonSize} buttonColor='#1abc9c' title="Clear Queue" textStyle={common.actionButtonText} onPress={this.onClear.bind(this)}>
                         <FAIcon name="eraser" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item size={actionButtonSize} buttonColor='#9b59b6' title="Previous" textStyle={styles.actionButtonText} onPress={this.onPrevious.bind(this)}>
+                    <ActionButton.Item size={actionButtonSize} buttonColor='#9b59b6' title="Previous" textStyle={common.actionButtonText} onPress={this.onPrevious.bind(this)}>
                         <FAIcon name="fast-backward" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item size={actionButtonSize} buttonColor='#3498db' title="Stop" textStyle={styles.actionButtonText} onPress={this.onStop.bind(this)}>
+                    <ActionButton.Item size={actionButtonSize} buttonColor='#3498db' title="Stop" textStyle={common.actionButtonText} onPress={this.onStop.bind(this)}>
                         <FAIcon name="stop" size={12} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item size={actionButtonSize} buttonColor='#1abc9c' title="Play/Pause" textStyle={styles.actionButtonText} onPress={this.onPlayPause.bind(this)}>
+                    <ActionButton.Item size={actionButtonSize} buttonColor='#1abc9c' title="Play/Pause" textStyle={common.actionButtonText} onPress={this.onPlayPause.bind(this)}>
                         <FAIcon name={playPauseIcon} size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item size={actionButtonSize} buttonColor='#9b59b6' title="Next" textStyle={styles.actionButtonText} onPress={this.onNext.bind(this)}>
+                    <ActionButton.Item size={actionButtonSize} buttonColor='#9b59b6' title="Next" textStyle={common.actionButtonText} onPress={this.onNext.bind(this)}>
                         <FAIcon name="fast-forward" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>

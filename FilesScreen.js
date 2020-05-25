@@ -335,7 +335,7 @@ export default class FilesScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={styles.separator}
+                style={common.separator}
             />
         );
     };
@@ -355,8 +355,8 @@ export default class FilesScreen extends React.Component {
         });
 
         return (
-            <View style={styles.container1}>
-                <View style={styles.container2}>
+            <View style={common.container1}>
+                <View style={common.container2}>
                     <View style={styles.container3}>
                         <SearchBar
                             clearIcon
@@ -366,18 +366,18 @@ export default class FilesScreen extends React.Component {
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
-                            containerStyle={styles.searchbarContainer}
-                            inputContainerStyle={styles.searchbarInputContainer}
-                            inputStyle={styles.searchbarInput}
+                            containerStyle={common.searchbarContainer}
+                            inputContainerStyle={common.searchbarInputContainer}
+                            inputStyle={common.searchbarInput}
                     />
                     </View>
                     <View style={styles.container3}>
-                        <Text style={styles.text}>
+                        <Text style={common.text}>
                             Directories : {dirCount} Files: {fileCount}
                         </Text>
                     </View>
                 </View>
-                <View style={styles.container4}>
+                <View style={common.container4}>
                 <SwipeListView
 					useFlatList
                     data={this.state.files}
@@ -392,20 +392,20 @@ export default class FilesScreen extends React.Component {
 
                             return (
                                 <SwipeRow leftOpenValue={75} rightOpenValue={-150}>
-                                    <View style={styles.rowBack}>
-                                        <TouchableOpacity style={styles.backLeftBtn} onPress={ _ => this.queue(map, item, true) }>
-                                            <Text style={styles.backTextWhite}>Play</Text>
+                                    <View style={[common.rowBack, {paddingTop: 3, paddingBottom: 3}]}>
+                                        <TouchableOpacity style={common.backLeftBtn} onPress={ _ => this.queue(map, item, true) }>
+                                            <Text style={common.backTextWhite}>Play</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.queue(map, item, false) }>
-                                            <Text style={styles.backTextWhite}>Queue</Text>
+                                        <TouchableOpacity style={[common.backRightBtn, common.backRightBtnLeft]} onPress={ _ => this.queue(map, item, false) }>
+                                            <Text style={common.backTextWhite}>Queue</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.playlist(map, item) }>
-                                            <Text style={styles.backTextWhite}>Playlist</Text>
+                                        <TouchableOpacity style={[common.backRightBtn, common.backRightBtnRight]} onPress={ _ => this.playlist(map, item) }>
+                                            <Text style={common.backTextWhite}>Playlist</Text>
                                         </TouchableOpacity>
                                     </View>
-                                    <View style={[styles.container5, styles.rowFront]}>
-                                        <Icon name="ios-musical-notes" size={20} color="black" style={styles.icon}/>
-                                        <View style={styles.container6}>
+                                    <View style={[common.container3, common.rowFront, {paddingTop: 3, paddingBottom: 3}]}>
+                                        <Icon name="ios-musical-notes" size={20} color="black" style={common.icon}/>
+                                        <View style={common.container4}>
                                             {item.artist &&
                                                 <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>{item.artist}</Text>
                                             }
@@ -417,7 +417,7 @@ export default class FilesScreen extends React.Component {
                                             }
                                             <Text numberOfLines={1} ellipsizeMode='middle' style={styles.file}>{file}</Text>
                                         </View>
-                                        <Icon name="ios-swap" size={20} color="black" style={styles.icon}/>
+                                        <Icon name="ios-swap" size={20} color="black" style={common.icon}/>
                                     </View>
                                 </SwipeRow>
                             );
@@ -428,35 +428,35 @@ export default class FilesScreen extends React.Component {
                             }
                             return (
                                 <TouchableOpacity onPress={this.onPress.bind(this, item)}>
-                                    <View style={styles.container7}>
-                                        <Icon name="ios-folder" size={20} color="black" style={styles.icon}/>
-                                        <View style={styles.container6}>
+                                    <View style={common.container3}>
+                                        <Icon name="ios-folder" size={20} color="black" style={common.icon}/>
+                                        <View style={common.container4}>
                                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{dir}</Text>
                                         </View>
-                                        <Icon name="ios-more" size={20} color="black" style={styles.icon}/>
+                                        <Icon name="ios-more" size={20} color="black" style={common.icon}/>
                                     </View>
                                 </TouchableOpacity>
                             );
                         }
                     }}
-                    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                    renderSectionHeader={({section}) => <Text style={common.sectionHeader}>{section.title}</Text>}
                     ItemSeparatorComponent={this.renderSeparator}
 				/>
                 </View>
                 {this.state.loading &&
-                    <View style={styles.loading}>
+                    <View style={common.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }
                 <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
                 {showAddAll && <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
-                    <ActionButton.Item buttonColor='#1abc9c' title="Play Now" size={40} textStyle={styles.actionButtonText} onPress={() => {this.autoPlay();}}>
+                    <ActionButton.Item buttonColor='#1abc9c' title="Play Now" size={40} textStyle={common.actionButtonText} onPress={() => {this.autoPlay();}}>
                         <FAIcon name="play" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Add to Queue" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(false);}}>
+                    <ActionButton.Item buttonColor='#3498db' title="Add to Queue" size={40} textStyle={common.actionButtonText} onPress={() => {this.addAll(false);}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#9b59b6' title="Add to Playlist" size={40} textStyle={styles.actionButtonText} onPress={() => {this.addAll(true);}}>
+                    <ActionButton.Item buttonColor='#9b59b6' title="Add to Playlist" size={40} textStyle={common.actionButtonText} onPress={() => {this.addAll(true);}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>}

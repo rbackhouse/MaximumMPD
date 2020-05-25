@@ -91,14 +91,14 @@ export default class DebugScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={styles.separator}
+                style={common.separator}
             />
         );
     };
 
     renderItem = ({item}) => {
         return (
-            <View style={styles.container2}>
+            <View style={common.container3}>
                 <Text style={styles.item}>{item.debug}</Text>
             </View>
         );
@@ -106,7 +106,7 @@ export default class DebugScreen extends React.Component {
 
     render() {
         return (
-            <View style={styles.container1}>
+            <View style={common.container1}>
                 <View style={styles.container3}>
                     <View style={styles.container4}>
                     <TextInput
@@ -121,20 +121,20 @@ export default class DebugScreen extends React.Component {
                 <FlatList
                     data={this.state.debug}
                     renderItem={this.renderItem}
-                    renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                    renderSectionHeader={({section}) => <Text style={common.sectionHeader}>{section.title}</Text>}
                     keyExtractor={item => item.key}
                     ItemSeparatorComponent={this.renderSeparator}
                 />
                 {this.state.loading &&
-                    <View style={styles.loading}>
+                    <View style={common.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
-                    <ActionButton.Item buttonColor='#3498db' title="Run" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onRun();}}>
+                    <ActionButton.Item buttonColor='#3498db' title="Run" size={40} textStyle={common.actionButtonText} onPress={() => {this.onRun();}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#1abc9c' title="Clear" size={40} textStyle={styles.actionButtonText} onPress={() => {this.onClear();}}>
+                    <ActionButton.Item buttonColor='#1abc9c' title="Clear" size={40} textStyle={common.actionButtonText} onPress={() => {this.onClear();}}>
                         <FAIcon name="eraser" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>

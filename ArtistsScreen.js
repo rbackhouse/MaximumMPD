@@ -373,7 +373,7 @@ export default class ArtistsScreen extends React.Component {
     renderSeparator = () => {
         return (
             <View
-                style={styles.separator}
+                style={common.separator}
             />
         );
     };
@@ -395,7 +395,7 @@ export default class ArtistsScreen extends React.Component {
                     <View style={styles.itemTextContainer}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} color="black" style={styles.icon}/>
+                    <Icon name="ios-more" size={20} color="black" style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -405,20 +405,20 @@ export default class ArtistsScreen extends React.Component {
         const item = data.item;
         return (
             <SwipeRow rightOpenValue={-150}>
-                <View style={styles.rowBack}>
-                    <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.genreAlbums(map, item) }>
-                        <Text style={styles.backTextWhite}>Albums</Text>
+                <View style={common.rowBack}>
+                    <TouchableOpacity style={[common.backRightBtn, common.backRightBtnLeft]} onPress={ _ => this.genreAlbums(map, item) }>
+                        <Text style={common.backTextWhite}>Albums</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.genreSongs(map, item) }>
-                        <Text style={styles.backTextWhite}>Songs</Text>
+                    <TouchableOpacity style={[common.backRightBtn, common.backRightBtnRight]} onPress={ _ => this.genreSongs(map, item) }>
+                        <Text style={common.backTextWhite}>Songs</Text>
                     </TouchableOpacity>
                 </View>
-                <View style={[styles.genreContainer, styles.rowFront]}>
+                <View style={[styles.genreContainer, common.rowFront]}>
                     <Image style={styles.iconGenre} source={require('./images/icons8-cd-filled-50.png')}/>
                     <View style={styles.itemTextContainer}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
-                    <Icon name="ios-swap" size={20} color="black" style={styles.icon}/>
+                    <Icon name="ios-swap" size={20} color="black" style={common.icon}/>
                 </View>
             </SwipeRow>
         );
@@ -442,7 +442,7 @@ export default class ArtistsScreen extends React.Component {
                         <Text style={styles.albumItem}>{item.name}</Text>
                         <Text style={styles.albumItem}>{item.artist}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} color="black" style={styles.icon}/>
+                    <Icon name="ios-more" size={20} color="black" style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -496,7 +496,7 @@ export default class ArtistsScreen extends React.Component {
         }
         if (this.state.selectedTab === 0) {
             return (
-                <View style={styles.tabContainer}>
+                <View style={common.container1}>
                     <View style={{flex: bg, width: "100%"}}>
                         <ButtonGroup
                             onPress={(index) => {
@@ -510,7 +510,7 @@ export default class ArtistsScreen extends React.Component {
                         />
                     </View>
                     <View style={{flex: sb, flexDirection: 'row', alignItems: 'center'}}>
-                        <View style={styles.flex75}>
+                        <View style={common.flex75}>
                             <SearchBar
                                 clearIcon
                                 lightTheme
@@ -519,13 +519,13 @@ export default class ArtistsScreen extends React.Component {
                                 placeholder='Search'
                                 onChangeText={this.search}
                                 value={this.state.searchValue}
-                                containerStyle={styles.searchbarContainer}
-                                inputContainerStyle={styles.searchbarInputContainer}
-                                inputStyle={styles.searchbarInput}    
+                                containerStyle={common.searchbarContainer}
+                                inputContainerStyle={common.searchbarInputContainer}
+                                inputStyle={common.searchbarInput}    
                             />
                         </View>
-                        <View style={styles.flex25}>
-                            <Text style={styles.text}>
+                        <View style={common.flex25}>
+                            <Text style={common.text}>
                                 Total : {this.state.artists.length}
                             </Text>
                         </View>
@@ -535,7 +535,7 @@ export default class ArtistsScreen extends React.Component {
                         <FlatList
                             data={this.state.artists}
                             renderItem={this.renderItem}
-                            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                            renderSectionHeader={({section}) => <Text style={common.sectionHeader}>{section.title}</Text>}
                             keyExtractor={item => item.key}
                             ItemSeparatorComponent={this.renderSeparator}
                             key={this.state.numColumns}
@@ -543,7 +543,7 @@ export default class ArtistsScreen extends React.Component {
                        />
                     </View>
                     {this.state.loading &&
-                        <View style={styles.loading}>
+                        <View style={common.loading}>
                             <ActivityIndicator size="large" color="#0000ff"/>
                         </View>
                     }
@@ -551,7 +551,7 @@ export default class ArtistsScreen extends React.Component {
             );
         } else if (this.state.selectedTab === 1) {
             return (
-                <View style={styles.tabContainer}>
+                <View style={common.container1}>
                     <View style={{flex: bg, width: "100%"}}>
                         <ButtonGroup
                             onPress={(index) => {
@@ -565,7 +565,7 @@ export default class ArtistsScreen extends React.Component {
                         />
                     </View>
                     <View style={{flex: sb, flexDirection: 'row', alignItems: 'center'}}>
-                        <View style={styles.flex75}>
+                        <View style={common.flex75}>
                             <SearchBar
                                 clearIcon
                                 lightTheme
@@ -574,13 +574,13 @@ export default class ArtistsScreen extends React.Component {
                                 placeholder='Search'
                                 onChangeText={this.searchAlbums}
                                 value={this.state.searchAlbumValue}
-                                containerStyle={styles.searchbarContainer}
-                                inputContainerStyle={styles.searchbarInputContainer}
-                                inputStyle={styles.searchbarInput}
+                                containerStyle={common.searchbarContainer}
+                                inputContainerStyle={common.searchbarInputContainer}
+                                inputStyle={common.searchbarInput}
                             />
                         </View>
-                        <View style={styles.flex25}>
-                            <Text style={styles.text}>
+                        <View style={common.flex25}>
+                            <Text style={common.text}>
                                 Total : {this.state.realTotal}
                             </Text>
                         </View>
@@ -590,7 +590,7 @@ export default class ArtistsScreen extends React.Component {
                             <FlatList
                                 data={this.state.albums}
                                 renderItem={this.renderAlbumItem}
-                                renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                                renderSectionHeader={({section}) => <Text style={common.sectionHeader}>{section.title}</Text>}
                                 keyExtractor={item => item.key}
                                 ItemSeparatorComponent={this.renderSeparator}
                                 key={this.state.numColumns}
@@ -603,16 +603,16 @@ export default class ArtistsScreen extends React.Component {
                                 renderItem={this.renderGridAlbumItem}
                                 keyExtractor={item => item.key}
                                 numColumns={this.state.numColumns}
-                                columnWrapperStyle={styles.row}
+                                columnWrapperStyle={common.row}
                                 key={this.state.numColumns}
                             />
                         }
                     </View>
                     <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
-                        <ActionButton.Item buttonColor='#3498db' title="List View" size={40} textStyle={styles.actionButtonText} onPress={() => {this.setState({grid: false, numColumns: 1});}}>
+                        <ActionButton.Item buttonColor='#3498db' title="List View" size={40} textStyle={common.actionButtonText} onPress={() => {this.setState({grid: false, numColumns: 1});}}>
                             <Icon name="ios-list" size={20} color="white"/>
                         </ActionButton.Item>
-                        <ActionButton.Item buttonColor='#9b59b6' title="Grid View" size={40} textStyle={styles.actionButtonText} onPress={() => {
+                        <ActionButton.Item buttonColor='#9b59b6' title="Grid View" size={40} textStyle={common.actionButtonText} onPress={() => {
                             const {height, width} = Dimensions.get('window');
                             numColumns = width > 375 ? 3 : 2;
                             this.setState({grid: true, numColumns: numColumns});
@@ -621,7 +621,7 @@ export default class ArtistsScreen extends React.Component {
                         </ActionButton.Item>
                     </ActionButton>
                     {this.state.loading &&
-                        <View style={styles.loading}>
+                        <View style={common.loading}>
                             <ActivityIndicator size="large" color="#0000ff"/>
                         </View>
                     }
@@ -629,7 +629,7 @@ export default class ArtistsScreen extends React.Component {
             );
         } else if (this.state.selectedTab === 2) {
             return (
-                <View style={styles.tabContainer}>
+                <View style={common.container1}>
                     <View style={{flex: bg, width: "100%"}}>
                         <ButtonGroup
                             onPress={(index) => {
@@ -643,7 +643,7 @@ export default class ArtistsScreen extends React.Component {
                         />
                     </View>
                     <View style={{flex: sb, flexDirection: 'row', alignItems: 'center'}}>
-                        <View style={styles.flex75}>
+                        <View style={common.flex75}>
                             <SearchBar
                                 clearIcon
                                 lightTheme
@@ -652,13 +652,13 @@ export default class ArtistsScreen extends React.Component {
                                 placeholder='Search'
                                 onChangeText={this.searchGenres}
                                 value={this.state.searchGenreValue}
-                                containerStyle={styles.searchbarContainer}
-                                inputContainerStyle={styles.searchbarInputContainer}
-                                inputStyle={styles.searchbarInput}    
+                                containerStyle={common.searchbarContainer}
+                                inputContainerStyle={common.searchbarInputContainer}
+                                inputStyle={common.searchbarInput}    
                             />
                         </View>
-                        <View style={styles.flex25}>
-                            <Text style={styles.text}>
+                        <View style={common.flex25}>
+                            <Text style={common.text}>
                                 Total : {this.state.genres.length}
                             </Text>
                         </View>
@@ -669,12 +669,12 @@ export default class ArtistsScreen extends React.Component {
                             data={this.state.genres}
                             keyExtractor={item => item.key}
                             renderItem={this.renderGenreItem}
-                            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+                            renderSectionHeader={({section}) => <Text style={common.sectionHeader}>{section.title}</Text>}
                             ItemSeparatorComponent={this.renderSeparator}
                         />
                     </View>
                     {this.state.loading &&
-                        <View style={styles.loading}>
+                        <View style={common.loading}>
                             <ActivityIndicator size="large" color="#0000ff"/>
                         </View>
                     }
