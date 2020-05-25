@@ -16,9 +16,10 @@
 */
 
 import React from 'react';
-import { View, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Alert, ActivityIndicator } from 'react-native';
 import SettingsList from 'react-native-settings-list';
 import MPDConnection from './MPDConnection';
+import { styles as common, outputsStyles as styles } from './Styles';
 
 export default class OutputsScreen extends React.Component {
     static navigationOptions = {
@@ -130,16 +131,3 @@ export default class OutputsScreen extends React.Component {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    container1 : {backgroundColor:'#EFEFF4',flex:1}
-});

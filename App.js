@@ -16,13 +16,13 @@
 */
 
 import React from 'react';
-import { StyleSheet, ActivityIndicator, View, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, View, TouchableOpacity } from 'react-native';
 import Icon  from 'react-native-vector-icons/Ionicons';
 import FAIcon  from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/dist/MaterialIcons';
 
 import { createStackNavigator, createBottomTabNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
-import HeaderButtons from 'react-navigation-header-buttons';
+import { styles as common, appStyles as styles } from './Styles';
 
 import PlayScreen from './PlayScreen';
 import SearchScreen from './SearchScreen';
@@ -94,11 +94,11 @@ class Header extends React.Component {
             <View>
             {isConnecting &&
                 <View style={styles.connecting}>
-                    <ActivityIndicator size="small" color="#0000ff" style={{ paddingRight: 15 }}/>
+                    <ActivityIndicator size="small" color="#0000ff" style={styles.paddingRight}/>
                 </View>
             }
             {!isConnecting &&
-                <FAIcon name={icon} size={20} color={color} style={{ paddingRight: 15 }}/>
+                <FAIcon name={icon} size={20} color={color} style={styles.paddingRight}/>
             }
             </View>
         );
@@ -111,7 +111,7 @@ class SortHeader extends React.Component {
         return (
             <View>
                 <TouchableOpacity onPress={navigation.getParam('sort')}>
-                    <MaterialIcon name="sort" size={20} color="gray" style={{ paddingRight: 15 }}/>
+                    <MaterialIcon name="sort" size={20} color="gray" style={styles.paddingRight}/>
                 </TouchableOpacity>
             </View>
         );
@@ -279,17 +279,6 @@ const MainPage = createBottomTabNavigator(
     swipeEnabled: false
   }
 );
-
-const styles = StyleSheet.create({
-    connectiing: {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    }
-});
 
 const SwitchPage = createSwitchNavigator(
     {

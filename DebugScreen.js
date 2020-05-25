@@ -16,11 +16,12 @@
 */
 
 import React from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, Alert, ActivityIndicator} from 'react-native';
+import { View, Text, TextInput, FlatList, Alert, ActivityIndicator} from 'react-native';
 import ActionButton from 'react-native-action-button';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 
 import MPDConnection from './MPDConnection';
+import { styles as common, debugStyles as styles } from './Styles';
 
 export default class DebugScreen extends React.Component {
     static navigationOptions = {
@@ -141,52 +142,3 @@ export default class DebugScreen extends React.Component {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    textInput: {
-      borderColor: '#CCCCCC',
-      borderTopWidth: 1,
-      borderBottomWidth: 1,
-      height: 50,
-      fontSize: 25,
-      paddingLeft: 20,
-      paddingRight: 20
-    },
-    item: {
-        fontSize: 17,
-        fontFamily: 'GillSans-Italic',
-        padding: 10
-    },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container2: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container3: {flex: .1, flexDirection: 'row', alignItems: 'center'},
-    container4: {flex: 1}
-});

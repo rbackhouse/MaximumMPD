@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { Text, View, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
@@ -28,6 +28,7 @@ import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import NewPlaylistModal from './NewPlaylistModal';
+import { styles as common, filesStyles as styles } from './Styles';
 
 export default class FilesScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -463,110 +464,3 @@ export default class FilesScreen extends React.Component {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    item: {
-        fontFamily: 'GillSans-Italic',
-        padding: 10
-    },
-    file: {
-        fontFamily: 'GillSans-Italic',
-        paddingLeft: 10,
-        paddingTop: 2,
-        paddingBottom: 2
-    },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    backTextWhite: {
-		color: '#FFF'
-	},
-    rowFront: {
-		alignItems: 'center',
-		backgroundColor: '#FFFFFF',
-		justifyContent: 'center',
-		paddingTop: 3,
-		paddingBottom: 3,
-	},
-	rowBack: {
-		alignItems: 'center',
-		backgroundColor: '#DDD',
-		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingLeft: 15,
-		paddingTop: 3,
-		paddingBottom: 3,
-	},
-	backRightBtn: {
-		alignItems: 'center',
-		bottom: 0,
-		justifyContent: 'center',
-		position: 'absolute',
-		top: 0,
-		width: 75
-	},
-	backRightBtnLeft: {
-		backgroundColor: 'grey',
-		right: 75
-	},
-	backRightBtnRight: {
-		backgroundColor: 'darkgray',
-		right: 0
-    },
-	backLeftBtn: {
-		alignItems: 'center',
-		bottom: 0,
-		justifyContent: 'center',
-		position: 'absolute',
-		top: 0,
-		width: 75,
-		backgroundColor: '#F08080'
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container2: {flex: .1, flexDirection: 'row', alignItems: 'center' },
-    container3: {flex: .5},
-    container4: {flex: .9, flexDirection: 'row', alignItems: 'flex-start' },
-    container5: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container6: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
-    container7: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    text: {fontSize: 15,fontFamily: 'GillSans-Italic'},
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    },
-    searchbarContainer: {
-        backgroundColor: 'white'
-    },
-    searchbarInputContainer: {
-        backgroundColor: '#EBECEC'
-    },
-    searchbarInput: { 
-        backgroundColor: '#EBECEC'
-    }
-});

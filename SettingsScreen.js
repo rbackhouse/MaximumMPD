@@ -16,13 +16,13 @@
 */
 
 import React from 'react';
-import { View, Picker, Modal, Text, StyleSheet, Alert, Linking, TextInput, Switch, Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { Button as ReactButton } from 'react-native';
+import { View, Picker, Modal, Text, Alert, Linking, TextInput, Switch, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import SettingsList from 'react-native-settings-list';
 import { Input, Button } from 'react-native-elements'
 import MPDConnection from './MPDConnection';
 import AlbumArt from './AlbumArt';
 import Config from './Config';
+import { styles as common, settingsStyles as styles } from './Styles';
 
 class AlbumArtModal extends React.Component {
     state = {
@@ -780,47 +780,3 @@ export default class SettingsScreen extends React.Component {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    entryField: {
-        width: 150,
-        height: 30,
-        margin: 15,
-        borderColor: '#e3e5e5',
-        borderWidth: 1
-    },
-    label: {
-        fontFamily: 'GillSans-Italic',
-        fontWeight: 'normal',
-    },
-    status: {
-        fontFamily: 'GillSans-Italic',
-        margin: 15
-    },
-    text1: {fontSize: 15,fontFamily: 'GillSans-Italic'},
-    text2: {fontSize: 20, fontFamily: 'GillSans-Italic'},
-    flexStart: {flex: .5, alignItems: 'flex-start'},
-    flexEnd: {flex: .5, alignItems: 'flex-end'},
-    flex1: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-    flex2: {flex: .2, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'},
-    flex3: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    container1: {marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'},
-    container2: {flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15},
-    container3: {flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-    container4: {flex: .2, flexDirection: 'row', alignItems: 'center', margin: 15},
-    container5: {marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'flex-start'},
-    container6: {flex: .1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    container7: {backgroundColor:'#EFEFF4',flex:1},
-    textInput1: {
-        width: 75,
-        height: 35,
-        borderColor: '#e3e5e5',
-        borderWidth: 1                            
-    },
-    textInput2: {
-        width: 150,
-        height: 35,
-        borderColor: '#e3e5e5',
-        borderWidth: 1                            
-    }
-});

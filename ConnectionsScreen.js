@@ -19,7 +19,6 @@ import React from 'react';
 import {
     View,
     Text,
-    StyleSheet,
     TouchableOpacity,
     Modal,
     Alert,
@@ -32,6 +31,7 @@ import { Input, Button } from 'react-native-elements'
 import ActionButton from 'react-native-action-button';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Config from './Config';
+import { styles as common, connectionsStyles as styles } from './Styles';
 
 class AddConnectionModal extends React.Component {
     state = {
@@ -397,100 +397,3 @@ export default class ConnectionsScreen extends React.Component {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    item: {
-        fontFamily: 'GillSans-Italic',
-        paddingLeft: 10
-    },
-    label: {
-        fontSize: 17,
-        fontFamily: 'GillSans-Italic',
-        fontWeight: 'normal',
-    },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 17,
-        fontFamily: 'GillSans-Italic',
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    button: {
-        alignItems: 'center',
-        backgroundColor: '#3396FF',
-        padding: 10,
-        borderRadius: 5
-    },
-    entryField: {
-        width: 150,
-        height: 30,
-        margin: 15,
-        borderColor: '#e3e5e5',
-        borderWidth: 1
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    backTextWhite: {
-		color: '#FFF'
-	},
-	rowFront: {
-		alignItems: 'center',
-		backgroundColor: '#FFFFFF',
-		justifyContent: 'center',
-	},
-	rowBack: {
-		alignItems: 'center',
-		backgroundColor: '#DDD',
-		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingLeft: 15,
-	},
-	backRightBtn: {
-		alignItems: 'center',
-		bottom: 0,
-		justifyContent: 'center',
-		position: 'absolute',
-		top: 0,
-		width: 75
-	},
-	backRightBtnLeft: {
-		backgroundColor: 'grey',
-		right: 75
-	},
-	backRightBtnRight: {
-		backgroundColor: 'darkgray',
-		right: 0
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container2: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5 },
-    container3: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    dialog1: {marginTop: 22, flex: .8, flexDirection: 'column', justifyContent: 'space-around'},
-    dialog2: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-    dialogtext: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    }
-});

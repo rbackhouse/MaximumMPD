@@ -16,8 +16,9 @@
 */
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import ConnectionsScreen from './ConnectionsScreen';
+import { styles as common, welcomeStyles as styles } from './Styles';
 
 export default class WelcomeScreen extends React.Component {
     render() {
@@ -33,18 +34,3 @@ export default class WelcomeScreen extends React.Component {
         );
     }
 }
-const styles = StyleSheet.create({
-    title: {
-        fontSize: 30,
-        fontFamily: 'GillSans-Italic',
-        padding: 10
-    },
-    intro: {
-        fontSize: 16,
-        fontFamily: 'GillSans-Italic',
-        paddingLeft: 10,
-        paddingRight: 10,
-    },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container2 : {flex: .3, alignItems: 'center', justifyContent: 'center', paddingTop: 10}
-});

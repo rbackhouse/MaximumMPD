@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Modal, Picker, PickerIOS, Dimensions } from 'react-native';
+import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Modal, Picker, PickerIOS, Dimensions } from 'react-native';
 import { SearchBar, Input, Button } from 'react-native-elements'
 
 import ActionButton from 'react-native-action-button';
@@ -25,8 +25,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 
 import MPDConnection from './MPDConnection';
-import Base64 from './Base64';
 import Config from './Config';
+import { styles as common, playlistStyles as styles } from './Styles';
 
 class RandomPlaylistTypeModal extends React.Component {
     state = {
@@ -426,93 +426,3 @@ export default class PlaylistScreen extends React.Component {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    item: {
-        fontFamily: 'GillSans-Italic'
-    },
-    label: {
-        fontSize: 17,
-        fontFamily: 'GillSans-Italic',
-        fontWeight: 'normal',
-    },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    button: {
-        width: 35,
-        height: 35,
-        backgroundColor: '#3396FF',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 50
-    },
-    tabBar: {
-        paddingLeft: 20,
-        paddingRight: 20,
-        paddingTop: 10,
-        flexDirection: 'row',
-        width: "85%"
-    },
-    tabBarButton: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    actionButtonIcon: {
-        fontSize: 20,
-        height: 22,
-        color: 'white',
-    },
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    entryField: {
-        width: 150,
-        height: 30,
-        margin: 15,
-        borderColor: '#e3e5e5',
-        borderWidth: 1
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    },
-    text: {
-        fontSize: 15,
-        fontFamily: 'GillSans-Italic',
-        paddingLeft: 10
-    },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start' },
-    container2: {flex: .05, flexDirection: 'row', alignItems: 'flex-start' },
-    container3: {flex: 1, justifyContent: 'center'},
-    container4: {flex: .95, flexDirection: 'row', alignItems: 'flex-start' },
-    container5: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container6: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
-    dialog1: {marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'},
-    dialog2: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-    dialogtext: {fontSize: 20, fontFamily: 'GillSans-Italic'}
-});

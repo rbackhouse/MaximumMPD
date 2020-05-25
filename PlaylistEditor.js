@@ -16,15 +16,15 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, Modal } from 'react-native';
+import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Image, Modal } from 'react-native';
 import { SearchBar, Input, Button } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
 
 import MPDConnection from './MPDConnection';
-import Base64 from './Base64';
 import NewPlaylistModal from './NewPlaylistModal';
+import { styles as common, playlistEditorStyles as styles } from './Styles';
 
 class AddStreamURLModal extends React.Component {
     state = {
@@ -292,71 +292,3 @@ export default class PlaylistEditor extends React.Component {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    item: {
-        fontFamily: 'GillSans-Italic',
-        padding: 10
-    },
-    label: {
-        fontSize: 17,
-        fontFamily: 'GillSans-Italic',
-        fontWeight: 'normal',
-    },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    searchbarContainer: {
-        backgroundColor: 'white'
-    },
-    searchbarInputContainer: {
-        backgroundColor: '#EBECEC'
-    },
-    searchbarInput: { 
-        backgroundColor: '#EBECEC'
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    },
-    text: {
-        fontSize: 15,
-        fontFamily: 'GillSans-Italic'
-    },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container2: {flex: .1, flexDirection: 'row', alignItems: 'center'},
-    container3: {flex: .75},
-    container4: {flex: .25},
-    container5: {flex: .9, flexDirection: 'row', alignItems: 'flex-start' },
-    container6: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container7: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
-    dialog1: {marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around'},
-    dialog2: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-    dialogtext: {fontSize: 20, fontFamily: 'GillSans-Italic'}
-});

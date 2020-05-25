@@ -28,6 +28,7 @@ import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
 import NewPlaylistModal from './NewPlaylistModal';
 import Config from './Config';
+import { styles as common, albumsStyles as styles } from './Styles';
 
 export default class AlbumsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -329,88 +330,3 @@ export default class AlbumsScreen extends React.Component {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    item: {
-        fontFamily: 'GillSans-Italic',
-        padding: 10
-    },
-    albumGridItem: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    actionButtonText: {
-        fontSize: 13,
-        fontFamily: 'GillSans-Italic'
-    },
-    row: {
-        flex: 1,
-        justifyContent: "space-around"
-    },
-    searchbarContainer: {
-        backgroundColor: 'white'
-    },
-    searchbarInputContainer: {
-        backgroundColor: '#EBECEC'
-    },
-    searchbarInput: { 
-        backgroundColor: '#EBECEC'
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    text: {
-        fontSize: 15,
-        fontFamily: 'GillSans-Italic'
-    },
-    paddingLeft: {
-        paddingLeft: 10
-    },
-    albumart: {
-        width: 20, 
-        height: 20, 
-        paddingLeft: 20, 
-        paddingRight: 35, 
-        resizeMode: 'contain'
-    },
-    noalbumart: {
-        width: 55, 
-        height: 55, 
-        paddingLeft: 20, 
-        paddingRight: 20, 
-        resizeMode: 'contain'
-    },
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    },
-    container1: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', height: 65 },
-    container2: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
-    container3: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5},
-    container4: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container5: {flex: .1, flexDirection: 'row', alignItems: 'center'},
-    container6: {flex: .75},
-    container7: {flex: .25},
-    container8: {flex: .9, flexDirection: 'row', alignItems: 'flex-start' }
-});

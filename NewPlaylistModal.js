@@ -16,11 +16,12 @@
 */
 
 import React from 'react';
-import { Text, View, Modal, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Text, View, Modal, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SearchBar, Input, Button } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import MPDConnection from './MPDConnection';
+import { styles as common, newPlaylistStyles as styles } from './Styles';
 
 export default class NewPlaylistModal extends React.Component {
     state = {
@@ -179,76 +180,3 @@ export default class NewPlaylistModal extends React.Component {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    entryField: {
-        width: 150,
-        height: 30,
-        margin: 15,
-        borderColor: '#e3e5e5',
-        borderWidth: 1
-    },
-    item: {
-        fontSize: 17,
-        fontFamily: 'GillSans-Italic',
-        padding: 10
-    },
-    label: {
-        fontSize: 17,
-        fontFamily: 'GillSans-Italic',
-        fontWeight: 'normal',
-    },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 14,
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    },
-    searchbarContainer: {
-        backgroundColor: 'white'
-    },
-    searchbarInputContainer: {
-        backgroundColor: '#EBECEC'
-    },
-    searchbarInput: { 
-        backgroundColor: '#EBECEC'
-    },
-    container1: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container2: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
-    container3: {marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'space-around'},
-    container4: { flex: .1, justifyContent: 'flex-start', alignItems: 'stretch', marginBottom: 20 },
-    container5: { flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    container6: { flex: .5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    container7: { flex: .1, justifyContent: 'flex-start', alignItems: 'stretch'},
-    container8: { flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
-    container9: { flex: .6, justifyContent: 'flex-start', alignItems: 'stretch'},
-    container10: {flex: .1, flexDirection: 'row', alignItems: 'center'},
-    container11: {flex: .75},
-    container12: {flex: .25},
-    container13: {flex: .9, flexDirection: 'row', alignItems: 'flex-start' },
-    text1: {fontSize: 20, fontFamily: 'GillSans-Italic'},
-    text2: {fontSize: 16, fontFamily: 'GillSans-Italic'},
-    text3: {fontSize: 15,fontFamily: 'GillSans-Italic'}
-});

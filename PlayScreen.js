@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Image, Alert, Platform, Linking, ActivityIndicator } from 'react-native';
+import { Text, View, TouchableOpacity, Image, Alert, Platform, Linking, ActivityIndicator } from 'react-native';
 import { Slider, ButtonGroup } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -33,6 +33,7 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
 import Config from './Config';
+import { styles as common, playStyles as styles } from './Styles';
 
 const { VolumeControl } = NativeModules;
 const volumeEmitter = new NativeEventEmitter(VolumeControl);
@@ -564,89 +565,3 @@ export default class PlayScreen extends React.Component {
         }
     }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    content: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    button: {
-        backgroundColor: '#3396FF',
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowOpacity: 0.35,
-        shadowOffset: {
-          width: 0,
-          height: 5
-        },
-        shadowColor: "#000",
-        shadowRadius: 3,
-        elevation: 5
-    },
-    largeButton: {
-        width: 60,
-        height: 60,
-        borderRadius: 50,
-    },
-    mediumButton: {
-        width: 50,
-        height: 50,
-        borderRadius: 35,
-    },
-    smallButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 30,
-    },
-    tabBar: {
-        paddingLeft: 20,
-        paddingRight: 20,
-        paddingBottom: 20,
-        flexDirection: 'row',
-        height: 80
-    },
-    tabBarButton: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    item: {
-        fontSize: 18,
-        fontFamily: 'GillSans-Italic'
-    },
-    meniItem: {
-        fontSize: 16,
-        fontFamily: 'GillSans-Italic'
-    },
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    tabcontainer1: {flex:1},
-    container1: {flex: .1, width: "100%", padding: 5},
-    container2: {flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center', paddingLeft: 5, paddingRight: 5},
-    container3: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container4: {flex: .6, width: "60%", alignItems: 'center', justifyContent: 'center'},
-    container5: {flex: .1, width: "80%", height: "15%", padding: 15, alignItems: 'center', justifyContent: 'center'},
-    container6: {flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center'},
-    container7: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    containerStyle: {height: 25},
-    selectedButtonStyle: {backgroundColor: '#3396FF'},    
-    selectedTextStyle: {color: 'white'},
-    paddingRight: { paddingRight: 15 },
-    paddingLeft: { paddingLeft: 15 },
-    paddingRightSmall: { paddingRight: 10 },
-    paddingLeftSmall: { paddingLeft: 10 },
-    iconMore: { paddingLeft: 1 },
-    positionSlider: {width: "80%"},
-    volumeSlider: {width: "85%"}
-})

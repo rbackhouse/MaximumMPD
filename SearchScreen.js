@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { View, Text, StyleSheet, SectionList, ActivityIndicator, TouchableOpacity, Alert, Image } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity, Alert, Image } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
@@ -25,6 +25,7 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import NewPlaylistModal from './NewPlaylistModal';
 import AlbumArt from './AlbumArt';
+import { styles as common, searchStyles as styles } from './Styles';
 
 export default class SearchScreen extends React.Component {
 
@@ -304,115 +305,3 @@ export default class SearchScreen extends React.Component {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    item: {
-        fontFamily: 'GillSans-Italic',
-        paddingLeft: 10
-    },
-    sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
-        fontSize: 17,
-        fontFamily: 'GillSans-Italic',
-        fontWeight: 'bold',
-        backgroundColor: 'rgba(247,247,247,1.0)',
-    },
-    backTextWhite: {
-		color: '#FFF'
-	},
-    rowFront: {
-		alignItems: 'center',
-		backgroundColor: '#FFFFFF',
-		justifyContent: 'center',
-        height: 85
-	},
-	rowBack: {
-		alignItems: 'center',
-		backgroundColor: '#DDD',
-		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingLeft: 15,
-        height: 85
-	},
-	backRightBtn: {
-		alignItems: 'center',
-		bottom: 0,
-		justifyContent: 'center',
-		position: 'absolute',
-		top: 0,
-		width: 75
-	},
-	backRightBtnLeft: {
-		backgroundColor: 'grey',
-		right: 75
-	},
-	backRightBtnRight: {
-		backgroundColor: 'darkgray',
-		right: 0
-	},
-    loading: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-	backLeftBtn: {
-		alignItems: 'center',
-		bottom: 0,
-		justifyContent: 'center',
-		position: 'absolute',
-		top: 0,
-		width: 75,
-		backgroundColor: '#F08080'
-    },
-    container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch' },
-    container2: {flex: .1, flexDirection: 'row', alignItems: 'center'},
-    container3: {flex: 1},
-    container4: {flex: .9, flexDirection: 'row', alignItems: 'stretch' },
-    container5: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5},
-    container6: {flex: 1, flexDirection: 'row', alignItems: 'center'},
-    container7: {flex: 1, flexDirection: 'row', alignItems: 'center', height: 65},
-    searchbarContainer: {
-        backgroundColor: 'white'
-    },
-    searchbarInputContainer: {
-        backgroundColor: '#EBECEC'
-    },
-    searchbarInput: { 
-        backgroundColor: '#EBECEC'
-    },
-    separator: {
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
-    },
-    paddingLeft: {
-        paddingLeft: 10
-    },
-    albumart: {
-        width: 20, 
-        height: 20, 
-        paddingLeft: 20, 
-        paddingRight: 35, 
-        resizeMode: 'contain'
-    },
-    noalbumart: {
-        width: 55, 
-        height: 55, 
-        paddingLeft: 20, 
-        paddingRight: 20, 
-        resizeMode: 'contain'
-    },
-    icon: { 
-        paddingLeft: 20, 
-        paddingRight: 20 
-    }
-});
