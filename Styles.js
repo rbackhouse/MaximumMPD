@@ -1,22 +1,24 @@
 import { StyleSheet } from 'react-native'
 
-let darkMode = false;
+let darkMode = true;
 
 const Colors = {
-    dark: '#333',
+    dark: '#000',
     light: '#fff'
 };
 
 const iconColor = darkMode ? Colors.light : Colors.dark;
 const bgColor = darkMode ? Colors.dark : Colors.light;
 const textColor = darkMode ? Colors.light : Colors.dark;
+const separatorColor = darkMode ? "#5c5c5c" : "#CED0CE";
 
 const styles = StyleSheet.create({
     separator: {
         height: 1,
-        width: "90%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "5%"
+        width: "95%",
+        backgroundColor: separatorColor,
+        marginLeft: "3%",
+        marginRight: "3%"
     },
     icon: { 
         paddingLeft: 20, 
@@ -115,7 +117,10 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		paddingLeft: 15,
-	},
+    },
+    containerStyle: { height: 28, backgroundColor: bgColor },
+    selectedButtonStyle: {backgroundColor: '#3396FF'},    
+    selectedTextStyle: {color: textColor},    
     flex75: {flex: .75},
     flex25: {flex: .25},
     container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch', backgroundColor: bgColor},
@@ -188,8 +193,6 @@ const artistsStyles = StyleSheet.create({
     itemTextContainer: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5, backgroundColor: bgColor },
     genreContainer: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', backgroundColor: bgColor},
     paddingLeft: {paddingLeft: 10},
-    selectedButtonStyle: {backgroundColor: '#3396FF'},
-    selectedTextStyle: {color: textColor},
     gridItem: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5, paddingLeft: 5, paddingRight: 5, backgroundColor: bgColor},
     iconNoAlbumArt: {width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain', backgroundColor: bgColor },
     iconAlbumArt: {width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain', backgroundColor: bgColor },
@@ -449,9 +452,6 @@ const playStyles = StyleSheet.create({
     container4: { flex: .6, width: "60%", alignItems: 'center', justifyContent: 'center', backgroundColor: bgColor },
     container5: { flex: .1, width: "80%", height: "15%", padding: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: bgColor },
     container6: { flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center', backgroundColor: bgColor },
-    containerStyle: { height: 25, backgroundColor: bgColor },
-    selectedButtonStyle: {backgroundColor: '#3396FF'},    
-    selectedTextStyle: {color: 'white'},
     paddingRight: { paddingRight: 15 },
     paddingLeft: { paddingLeft: 15 },
     paddingRightSmall: { paddingRight: 10 },

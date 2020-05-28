@@ -504,9 +504,9 @@ export default class ArtistsScreen extends React.Component {
                             }}
                             selectedIndex={this.state.selectedTab}
                             buttons={['Artists', 'Albums', 'Genres']}
-                            containerStyle={{height: 25}}
-                            selectedButtonStyle={styles.selectedBackgroundColor}
-                            selectedTextStyle={styles.selectedTextStyle}
+                            containerStyle={common.containerStyle}
+                            selectedButtonStyle={common.selectedButtonStyle}
+                            selectedTextStyle={common.selectedTextStyle}
                         />
                     </View>
                     <View style={{flex: sb, flexDirection: 'row', alignItems: 'center'}}>
@@ -559,9 +559,9 @@ export default class ArtistsScreen extends React.Component {
                             }}
                             selectedIndex={this.state.selectedTab}
                             buttons={['Artists', 'Albums', 'Genres']}
-                            containerStyle={{height: 25}}
-                            selectedButtonStyle={styles.selectedBackgroundColor}
-                            selectedTextStyle={styles.selectedTextStyle}
+                            containerStyle={common.containerStyle}
+                            selectedButtonStyle={common.selectedButtonStyle}
+                            selectedTextStyle={common.selectedTextStyle}
                         />
                     </View>
                     <View style={{flex: sb, flexDirection: 'row', alignItems: 'center'}}>
@@ -637,9 +637,9 @@ export default class ArtistsScreen extends React.Component {
                             }}
                             selectedIndex={this.state.selectedTab}
                             buttons={['Artists', 'Albums', 'Genres']}
-                            containerStyle={{height: 25}}
-                            selectedButtonStyle={styles.selectedBackgroundColor}
-                            selectedTextStyle={styles.selectedTextStyle}
+                            containerStyle={common.containerStyle}
+                            selectedButtonStyle={common.selectedButtonStyle}
+                            selectedTextStyle={common.selectedTextStyle}
                         />
                     </View>
                     <View style={{flex: sb, flexDirection: 'row', alignItems: 'center'}}>

@@ -415,9 +415,9 @@ export default class PlayScreen extends React.Component {
                                 }}
                                 selectedIndex={this.state.selectedTab}
                                 buttons={['Playing', 'Queue', 'Playlists']}
-                                containerStyle={styles.containerStyle}
-                                selectedButtonStyle={styles.selectedButtonStyle}
-                                selectedTextStyle={styles.selectedTextStyle}
+                                containerStyle={common.containerStyle}
+                                selectedButtonStyle={common.selectedButtonStyle}
+                                selectedTextStyle={common.selectedTextStyle}
                                 />
                         </View>
                       <View style={styles.container2}>
@@ -536,9 +536,9 @@ export default class PlayScreen extends React.Component {
                             }}
                             selectedIndex={this.state.selectedTab}
                             buttons={['Playing', 'Queue', 'Playlists']}
-                            containerStyle={styles.containerStyle}
-                            selectedButtonStyle={styles.selectedButtonStyle}
-                            selectedTextStyle={styles.selectedTextStyle}
+                            containerStyle={common.containerStyle}
+                            selectedButtonStyle={common.selectedButtonStyle}
+                            selectedTextStyle={common.selectedTextStyle}
                         />
                     </View>
                     <PlaylistScreen navigation={this.props.navigation}/>
@@ -554,9 +554,9 @@ export default class PlayScreen extends React.Component {
                             }}
                             selectedIndex={this.state.selectedTab}
                             buttons={['Playing', 'Queue', 'Playlists']}
-                            containerStyle={styles.containerStyle}
-                            selectedButtonStyle={styles.selectedButtonStyle}
-                            selectedTextStyle={styles.selectedTextStyle}
+                            containerStyle={common.containerStyle}
+                            selectedButtonStyle={common.selectedButtonStyle}
+                            selectedTextStyle={common.selectedTextStyle}
                         />
                     </View>
                     <PlaylistEditor navigation={this.props.navigation}/>
