@@ -31,7 +31,7 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
 import NewPlaylistModal from './NewPlaylistModal';
-import { styles as common, songsStyles as styles, iconColor } from './Styles';
+import { styles as common, songsStyles as styles } from './Styles';
 
 export default class SongsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -366,7 +366,7 @@ export default class SongsScreen extends React.Component {
                             <View style={[styles.container6, common.rowFront, {height: 85}]}>
                                 <View style={styles.paddingLeft}/>
                                 {this.state.imagePath.length < 1 &&
-                                    <FontAwesome5 name="compact-disc" size={20} color={iconColor} style={common.icon}/>
+                                    <FontAwesome5 name="compact-disc" size={20} style={common.icon}/>
                                 }
                                 {this.state.imagePath.length > 0 &&
                                     <Image style={styles.albumart} source={{uri: this.state.imagePath}}/>
@@ -381,7 +381,7 @@ export default class SongsScreen extends React.Component {
                                     }
                                     <Text style={styles.item}>Track: {item.track} Time: {item.time}</Text>
                                 </View>
-                                <Icon name="ios-swap" size={20} color={iconColor} style={common.icon}/>
+                                <Icon name="ios-swap" size={20} style={common.icon}/>
                             </View>
                         </SwipeRow>
                     );}}

@@ -28,7 +28,7 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
 import Config from './Config';
-import { styles as common, artistsStyles as styles, iconColor } from './Styles';
+import { styles as common, artistsStyles as styles } from './Styles';
 
 export default class ArtistsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -389,7 +389,7 @@ export default class ArtistsScreen extends React.Component {
                 }} style={styles.itemContainer}>
                     <View style={styles.paddingLeft}/>
                     {item.imagePath === undefined &&
-                        <MaterialCommunityIcon name="artist" size={20} color={iconColor} style={common.icon}/>
+                        <MaterialCommunityIcon name="artist" size={20} style={common.icon}/>
                     }
                     {item.imagePath !== undefined &&
                         <Image style={styles.iconAlbumArt} source={{uri: item.imagePath}}/>
@@ -397,7 +397,7 @@ export default class ArtistsScreen extends React.Component {
                     <View style={styles.itemTextContainer}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} color={iconColor} style={common.icon}/>
+                    <Icon name="ios-more" size={20} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -416,11 +416,11 @@ export default class ArtistsScreen extends React.Component {
                     </TouchableOpacity>
                 </View>
                 <View style={[styles.genreContainer, common.rowFront]}>
-                    <MaterialCommunityIcon name="guitar-acoustic" size={20} color={iconColor} style={common.icon}/>
+                    <MaterialCommunityIcon name="guitar-acoustic" size={20} style={common.icon}/>
                     <View style={styles.itemTextContainer}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
-                    <Icon name="ios-swap" size={20} color={iconColor} style={common.icon}/>
+                    <Icon name="ios-swap" size={20} style={common.icon}/>
                 </View>
             </SwipeRow>
         );
@@ -435,7 +435,7 @@ export default class ArtistsScreen extends React.Component {
                 }} style={styles.itemContainer}>
                     <View style={styles.paddingLeft}/>
                     {item.imagePath === undefined &&
-                        <FontAwesome5 name="compact-disc" size={20} color={iconColor} style={common.icon}/>
+                        <FontAwesome5 name="compact-disc" size={20} style={common.icon}/>
                     }
                     {item.imagePath !== undefined &&
                         <Image style={styles.iconAlbumArt} source={{uri: item.imagePath}}/>
@@ -444,7 +444,7 @@ export default class ArtistsScreen extends React.Component {
                         <Text style={styles.albumItem}>{item.name}</Text>
                         <Text style={styles.albumItem}>{item.artist}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} color={iconColor} style={common.icon}/>
+                    <Icon name="ios-more" size={20} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );

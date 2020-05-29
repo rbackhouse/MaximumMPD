@@ -27,7 +27,7 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import NewPlaylistModal from './NewPlaylistModal';
 import AlbumArt from './AlbumArt';
-import { styles as common, searchStyles as styles, iconColor } from './Styles';
+import { styles as common, searchStyles as styles } from './Styles';
 
 export default class SearchScreen extends React.Component {
 
@@ -257,7 +257,7 @@ export default class SearchScreen extends React.Component {
                                     <View style={[styles.container1, common.rowFront, {height: 85}]}>
                                         <View style={styles.paddingLeft}/>
                                         {item.imagePath === undefined &&
-                                            <FontAwesome5 name="compact-disc" size={20} color={iconColor} style={common.icon}/>
+                                            <FontAwesome5 name="compact-disc" size={20} style={common.icon}/>
                                         }
                                         {item.imagePath !== undefined &&
                                             <Image style={styles.albumart} source={{uri: item.imagePath}}/>
@@ -268,7 +268,7 @@ export default class SearchScreen extends React.Component {
                                             {item.album && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.album}</Text>}
                                             {item.time && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.time}</Text>}
                                         </View>
-                                        <Icon name="ios-swap" size={20} color={iconColor} style={common.icon}/>
+                                        <Icon name="ios-swap" size={20} style={common.icon}/>
                                     </View>
                                 </SwipeRow>
                             );
@@ -278,7 +278,7 @@ export default class SearchScreen extends React.Component {
                                     <View style={styles.container7}>
                                         <View style={styles.paddingLeft}/>
                                         {item.imagePath === undefined &&
-                                            <MaterialCommunityIcon name="artist" size={20} color={iconColor} style={common.icon}/>
+                                            <MaterialCommunityIcon name="artist" size={20} style={common.icon}/>
                                         }
                                         {item.imagePath !== undefined &&
                                             <Image style={styles.albumart} source={{uri: item.imagePath}}/>
@@ -287,7 +287,7 @@ export default class SearchScreen extends React.Component {
                                             {item.artist && <Text style={styles.item}>{item.artist}</Text>}
                                             {item.album && <Text style={styles.item}>{item.album}</Text>}
                                         </View>
-                                        <Icon name="ios-more" size={20} color={iconColor} style={common.icon}/>
+                                        <Icon name="ios-more" size={20} style={common.icon}/>
                                     </View>
                                 </TouchableOpacity>
                             );

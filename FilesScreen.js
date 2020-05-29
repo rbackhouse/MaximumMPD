@@ -28,7 +28,7 @@ import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import NewPlaylistModal from './NewPlaylistModal';
-import { styles as common, filesStyles as styles, iconColor } from './Styles';
+import { styles as common, filesStyles as styles } from './Styles';
 
 export default class FilesScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -405,7 +405,7 @@ export default class FilesScreen extends React.Component {
                                         </TouchableOpacity>
                                     </View>
                                     <View style={[common.container3, common.rowFront, {paddingTop: 3, paddingBottom: 3}]}>
-                                        <Icon name="ios-musical-notes" size={20} color={iconColor} style={common.icon}/>
+                                        <Icon name="ios-musical-notes" size={20} style={common.icon}/>
                                         <View style={common.container4}>
                                             {item.artist &&
                                                 <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>{item.artist}</Text>
@@ -418,7 +418,7 @@ export default class FilesScreen extends React.Component {
                                             }
                                             <Text numberOfLines={1} ellipsizeMode='middle' style={styles.file}>{file}</Text>
                                         </View>
-                                        <Icon name="ios-swap" size={20} color={iconColor} style={common.icon}/>
+                                        <Icon name="ios-swap" size={20} style={common.icon}/>
                                     </View>
                                 </SwipeRow>
                             );
@@ -430,11 +430,11 @@ export default class FilesScreen extends React.Component {
                             return (
                                 <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                                     <View style={common.container3}>
-                                        <Icon name="ios-folder" size={20} color={iconColor} style={common.icon}/>
+                                        <Icon name="ios-folder" size={20} style={common.icon}/>
                                         <View style={common.container4}>
                                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{dir}</Text>
                                         </View>
-                                        <Icon name="ios-more" size={20} color={iconColor} style={common.icon}/>
+                                        <Icon name="ios-more" size={20} style={common.icon}/>
                                     </View>
                                 </TouchableOpacity>
                             );

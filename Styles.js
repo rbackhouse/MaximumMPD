@@ -21,14 +21,18 @@ let darkMode = true;
 
 const Colors = {
     dark: '#000',
-    light: '#fff'
+    light: '#fff',
+    separatorDark: '#303030',
+    separatorLight: '#CED0CE',
+    searchbarDark: '#303030',
+    searchbarLight: '#EBECEC'
 };
 
-const iconColor = darkMode ? Colors.light : Colors.dark;
-const bgColor = darkMode ? Colors.dark : Colors.light;
-const textColor = darkMode ? Colors.light : Colors.dark;
-const separatorColor = darkMode ? "#303030" : "#CED0CE";
-const searchbarColor = darkMode ? '#303030' : '#EBECEC';
+let iconColor = darkMode ? Colors.light : Colors.dark;
+let bgColor = darkMode ? Colors.dark : Colors.light;
+let textColor = darkMode ? Colors.light : Colors.dark;
+let separatorColor = darkMode ? Colors.separatorDark : Colors.separatorLight;
+let searchbarColor = darkMode ? Colors.searchbarDark : Colors.searchbarLight;
 
 const styles = StyleSheet.create({
     separator: {
@@ -317,7 +321,8 @@ const newPlaylistStyles = StyleSheet.create({
     container13: {flex: .9, flexDirection: 'row', alignItems: 'flex-start', backgroundColor: bgColor },
     text1: {fontSize: 20, fontFamily: 'GillSans-Italic', color: textColor},
     text2: {fontSize: 16, fontFamily: 'GillSans-Italic', color: textColor},
-    text3: {fontSize: 15,fontFamily: 'GillSans-Italic', color: textColor}
+    text3: {fontSize: 15,fontFamily: 'GillSans-Italic', color: textColor},
+    icon: {paddingRight: 5, color: iconColor}
 });
 
 const outputsStyles = StyleSheet.create({
@@ -542,16 +547,24 @@ const settingsStyles = StyleSheet.create({
         width: 75,
         height: 35,
         borderColor: '#e3e5e5',
-        borderWidth: 1                            
+        borderWidth: 1,
+        backgroundColor: bgColor,
+        color: textColor                 
     },
     textInput2: {
         width: 150,
         height: 35,
         borderColor: '#e3e5e5',
-        borderWidth: 1                            
+        borderWidth: 1,                       
+        backgroundColor: bgColor,
+        color: textColor                 
     },
     item: {color: textColor},
-    headerStyle: {marginTop:15, color: textColor, backgroundColor: searchbarColor}
+    headerStyle: {marginTop:15, color: textColor, backgroundColor: searchbarColor},
+    picker: {
+        backgroundColor: bgColor,
+        color: textColor
+    }
 });
 
 const songsStyles = StyleSheet.create({
@@ -591,6 +604,70 @@ const welcomeStyles = StyleSheet.create({
     container2: { flex: .3, alignItems: 'center', justifyContent: 'center', paddingTop: 10, backgroundColor: bgColor }
 });
 
+const rawstyles = {
+    styles: styles, 
+    albumsStyles: albumsStyles,
+    appStyles: appStyles,
+    artistsStyles: artistsStyles,
+    connectionsStyles: connectionsStyles,
+    debugStyles: debugStyles,
+    filesStyles: filesStyles,
+    newPlaylistStyles: newPlaylistStyles,
+    outputsStyles: outputsStyles,
+    playlistDetailsStyles: playlistDetailsStyles,
+    playlistEditorStyles: playlistEditorStyles,
+    playlistStyles: playlistStyles,
+    playStyles: playStyles,
+    searchStyles: searchStyles,
+    settingsStyles: settingsStyles,
+    songsStyles: songsStyles,
+    welcomeStyles: welcomeStyles
+}
+
+let stylesheets = {
+    styles: undefined, 
+    albumsStyles: undefined,
+    appStyles: undefined,
+    artistsStyles: undefined,
+    connectionsStyles: undefined,
+    debugStyles: undefined,
+    filesStyles: undefined,
+    newPlaylistStyles: undefined,
+    outputsStyles: undefined,
+    playlistDetailsStyles: undefined,
+    playlistEditorStyles: undefined,
+    playlistStyles: undefined,
+    playStyles: undefined,
+    searchStyles: undefined,
+    settingsStyles: undefined,
+    songsStyles: undefined,
+    welcomeStyles: undefined
+};
+
+function build() {
+    iconColor = darkMode ? Colors.light : Colors.dark;
+    bgColor = darkMode ? Colors.dark : Colors.light;
+    textColor = darkMode ? Colors.light : Colors.dark;
+    separatorColor = darkMode ? Colors.separatorDark : Colors.separatorLight;
+    searchbarColor = darkMode ? Colors.searchbarDark : Colors.searchbarLight;
+    
+    for (let name in stylesheets) {
+        stylesheets[name] = StyleSheet.create(rawstyles[name]);
+    }
+}
+
+//build();
+
+const StyleManager = {
+    getStyles: (name) => {
+        return stylesheets[name];
+    },
+    changeMode: (isDark) => {
+        darkMode = isDark;
+        build();
+    }
+}
+
 export { 
     styles, 
     albumsStyles,
@@ -609,6 +686,6 @@ export {
     settingsStyles,
     songsStyles,
     welcomeStyles,
-    iconColor,
-    bgColor
+    bgColor,
+    StyleManager
 }; 

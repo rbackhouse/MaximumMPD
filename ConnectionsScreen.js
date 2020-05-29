@@ -31,7 +31,7 @@ import { Input, Button } from 'react-native-elements'
 import ActionButton from 'react-native-action-button';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Config from './Config';
-import { styles as common, connectionsStyles as styles, iconColor } from './Styles';
+import { styles as common, connectionsStyles as styles } from './Styles';
 
 class AddConnectionModal extends React.Component {
     state = {
@@ -372,7 +372,7 @@ export default class ConnectionsScreen extends React.Component {
                                     <Text style={styles.item}>{item.ipAddress}</Text>
                                     <Text style={styles.item}>{item.port}</Text>
                                 </View>
-                                <Icon name="check" size={15} color={iconColor} style={[{ display: selected }, common.icon]}/>
+                                <Icon name="check" size={15} style={[{ display: selected }, common.icon]}/>
                             </View>
                         </SwipeRow>
                     );}}

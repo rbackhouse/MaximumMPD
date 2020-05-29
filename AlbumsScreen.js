@@ -27,7 +27,7 @@ import MPDConnection from './MPDConnection';
 import AlbumArt from './AlbumArt';
 import NewPlaylistModal from './NewPlaylistModal';
 import Config from './Config';
-import { styles as common, albumsStyles as styles, iconColor } from './Styles';
+import { styles as common, albumsStyles as styles } from './Styles';
 
 export default class AlbumsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -192,7 +192,7 @@ export default class AlbumsScreen extends React.Component {
                 }} style={styles.container1}>
                     <View style={styles.paddingLeft}/>
                     {item.imagePath === undefined &&
-                        <FontAwesome5 name="compact-disc" size={20} color={iconColor} style={common.icon}/>
+                        <FontAwesome5 name="compact-disc" size={20} style={common.icon}/>
                     }
                     {item.imagePath !== undefined &&
                         <Image style={styles.albumart} source={{uri: item.imagePath}}/>
@@ -203,7 +203,7 @@ export default class AlbumsScreen extends React.Component {
                     {item.date !== undefined &&
                         <Text style={styles.item}>({item.date})</Text>
                     }
-                    <Icon name="ios-more" size={20} color={iconColor} style={common.icon}/>
+                    <Icon name="ios-more" size={20} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );

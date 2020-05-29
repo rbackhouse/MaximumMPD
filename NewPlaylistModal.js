@@ -19,9 +19,10 @@ import React from 'react';
 import { Text, View, Modal, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SearchBar, Input, Button } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
+import FAIcon from 'react-native-vector-icons/FontAwesome';
 
 import MPDConnection from './MPDConnection';
-import { styles as common, newPlaylistStyles as styles, iconColor } from './Styles';
+import { styles as common, newPlaylistStyles as styles } from './Styles';
 
 export default class NewPlaylistModal extends React.Component {
     state = {
@@ -89,11 +90,11 @@ export default class NewPlaylistModal extends React.Component {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                 <View style={common.container3}>
-                    <Icon name="ios-list" size={20} color={iconColor} style={common.icon}/>
+                    <Icon name="ios-list" size={20} style={common.icon}/>
                     <View style={common.container4}>
                         <Text style={styles.item}>{item}</Text>
                     </View>
-                    <Icon name="ios-add-circle" size={20} color={iconColor} style={common.icon}/>
+                    <Icon name="ios-add-circle" size={20} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -125,7 +126,13 @@ export default class NewPlaylistModal extends React.Component {
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Create"
-                            icon={{name: 'check',  size: 15, type: 'font-awesome'}}
+                            icon={
+                                <FAIcon
+                                  name="check"
+                                  size={15}                                  
+                                  style={style.icon}
+                                />
+                            }
                             raised={true}
                             type="outline"
                             disabled={this.state.createDisabled}
@@ -133,7 +140,13 @@ export default class NewPlaylistModal extends React.Component {
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome'}}
+                            icon={
+                                <FAIcon
+                                  name="times-circle"
+                                  size={15}
+                                  style={style.icon}
+                                />
+                            }
                             raised={true}
                             type="outline"
                         />

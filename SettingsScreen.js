@@ -22,7 +22,7 @@ import { Input, Button } from 'react-native-elements'
 import MPDConnection from './MPDConnection';
 import AlbumArt from './AlbumArt';
 import Config from './Config';
-import { styles as common, settingsStyles as styles, bgColor } from './Styles';
+import { settingsStyles as styles, bgColor } from './Styles';
 
 class AlbumArtModal extends React.Component {
     state = {
@@ -344,6 +344,7 @@ class ReplayGainModal extends React.Component {
                         <Text style={styles.text2}>Set Replay Gain</Text>
                     </View>
                     <Picker
+                        itemStyle={styles.picker}
                         selectedValue={this.state.replayGain}
                         onValueChange={(itemValue, itemIndex) => this.setState({replayGain: itemValue})}>
                         <Picker.Item label="Off" value="off" />

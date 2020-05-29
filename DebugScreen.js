@@ -118,6 +118,7 @@ export default class DebugScreen extends React.Component {
                     />
                     </View>
                 </View>
+                <View style={common.container4}>
                 <FlatList
                     data={this.state.debug}
                     renderItem={this.renderItem}
@@ -125,6 +126,7 @@ export default class DebugScreen extends React.Component {
                     keyExtractor={item => item.key}
                     ItemSeparatorComponent={this.renderSeparator}
                 />
+                </View>
                 {this.state.loading &&
                     <View style={common.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>

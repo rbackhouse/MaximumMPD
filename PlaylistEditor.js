@@ -24,7 +24,7 @@ import ActionButton from 'react-native-action-button';
 
 import MPDConnection from './MPDConnection';
 import NewPlaylistModal from './NewPlaylistModal';
-import { styles as common, playlistEditorStyles as styles, iconColor } from './Styles';
+import { styles as common, playlistEditorStyles as styles } from './Styles';
 
 class AddStreamURLModal extends React.Component {
     state = {
@@ -57,6 +57,7 @@ class AddStreamURLModal extends React.Component {
                 animationType="fade"
                 transparent={false}
                 visible={visible}
+                statusBarTranslucent={false}
                 onRequestClose={() => {
             }}>
                 <View style={styles.dialog1}>
@@ -229,11 +230,11 @@ export default class PlaylistEditor extends React.Component {
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                 <View style={common.container3}>
-                    <Icon name="ios-list" size={20} color={iconColor} style={common.icon}/>
+                    <Icon name="ios-list" size={20} style={common.icon}/>
                     <View style={common.container4}>
                         <Text style={styles.item}>{item}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} color={iconColor} style={common.icon}/>
+                    <Icon name="ios-more" size={20} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );
