@@ -19,6 +19,8 @@ import React from 'react';
 import { View, Text, ActivityIndicator, TouchableOpacity, Alert, Image } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 
 import MPDConnection from './MPDConnection';
@@ -216,6 +218,7 @@ export default class SearchScreen extends React.Component {
                             clearIcon
                             lightTheme
                             round
+                            platform="ios"
                             cancelButtonTitle="Cancel"
                             placeholder='Search'
                             onChangeText={this.search}
@@ -254,10 +257,10 @@ export default class SearchScreen extends React.Component {
                                     <View style={[styles.container1, common.rowFront, {height: 85}]}>
                                         <View style={styles.paddingLeft}/>
                                         {item.imagePath === undefined &&
-                                            <Image style={styles.albumart} source={require('./images/icons8-cd-filled-50.png')}/>
+                                            <FontAwesome5 name="compact-disc" size={20} color={iconColor} style={common.icon}/>
                                         }
                                         {item.imagePath !== undefined &&
-                                            <Image style={styles.noalbumart} source={{uri: item.imagePath}}/>
+                                            <Image style={styles.albumart} source={{uri: item.imagePath}}/>
                                         }
                                         <View style={common.container4}>
                                             {item.title && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.title}</Text>}
@@ -275,10 +278,10 @@ export default class SearchScreen extends React.Component {
                                     <View style={styles.container7}>
                                         <View style={styles.paddingLeft}/>
                                         {item.imagePath === undefined &&
-                                            <Image style={styles.albumart} source={require('./images/icons8-cd-filled-50.png')}/>
+                                            <MaterialCommunityIcon name="artist" size={20} color={iconColor} style={common.icon}/>
                                         }
                                         {item.imagePath !== undefined &&
-                                            <Image style={styles.noalbumart} source={{uri: item.imagePath}}/>
+                                            <Image style={styles.albumart} source={{uri: item.imagePath}}/>
                                         }
                                         <View style={common.container4}>
                                             {item.artist && <Text style={styles.item}>{item.artist}</Text>}

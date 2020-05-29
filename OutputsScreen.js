@@ -19,7 +19,7 @@ import React from 'react';
 import { View, Alert, ActivityIndicator } from 'react-native';
 import SettingsList from 'react-native-settings-list';
 import MPDConnection from './MPDConnection';
-import { styles as common, outputsStyles as styles } from './Styles';
+import { styles as common, outputsStyles as styles, bgColor } from './Styles';
 
 export default class OutputsScreen extends React.Component {
     static navigationOptions = {
@@ -118,8 +118,8 @@ export default class OutputsScreen extends React.Component {
         );
         return (
             <View style={styles.container1}>
-                <SettingsList borderColor='#c8c7cc' defaultItemSize={50}>
-                    <SettingsList.Header headerStyle={{marginTop:15}} headerText="Outputs"/>
+                <SettingsList backgroundColor={bgColor} underlayColor={bgColor} borderColor='#c8c7cc' defaultTitleStyle={styles.item} defaultItemSize={50}>
+                    <SettingsList.Header headerStyle={styles.headerStyle} headerText="Outputs"/>
                     {outputs}
                 </SettingsList>
                 {this.state.loading &&

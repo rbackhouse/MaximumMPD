@@ -395,7 +395,7 @@ export default class PlayScreen extends React.Component {
 
       let padding = 35;
       let isMedium = false;
-      let bg = .07;
+      let bg = .1;
       if (width < 321) {
           padding = 45;
           isMedium = true;
@@ -408,7 +408,7 @@ export default class PlayScreen extends React.Component {
           return (
               <View style={styles.container}>
                   <View style={styles.content}>
-                      <View style={styles.container1}>
+                      <View style={{flex: bg, width: "100%", alignItems: 'stretch', justifyContent: 'center', padding: 5}}>
                             <ButtonGroup
                                 onPress={(index) => {
                                     this.setState({selectedTab:index});
@@ -419,7 +419,7 @@ export default class PlayScreen extends React.Component {
                                 selectedButtonStyle={common.selectedButtonStyle}
                                 selectedTextStyle={common.selectedTextStyle}
                                 />
-                        </View>
+                      </View>
                       <View style={styles.container2}>
                             <View style={common.container3}>
                               <Text style={styles.paddingRight}>{elapsed}</Text>
@@ -504,13 +504,14 @@ export default class PlayScreen extends React.Component {
                         </View>
                         <View style={styles.tabBarButton}>
                             <Menu
-                              ref={this.setMenuRef}
-                              button={<TouchableOpacity
-                               onPress={this.onMore.bind(this)}>
+                                ref={this.setMenuRef}
+                                button={<TouchableOpacity
+                                onPress={this.onMore.bind(this)}>
                                       <View style={[styles.button, styles.smallButton]}>
                                           <IonIcon name="ios-more" size={20} color="#e6e6e6" style={styles.iconMore}/>
                                       </View>
-                              </TouchableOpacity>}
+                                </TouchableOpacity>}
+                                style={styles.menu}
                             >
                               <MenuItem textStyle={styles.meniItem} onPress={this.addToPlaylist}>Add to Playlist</MenuItem>
                               <MenuItem textStyle={styles.meniItem} onPress={this.onRandom}>Random Playlist</MenuItem>

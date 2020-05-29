@@ -20,6 +20,8 @@ import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, 
 import { SearchBar, ButtonGroup } from "react-native-elements";
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import ActionButton from 'react-native-action-button';
 
 import MPDConnection from './MPDConnection';
@@ -387,7 +389,7 @@ export default class ArtistsScreen extends React.Component {
                 }} style={styles.itemContainer}>
                     <View style={styles.paddingLeft}/>
                     {item.imagePath === undefined &&
-                        <Image style={styles.iconNoAlbumArt} source={require('./images/icons8-dj-30.png')}/>
+                        <MaterialCommunityIcon name="artist" size={20} color={iconColor} style={common.icon}/>
                     }
                     {item.imagePath !== undefined &&
                         <Image style={styles.iconAlbumArt} source={{uri: item.imagePath}}/>
@@ -414,7 +416,7 @@ export default class ArtistsScreen extends React.Component {
                     </TouchableOpacity>
                 </View>
                 <View style={[styles.genreContainer, common.rowFront]}>
-                    <Image style={styles.iconGenre} source={require('./images/icons8-cd-filled-50.png')}/>
+                    <MaterialCommunityIcon name="guitar-acoustic" size={20} color={iconColor} style={common.icon}/>
                     <View style={styles.itemTextContainer}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
@@ -433,7 +435,7 @@ export default class ArtistsScreen extends React.Component {
                 }} style={styles.itemContainer}>
                     <View style={styles.paddingLeft}/>
                     {item.imagePath === undefined &&
-                        <Image style={styles.iconNoAlbumArt} source={require('./images/icons8-cd-filled-50.png')}/>
+                        <FontAwesome5 name="compact-disc" size={20} color={iconColor} style={common.icon}/>
                     }
                     {item.imagePath !== undefined &&
                         <Image style={styles.iconAlbumArt} source={{uri: item.imagePath}}/>
@@ -486,7 +488,7 @@ export default class ArtistsScreen extends React.Component {
 
     render() {
         const {height, width} = Dimensions.get('window');
-        let bg = .06;
+        let bg = .07;
         let sb = .1;
         let fl = .84;
 
@@ -515,6 +517,7 @@ export default class ArtistsScreen extends React.Component {
                                 clearIcon
                                 lightTheme
                                 round
+                                platform="ios"
                                 cancelButtonTitle="Cancel"
                                 placeholder='Search'
                                 onChangeText={this.search}
@@ -570,6 +573,7 @@ export default class ArtistsScreen extends React.Component {
                                 clearIcon
                                 lightTheme
                                 round
+                                platform="ios"
                                 cancelButtonTitle="Cancel"
                                 placeholder='Search'
                                 onChangeText={this.searchAlbums}
@@ -648,6 +652,7 @@ export default class ArtistsScreen extends React.Component {
                                 clearIcon
                                 lightTheme
                                 round
+                                platform="ios"
                                 cancelButtonTitle="Cancel"
                                 placeholder='Search'
                                 onChangeText={this.searchGenres}

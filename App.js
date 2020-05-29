@@ -22,7 +22,7 @@ import FAIcon  from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/dist/MaterialIcons';
 
 import { createStackNavigator, createBottomTabNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
-import { styles as common, appStyles as styles, bgColor, textColor } from './Styles';
+import { styles as common, appStyles as styles} from './Styles';
 
 import PlayScreen from './PlayScreen';
 import SearchScreen from './SearchScreen';
@@ -133,12 +133,8 @@ const PlayStack = createStackNavigator(
                 <Header navigation={navigation}></Header>
             ),
             headerBackTitle: null,
-            headerStyle: {
-                backgroundColor: bgColor
-            },
-            headerTitleStyle: {
-                color: textColor
-            }
+            headerStyle: styles.headerStyle,
+            headerTitleStyle: styles.headerTitleStyle
         })
     }
 );
@@ -155,12 +151,8 @@ const BrowseStack = createStackNavigator(
                     <Header navigation={navigation}></Header>
                 ),
                 headerBackTitle: null,
-                headerStyle: {
-                    backgroundColor: bgColor
-                },
-                headerTitleStyle: {
-                    color: textColor
-                }
+                headerStyle: styles.headerStyle,
+                headerTitleStyle: styles.headerTitleStyle
             })
         },
         Songs: { 
@@ -173,12 +165,8 @@ const BrowseStack = createStackNavigator(
                 <SortHeader navigation={navigation}></SortHeader>
             ),
             headerBackTitle: null,
-            headerStyle: {
-                backgroundColor: bgColor
-            },
-            headerTitleStyle: {
-                color: textColor
-            }
+            headerStyle: styles.headerStyle,
+            headerTitleStyle: styles.headerTitleStyle
         })
     }
 );
@@ -198,12 +186,8 @@ const SearchStack = createStackNavigator(
                     <SortHeader navigation={navigation}></SortHeader>
                 ),
                 headerBackTitle: null,
-                headerStyle: {
-                    backgroundColor: bgColor
-                },
-                headerTitleStyle: {
-                    color: textColor
-                }    
+                headerStyle: styles.headerStyle,
+                headerTitleStyle: styles.headerTitleStyle
             })    
         }
     },
@@ -213,12 +197,8 @@ const SearchStack = createStackNavigator(
                 <Header navigation={navigation}></Header>
             ),
             headerBackTitle: null,
-            headerStyle: {
-                backgroundColor: bgColor
-            },
-            headerTitleStyle: {
-                color: textColor
-            }
+            headerStyle: styles.headerStyle,
+            headerTitleStyle: styles.headerTitleStyle
         })
     }
 );
@@ -232,12 +212,8 @@ const FilesStack = createStackNavigator(
                     <SortHeader navigation={navigation}></SortHeader>
                 ),
                 headerBackTitle: null,
-                headerStyle: {
-                    backgroundColor: bgColor
-                },
-                headerTitleStyle: {
-                    color: textColor
-                }    
+                headerStyle: styles.headerStyle,
+                headerTitleStyle: styles.headerTitleStyle
             })    
         }
     }
@@ -264,12 +240,8 @@ const SettingsStack = createStackNavigator(
                 <Header navigation={navigation}></Header>
             ),
             headerBackTitle: null,
-            headerStyle: {
-                backgroundColor: bgColor
-            },
-            headerTitleStyle: {
-                color: textColor
-            }
+            headerStyle: styles.headerStyle,
+            headerTitleStyle: styles.headerTitleStyle
         })
     }
 );
@@ -314,11 +286,9 @@ const MainPage = createBottomTabNavigator(
     }),
     tabBarPosition: 'bottom',
     tabBarOptions: {
-      activeTintColor: 'red',
-      inactiveTintColor: 'gray',
-      style: {
-          backgroundColor: bgColor
-      }
+        activeTintColor: 'red',
+        inactiveTintColor: 'gray',
+        style: styles.tabBar
     },
     animationEnabled: false,
     swipeEnabled: false

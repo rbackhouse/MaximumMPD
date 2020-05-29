@@ -20,6 +20,7 @@ import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, 
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import ActionButton from 'react-native-action-button';
 
 import MPDConnection from './MPDConnection';
@@ -191,10 +192,10 @@ export default class AlbumsScreen extends React.Component {
                 }} style={styles.container1}>
                     <View style={styles.paddingLeft}/>
                     {item.imagePath === undefined &&
-                        <Image style={styles.albumart} source={require('./images/icons8-cd-filled-50.png')}/>
+                        <FontAwesome5 name="compact-disc" size={20} color={iconColor} style={common.icon}/>
                     }
                     {item.imagePath !== undefined &&
-                        <Image style={styles.noalbumart} source={{uri: item.imagePath}}/>
+                        <Image style={styles.albumart} source={{uri: item.imagePath}}/>
                     }
                     <View style={common.container4}>
                         <Text style={styles.item}>{item.name}</Text>
@@ -258,6 +259,7 @@ export default class AlbumsScreen extends React.Component {
                             clearIcon
                             lightTheme
                             round
+                            platform="ios"
                             cancelButtonTitle="Cancel"
                             placeholder='Search'
                             onChangeText={this.search}

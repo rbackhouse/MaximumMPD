@@ -22,7 +22,7 @@ import { Input, Button } from 'react-native-elements'
 import MPDConnection from './MPDConnection';
 import AlbumArt from './AlbumArt';
 import Config from './Config';
-import { styles as common, settingsStyles as styles } from './Styles';
+import { styles as common, settingsStyles as styles, bgColor } from './Styles';
 
 class AlbumArtModal extends React.Component {
     state = {
@@ -667,34 +667,34 @@ export default class SettingsScreen extends React.Component {
         const maxListSize = ""+this.state.maxListSize;
         return (
             <View style={styles.container7}>
-                <SettingsList borderColor='#c8c7cc' defaultItemSize={50}>
-                    <SettingsList.Header headerStyle={{marginTop:15}}/>
+                <SettingsList backgroundColor={bgColor} underlayColor={bgColor} borderColor='#c8c7cc' defaultTitleStyle={styles.item} defaultItemSize={50}>
+                    <SettingsList.Header headerStyle={styles.headerStyle}/>
                     <SettingsList.Item
-                      hasNavArrow={true}
-                      title='About'
+                        hasNavArrow={true}
+                        title='About'
                       onPress={() => this.setState({aboutVisible: true})}
                     />
                     <SettingsList.Item
-                      hasNavArrow={true}
+                        hasNavArrow={true}
                       title='Connections'
                       onPress={() => this.props.navigation.navigate('Connections', {navigateOnConnect: false})}
                     />
                     <SettingsList.Item
-                      hasNavArrow={true}
+                        hasNavArrow={true}
                       title='Outputs'
                       onPress={() => this.props.navigation.navigate('Outputs')}
                     />
                     <SettingsList.Item
-                      hasNavArrow={true}
+                        hasNavArrow={true}
                       title='Update Database'
                       onPress={() => this.updateDB()}
                     />
                     <SettingsList.Item
-                      hasNavArrow={true}
+                        hasNavArrow={true}
                       title='Album Art'
                       onPress={() => this.setState({albumartVisible: true})}
                     />
-                    <SettingsList.Header headerStyle={{marginTop:15}} headerText="MPD Configuration"/>
+                    <SettingsList.Header headerStyle={styles.headerStyle} headerText="MPD Configuration"/>
                     <SettingsList.Item
                                 hasNavArrow={false}
                                 switchState={this.state.shuffle}
@@ -702,71 +702,71 @@ export default class SettingsScreen extends React.Component {
                                 switchOnValueChange={(value) => this.onShuffleChange(value)}
                                 title='Shuffle'/>
                     <SettingsList.Item
-                                hasNavArrow={false}
+                        hasNavArrow={false}
                                 switchState={this.state.repeat}
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onRepeatChange(value)}
                                 title='Repeat'/>
                     <SettingsList.Item
-                                hasNavArrow={false}
+                        hasNavArrow={false}
                                 switchState={this.state.removeSongAfterPlay}
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onRemoveSongAfterPlayChange(value)}
                                 title='Remove song after play'/>
                     <SettingsList.Item
-                                hasNavArrow={false}
+                        hasNavArrow={false}
                                 switchState={this.state.stopAftetSongPlayed}
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onStopAftetSongPlayedChange(value)}
                                 title='Stop after song played'/>
                     <SettingsList.Item
-                                  hasNavArrow={true}
+                        hasNavArrow={true}
                                   title='Replay Gain'
                                   titleInfo={replayGainValue}
                                   titleInfoStyle={{fontFamily: 'GillSans-Italic'}}
                                   onPress={() => this.setState({replayGainVisible: true})}
                                 />
                     <SettingsList.Item
-                                  hasNavArrow={true}
+                        hasNavArrow={true}
                                   title='Crossfade'
                                   titleInfo={crossfadeValue}
                                   titleInfoStyle={{fontFamily: 'GillSans-Italic'}}
                                   onPress={() => this.setState({crossfadeVisible: true})}
                                 />
-                    <SettingsList.Header headerStyle={{marginTop:15}} headerText="General Options"/>
+                    <SettingsList.Header headerStyle={styles.headerStyle} headerText="General Options"/>
                     <SettingsList.Item
-                                hasNavArrow={false}
+                        hasNavArrow={false}
                                 switchState={this.state.randomPlaylistByType}
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onRandomPlaylistByTypeChange(value)}
                                 title='Random Playlist by type'/>
                     <SettingsList.Item
-                                hasNavArrow={false}
+                        hasNavArrow={false}
                                 switchState={this.state.sortAlbumsByDate}
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onSortAlbumsByDateChange(value)}
                                 title='Sort Albums by date'/>
                     <SettingsList.Item
-                                hasNavArrow={false}
+                        hasNavArrow={false}
                                 switchState={this.state.autoConnect}
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onAutoConnectChange(value)}
                                 title='Auto connect to last used server'/>
                     <SettingsList.Item
-                                hasNavArrow={false}
+                        hasNavArrow={false}
                                 switchState={this.state.useDeviceVolume}
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onUseDeviceVolumeChange(value)}
                                 title='Link Device Volume Control to MPD Volume'/>
                     <SettingsList.Item
-                                hasNavArrow={false}
+                        hasNavArrow={false}
                                 switchState={this.state.useGridView}
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onUseGridViewChange(value)}
                                 title='Use Grid View by default'/>
-                    <SettingsList.Header headerStyle={{marginTop:15}} headerText="Debug Options"/>
+                    <SettingsList.Header headerStyle={styles.headerStyle} headerText="Debug Options"/>
                     <SettingsList.Item
-                      hasNavArrow={true}
+                        hasNavArrow={true}
                       title='Debug'
                       onPress={() => this.props.navigation.navigate('Debug')}
                     />

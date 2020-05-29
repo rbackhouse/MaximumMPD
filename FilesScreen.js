@@ -362,6 +362,7 @@ export default class FilesScreen extends React.Component {
                             clearIcon
                             lightTheme
                             round
+                            platform="ios"
                             cancelButtonTitle="Cancel"
                             placeholder='Search'
                             onChangeText={this.search}

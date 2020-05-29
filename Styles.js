@@ -1,3 +1,20 @@
+/*
+* The MIT License (MIT)
+*
+* Copyright (c) 2020 Richard Backhouse
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+* DEALINGS IN THE SOFTWARE.
+*/
+
 import { StyleSheet } from 'react-native'
 
 let darkMode = true;
@@ -10,7 +27,8 @@ const Colors = {
 const iconColor = darkMode ? Colors.light : Colors.dark;
 const bgColor = darkMode ? Colors.dark : Colors.light;
 const textColor = darkMode ? Colors.light : Colors.dark;
-const separatorColor = darkMode ? "#5c5c5c" : "#CED0CE";
+const separatorColor = darkMode ? "#303030" : "#CED0CE";
+const searchbarColor = darkMode ? '#303030' : '#EBECEC';
 
 const styles = StyleSheet.create({
     separator: {
@@ -38,10 +56,10 @@ const styles = StyleSheet.create({
         backgroundColor: bgColor
     },
     searchbarInputContainer: {
-        backgroundColor: '#EBECEC'
+        backgroundColor: searchbarColor
     },
     searchbarInput: { 
-        backgroundColor: '#EBECEC'
+        backgroundColor: searchbarColor
     },
     text: {
         fontSize: 15,
@@ -144,13 +162,6 @@ const albumsStyles = StyleSheet.create({
         paddingLeft: 10
     },
     albumart: {
-        width: 20, 
-        height: 20, 
-        paddingLeft: 20, 
-        paddingRight: 35, 
-        resizeMode: 'contain'
-    },
-    noalbumart: {
         width: 55, 
         height: 55, 
         paddingLeft: 20, 
@@ -170,7 +181,16 @@ const appStyles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    paddingRight: { paddingRight: 15 }
+    paddingRight: { paddingRight: 15 },
+    headerStyle: {
+        backgroundColor: bgColor
+    },
+    headerTitleStyle: {
+        color: textColor
+    },
+    tabBar: {
+        backgroundColor: bgColor
+    }
 });
 
 const artistsStyles = StyleSheet.create({
@@ -194,7 +214,6 @@ const artistsStyles = StyleSheet.create({
     genreContainer: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', backgroundColor: bgColor},
     paddingLeft: {paddingLeft: 10},
     gridItem: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5, paddingLeft: 5, paddingRight: 5, backgroundColor: bgColor},
-    iconNoAlbumArt: {width: 20, height: 20, paddingLeft: 20, paddingRight: 35, resizeMode: 'contain', backgroundColor: bgColor },
     iconAlbumArt: {width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain', backgroundColor: bgColor },
     iconGenre: {width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain', backgroundColor: bgColor }
 });
@@ -302,7 +321,9 @@ const newPlaylistStyles = StyleSheet.create({
 });
 
 const outputsStyles = StyleSheet.create({
-    container1 : { backgroundColor: bgColor, flex:1 }
+    container1 : { backgroundColor: searchbarColor, flex:1 },
+    item: {color: textColor},
+    headerStyle: {marginTop:15, color: textColor, backgroundColor: searchbarColor}
 });
 
 const playlistDetailsStyles = StyleSheet.create({
@@ -311,6 +332,7 @@ const playlistDetailsStyles = StyleSheet.create({
         color: textColor
     },
     container5: { flex: .9, flexDirection: 'row', alignItems: 'stretch', backgroundColor: bgColor },
+
 });
 
 const playlistEditorStyles = StyleSheet.create({
@@ -446,14 +468,15 @@ const playStyles = StyleSheet.create({
         fontFamily: 'GillSans-Italic',
         color: textColor
     },
+    menu: {backgroundColor: bgColor},
     tabcontainer1: { flex:1, backgroundColor: bgColor },
     container1: { flex: .1, width: "100%", padding: 5, backgroundColor: bgColor },
     container2: { flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center', paddingLeft: 5, paddingRight: 5, backgroundColor: bgColor },
     container4: { flex: .6, width: "60%", alignItems: 'center', justifyContent: 'center', backgroundColor: bgColor },
     container5: { flex: .1, width: "80%", height: "15%", padding: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: bgColor },
     container6: { flex: .1, width: "85%", height: 65, alignItems: 'center', justifyContent: 'center', backgroundColor: bgColor },
-    paddingRight: { paddingRight: 15 },
-    paddingLeft: { paddingLeft: 15 },
+    paddingRight: { paddingRight: 15, color: textColor },
+    paddingLeft: { paddingLeft: 15, color: textColor  },
     paddingRightSmall: { paddingRight: 10 },
     paddingLeftSmall: { paddingLeft: 10 },
     iconMore: { paddingLeft: 1 },
@@ -475,13 +498,6 @@ const searchStyles = StyleSheet.create({
         paddingLeft: 10
     },
     albumart: {
-        width: 20, 
-        height: 20, 
-        paddingLeft: 20, 
-        paddingRight: 35, 
-        resizeMode: 'contain'
-    },
-    noalbumart: {
         width: 55, 
         height: 55, 
         paddingLeft: 20, 
@@ -521,7 +537,7 @@ const settingsStyles = StyleSheet.create({
     container4: { flex: .2, flexDirection: 'row', alignItems: 'center', margin: 15, backgroundColor: bgColor },
     container5: { marginTop: 25, flex: 1, flexDirection: 'column', justifyContent: 'flex-start', backgroundColor: bgColor },
     container6: { flex: .1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor },
-    container7: { backgroundColor:'#EFEFF4',flex:1 },
+    container7: { backgroundColor: searchbarColor, flex:1 },
     textInput1: {
         width: 75,
         height: 35,
@@ -533,7 +549,9 @@ const settingsStyles = StyleSheet.create({
         height: 35,
         borderColor: '#e3e5e5',
         borderWidth: 1                            
-    }
+    },
+    item: {color: textColor},
+    headerStyle: {marginTop:15, color: textColor, backgroundColor: searchbarColor}
 });
 
 const songsStyles = StyleSheet.create({
@@ -545,14 +563,6 @@ const songsStyles = StyleSheet.create({
         paddingLeft: 10
     },
     albumart: {
-        width: 20, 
-        height: 20, 
-        paddingLeft: 20, 
-        paddingRight: 35, 
-        resizeMode: 'contain',
-        backgroundColor: bgColor
-    },
-    noalbumart: {
         width: 55, 
         height: 55, 
         paddingLeft: 20, 
@@ -599,7 +609,6 @@ export {
     settingsStyles,
     songsStyles,
     welcomeStyles,
-    bgColor,
-    textColor,
-    iconColor
+    iconColor,
+    bgColor
 }; 

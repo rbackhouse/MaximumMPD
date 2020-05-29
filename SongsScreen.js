@@ -21,6 +21,7 @@ import { SearchBar } from "react-native-elements";
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import ActionButton from 'react-native-action-button';
 
@@ -326,6 +327,7 @@ export default class SongsScreen extends React.Component {
                             clearIcon
                             lightTheme
                             round
+                            platform="ios"
                             cancelButtonTitle="Cancel"
                             placeholder='Search'
                             onChangeText={this.search}
@@ -364,10 +366,10 @@ export default class SongsScreen extends React.Component {
                             <View style={[styles.container6, common.rowFront, {height: 85}]}>
                                 <View style={styles.paddingLeft}/>
                                 {this.state.imagePath.length < 1 &&
-                                    <Image style={styles.albumart} source={require('./images/icons8-cd-filled-50.png')}/>
+                                    <FontAwesome5 name="compact-disc" size={20} color={iconColor} style={common.icon}/>
                                 }
                                 {this.state.imagePath.length > 0 &&
-                                    <Image style={styles.noalbumart} source={{uri: this.state.imagePath}}/>
+                                    <Image style={styles.albumart} source={{uri: this.state.imagePath}}/>
                                 }
                                 <View style={common.container4}>
                                     <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.title}</Text>
