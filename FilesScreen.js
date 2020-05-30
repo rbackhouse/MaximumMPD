@@ -28,7 +28,7 @@ import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import NewPlaylistModal from './NewPlaylistModal';
-import { styles as common, filesStyles as styles } from './Styles';
+import { StyleManager } from './Styles';
 
 export default class FilesScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -333,6 +333,7 @@ export default class FilesScreen extends React.Component {
     }
 
     renderSeparator = () => {
+        const common = StyleManager.getStyles("styles");
         return (
             <View
                 style={common.separator}
@@ -341,6 +342,8 @@ export default class FilesScreen extends React.Component {
     };
 
     render() {
+        const styles = StyleManager.getStyles("filesStyles");
+        const common = StyleManager.getStyles("styles");
         let showAddAll = false;
         let dirCount = 0;
         let fileCount = 0;

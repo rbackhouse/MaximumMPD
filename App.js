@@ -22,7 +22,7 @@ import FAIcon  from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/dist/MaterialIcons';
 
 import { createStackNavigator, createBottomTabNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
-import { styles as common, appStyles as styles} from './Styles';
+import { StyleManager } from './Styles';
 
 import PlayScreen from './PlayScreen';
 import SearchScreen from './SearchScreen';
@@ -90,6 +90,8 @@ class Header extends React.Component {
                 icon = "link";
                 break;
         }
+        const styles = StyleManager.getStyles("appStyles");
+
         return (
             <View>
             {isConnecting &&
@@ -107,6 +109,7 @@ class Header extends React.Component {
 
 class SortHeader extends React.Component {
     render() {
+        const styles = StyleManager.getStyles("appStyles");
         const { navigation } = this.props;
         return (
             <View>
@@ -133,8 +136,8 @@ const PlayStack = createStackNavigator(
                 <Header navigation={navigation}></Header>
             ),
             headerBackTitle: null,
-            headerStyle: styles.headerStyle,
-            headerTitleStyle: styles.headerTitleStyle
+            headerStyle: StyleManager.getStyles("appStyles").headerStyle,
+            headerTitleStyle: StyleManager.getStyles("appStyles").headerTitleStyle
         })
     }
 );
@@ -151,8 +154,8 @@ const BrowseStack = createStackNavigator(
                     <Header navigation={navigation}></Header>
                 ),
                 headerBackTitle: null,
-                headerStyle: styles.headerStyle,
-                headerTitleStyle: styles.headerTitleStyle
+                headerStyle: StyleManager.getStyles("appStyles").headerStyle,
+                headerTitleStyle: StyleManager.getStyles("appStyles").headerTitleStyle
             })
         },
         Songs: { 
@@ -165,8 +168,8 @@ const BrowseStack = createStackNavigator(
                 <SortHeader navigation={navigation}></SortHeader>
             ),
             headerBackTitle: null,
-            headerStyle: styles.headerStyle,
-            headerTitleStyle: styles.headerTitleStyle
+            headerStyle: StyleManager.getStyles("appStyles").headerStyle,
+            headerTitleStyle: StyleManager.getStyles("appStyles").headerTitleStyle
         })
     }
 );
@@ -186,8 +189,8 @@ const SearchStack = createStackNavigator(
                     <SortHeader navigation={navigation}></SortHeader>
                 ),
                 headerBackTitle: null,
-                headerStyle: styles.headerStyle,
-                headerTitleStyle: styles.headerTitleStyle
+                headerStyle: StyleManager.getStyles("appStyles").headerStyle,
+                headerTitleStyle: StyleManager.getStyles("appStyles").headerTitleStyle
             })    
         }
     },
@@ -197,8 +200,8 @@ const SearchStack = createStackNavigator(
                 <Header navigation={navigation}></Header>
             ),
             headerBackTitle: null,
-            headerStyle: styles.headerStyle,
-            headerTitleStyle: styles.headerTitleStyle
+            headerStyle: StyleManager.getStyles("appStyles").headerStyle,
+            headerTitleStyle: StyleManager.getStyles("appStyles").headerTitleStyle
         })
     }
 );
@@ -212,8 +215,8 @@ const FilesStack = createStackNavigator(
                     <SortHeader navigation={navigation}></SortHeader>
                 ),
                 headerBackTitle: null,
-                headerStyle: styles.headerStyle,
-                headerTitleStyle: styles.headerTitleStyle
+                headerStyle: StyleManager.getStyles("appStyles").headerStyle,
+                headerTitleStyle: StyleManager.getStyles("appStyles").headerTitleStyle
             })    
         }
     }
@@ -240,8 +243,8 @@ const SettingsStack = createStackNavigator(
                 <Header navigation={navigation}></Header>
             ),
             headerBackTitle: null,
-            headerStyle: styles.headerStyle,
-            headerTitleStyle: styles.headerTitleStyle
+            headerStyle: StyleManager.getStyles("appStyles").headerStyle,
+            headerTitleStyle: StyleManager.getStyles("appStyles").headerTitleStyle
         })
     }
 );
@@ -288,9 +291,9 @@ const MainPage = createBottomTabNavigator(
     tabBarOptions: {
         activeTintColor: 'red',
         inactiveTintColor: 'gray',
-        style: styles.tabBar
+        style: StyleManager.getStyles("appStyles").tabBar
     },
-    animationEnabled: false,
+    animationEnabled: true,
     swipeEnabled: false
   }
 );

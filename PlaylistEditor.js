@@ -24,7 +24,7 @@ import ActionButton from 'react-native-action-button';
 
 import MPDConnection from './MPDConnection';
 import NewPlaylistModal from './NewPlaylistModal';
-import { styles as common, playlistEditorStyles as styles } from './Styles';
+import { StyleManager } from './Styles';
 
 class AddStreamURLModal extends React.Component {
     state = {
@@ -51,6 +51,8 @@ class AddStreamURLModal extends React.Component {
     }
 
     render() {
+        const styles = StyleManager.getStyles("playlistEditorStyles");
+        const common = StyleManager.getStyles("styles");
         const visible = this.props.visible;
         return (
             <Modal
@@ -219,6 +221,7 @@ export default class PlaylistEditor extends React.Component {
     }
 
     renderSeparator = () => {
+        const common = StyleManager.getStyles("styles");
         return (
             <View
                 style={common.separator}
@@ -227,6 +230,8 @@ export default class PlaylistEditor extends React.Component {
     };
 
     renderItem = ({item}) => {
+        const styles = StyleManager.getStyles("playlistEditorStyles");
+        const common = StyleManager.getStyles("styles");
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                 <View style={common.container3}>
@@ -241,6 +246,8 @@ export default class PlaylistEditor extends React.Component {
     };
 
     render() {
+        const styles = StyleManager.getStyles("playlistEditorStyles");
+        const common = StyleManager.getStyles("styles");
         return (
             <View style={common.container1}>
                 <View style={common.container2}>

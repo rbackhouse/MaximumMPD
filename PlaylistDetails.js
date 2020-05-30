@@ -23,7 +23,7 @@ import FAIcon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
 
 import MPDConnection from './MPDConnection';
-import { styles as common, playlistDetailsStyles as styles } from './Styles';
+import { StyleManager } from './Styles';
 
 export default class PlaylistDetails extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -162,6 +162,7 @@ export default class PlaylistDetails extends React.Component {
     }
 
     renderSeparator = () => {
+        const common = StyleManager.getStyles("styles");
         return (
             <View
                 style={common.separator}
@@ -170,6 +171,8 @@ export default class PlaylistDetails extends React.Component {
     };
 
     renderItem = ({item, index}) => {
+        const styles = StyleManager.getStyles("playlistDetailsStyles");
+        const common = StyleManager.getStyles("styles");
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item, index)}>
                 <View style={common.container3}>
@@ -192,6 +195,8 @@ export default class PlaylistDetails extends React.Component {
     };
 
     render() {
+        const styles = StyleManager.getStyles("playlistDetailsStyles");
+        const common = StyleManager.getStyles("styles");
         return (
             <View style={common.container1}>
                 <View style={common.container2}>

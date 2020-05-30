@@ -22,7 +22,7 @@ import { Input, Button } from 'react-native-elements'
 import MPDConnection from './MPDConnection';
 import AlbumArt from './AlbumArt';
 import Config from './Config';
-import { settingsStyles as styles, bgColor } from './Styles';
+import { StyleManager, bgColor } from './Styles';
 
 class AlbumArtModal extends React.Component {
     state = {
@@ -133,6 +133,7 @@ class AlbumArtModal extends React.Component {
     }
 
     render() {
+        const styles = StyleManager.getStyles("settingsStyles");
         const visible = this.props.visible;
         const queueText = "Queue : "+this.state.count;
         return (
@@ -281,6 +282,7 @@ class CrossfadeModal extends React.Component {
     }
 
     render() {
+        const styles = StyleManager.getStyles("settingsStyles");
         const visible = this.props.visible;
         return (
             <Modal
@@ -331,6 +333,7 @@ class ReplayGainModal extends React.Component {
     }
 
     render() {
+        const styles = StyleManager.getStyles("settingsStyles");
         const visible = this.props.visible;
         return (
             <Modal
@@ -380,6 +383,7 @@ class AboutModal extends React.Component {
     }
 
     render() {
+        const styles = StyleManager.getStyles("settingsStyles");
         const visible = this.props.visible;
         return (
             <Modal
@@ -431,6 +435,7 @@ class MaxListSizeModal extends React.Component {
     }
 
     render() {
+        const styles = StyleManager.getStyles("settingsStyles");
         const visible = this.props.visible;
         const value = this.props.value;
         return (
@@ -490,7 +495,8 @@ export default class SettingsScreen extends React.Component {
         sortAlbumsByDate: false,
         autoConnect: false,
         useDeviceVolume: false,
-        useGridView: false
+        useGridView: false,
+        darkMode: false
     }
 
     componentDidMount() {
@@ -573,6 +579,11 @@ export default class SettingsScreen extends React.Component {
                 "DB update has started"
             );
         }
+    }
+
+    onDarkModeChange(value) {
+        this.setState({darkMode: value});
+        StyleManager.changeMode(value);
     }
 
     onShuffleChange(value) {
@@ -663,6 +674,7 @@ export default class SettingsScreen extends React.Component {
     }
 
     render() {
+        const styles = StyleManager.getStyles("settingsStyles");
         const replayGainValue = this.state.replayGain;
         const crossfadeValue = this.state.crossfade + " seconds";
         const maxListSize = ""+this.state.maxListSize;
@@ -671,29 +683,35 @@ export default class SettingsScreen extends React.Component {
                 <SettingsList backgroundColor={bgColor} underlayColor={bgColor} borderColor='#c8c7cc' defaultTitleStyle={styles.item} defaultItemSize={50}>
                     <SettingsList.Header headerStyle={styles.headerStyle}/>
                     <SettingsList.Item
+                                hasNavArrow={false}
+                                switchState={this.state.darkMode}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onDarkModeChange(value)}
+                                title='Dark Mode'/>
+                    <SettingsList.Item
                         hasNavArrow={true}
                         title='About'
-                      onPress={() => this.setState({aboutVisible: true})}
+                        onPress={() => this.setState({aboutVisible: true})}
                     />
                     <SettingsList.Item
                         hasNavArrow={true}
-                      title='Connections'
-                      onPress={() => this.props.navigation.navigate('Connections', {navigateOnConnect: false})}
+                        title='Connections'
+                        onPress={() => this.props.navigation.navigate('Connections', {navigateOnConnect: false})}
                     />
                     <SettingsList.Item
                         hasNavArrow={true}
-                      title='Outputs'
-                      onPress={() => this.props.navigation.navigate('Outputs')}
+                        title='Outputs'
+                        onPress={() => this.props.navigation.navigate('Outputs')}
                     />
                     <SettingsList.Item
                         hasNavArrow={true}
-                      title='Update Database'
-                      onPress={() => this.updateDB()}
+                        title='Update Database'
+                        onPress={() => this.updateDB()}
                     />
                     <SettingsList.Item
                         hasNavArrow={true}
-                      title='Album Art'
-                      onPress={() => this.setState({albumartVisible: true})}
+                        title='Album Art'
+                        onPress={() => this.setState({albumartVisible: true})}
                     />
                     <SettingsList.Header headerStyle={styles.headerStyle} headerText="MPD Configuration"/>
                     <SettingsList.Item
@@ -768,8 +786,8 @@ export default class SettingsScreen extends React.Component {
                     <SettingsList.Header headerStyle={styles.headerStyle} headerText="Debug Options"/>
                     <SettingsList.Item
                         hasNavArrow={true}
-                      title='Debug'
-                      onPress={() => this.props.navigation.navigate('Debug')}
+                        title='Debug'
+                        onPress={() => this.props.navigation.navigate('Debug')}
                     />
                 </SettingsList>
                 <ReplayGainModal replayGain={this.state.replayGain} visible={this.state.replayGainVisible} onSet={(value) => {this.setReplayGain(value)}} onCancel={() => this.setState({replayGainVisible: false})}></ReplayGainModal>

@@ -27,7 +27,7 @@ import MPDConnection from './MPDConnection';
 import AlbumArt from './AlbumArt';
 import NewPlaylistModal from './NewPlaylistModal';
 import Config from './Config';
-import { styles as common, albumsStyles as styles } from './Styles';
+import { StyleManager } from './Styles';
 
 export default class AlbumsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -176,6 +176,7 @@ export default class AlbumsScreen extends React.Component {
     }
 
     renderSeparator = () => {
+        const common = StyleManager.getStyles("styles");
         return (
             <View
                 style={common.separator}
@@ -184,6 +185,8 @@ export default class AlbumsScreen extends React.Component {
     };
 
     renderItem = ({item}) => {
+        const styles = StyleManager.getStyles("albumsStyles");
+        const common = StyleManager.getStyles("styles");
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                 <View onLayout={(event) => {
@@ -210,6 +213,7 @@ export default class AlbumsScreen extends React.Component {
     };
 
     renderGridAlbumItem = ({item}) => {
+        const styles = StyleManager.getStyles("albumsStyles");
         const size = Dimensions.get('window').width/this.state.numColumns;
         const gridStyles = StyleSheet.create({
             itemContainer: {
@@ -251,6 +255,8 @@ export default class AlbumsScreen extends React.Component {
     }
 
     render() {
+        const common = StyleManager.getStyles("styles");
+
         return (
             <View style={common.container1}>
                 <View style={common.container2}>

@@ -21,7 +21,7 @@ import ActionButton from 'react-native-action-button';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 
 import MPDConnection from './MPDConnection';
-import { styles as common, debugStyles as styles } from './Styles';
+import { StyleManager } from './Styles';
 
 export default class DebugScreen extends React.Component {
     static navigationOptions = {
@@ -89,6 +89,8 @@ export default class DebugScreen extends React.Component {
     }
 
     renderSeparator = () => {
+        const common = StyleManager.getStyles("styles");
+
         return (
             <View
                 style={common.separator}
@@ -97,6 +99,8 @@ export default class DebugScreen extends React.Component {
     };
 
     renderItem = ({item}) => {
+        const styles = StyleManager.getStyles("debugStyles");
+        const common = StyleManager.getStyles("styles");
         return (
             <View style={common.container3}>
                 <Text style={styles.item}>{item.debug}</Text>
@@ -105,6 +109,8 @@ export default class DebugScreen extends React.Component {
     };
 
     render() {
+        const styles = StyleManager.getStyles("debugStyles");
+        const common = StyleManager.getStyles("styles");
         return (
             <View style={common.container1}>
                 <View style={styles.container3}>

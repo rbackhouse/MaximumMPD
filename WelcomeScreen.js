@@ -18,10 +18,12 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import ConnectionsScreen from './ConnectionsScreen';
-import { styles as common, welcomeStyles as styles } from './Styles';
+import { StyleManager } from './Styles';
 
 export default class WelcomeScreen extends React.Component {
     render() {
+        const styles = StyleManager.getStyles("welcomeStyles");
+        const common = StyleManager.getStyles("styles");
         return (
             <View style={common.container1}>
                 <View style={styles.container2}>

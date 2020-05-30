@@ -22,7 +22,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 
 import MPDConnection from './MPDConnection';
-import { styles as common, newPlaylistStyles as styles } from './Styles';
+import { StyleManager } from './Styles';
 
 export default class NewPlaylistModal extends React.Component {
     state = {
@@ -79,6 +79,8 @@ export default class NewPlaylistModal extends React.Component {
     }
 
     renderSeparator = () => {
+        const common = StyleManager.getStyles("styles");
+
         return (
             <View
                 style={common.separator}
@@ -87,6 +89,8 @@ export default class NewPlaylistModal extends React.Component {
     };
 
     renderItem = ({item}) => {
+        const styles = StyleManager.getStyles("newPlaylistStyles");
+        const common = StyleManager.getStyles("styles");
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                 <View style={common.container3}>
@@ -101,6 +105,8 @@ export default class NewPlaylistModal extends React.Component {
     };
 
     render() {
+        const styles = StyleManager.getStyles("newPlaylistStyles");
+        const common = StyleManager.getStyles("styles");
         const visible = this.props.visible;
         const value = this.props.value;
         return (
@@ -130,7 +136,7 @@ export default class NewPlaylistModal extends React.Component {
                                 <FAIcon
                                   name="check"
                                   size={15}                                  
-                                  style={style.icon}
+                                  style={styles.icon}
                                 />
                             }
                             raised={true}
@@ -144,7 +150,7 @@ export default class NewPlaylistModal extends React.Component {
                                 <FAIcon
                                   name="times-circle"
                                   size={15}
-                                  style={style.icon}
+                                  style={styles.icon}
                                 />
                             }
                             raised={true}

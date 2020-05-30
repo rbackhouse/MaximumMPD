@@ -26,7 +26,7 @@ import FAIcon from 'react-native-vector-icons/FontAwesome';
 
 import MPDConnection from './MPDConnection';
 import Config from './Config';
-import { styles as common, playlistStyles as styles } from './Styles';
+import { StyleManager } from './Styles';
 
 class RandomPlaylistTypeModal extends React.Component {
     state = {
@@ -43,6 +43,8 @@ class RandomPlaylistTypeModal extends React.Component {
     }
 
     render() {
+        const styles = StyleManager.getStyles("playlistStyles");
+        const common = StyleManager.getStyles("styles");
         const visible = this.props.visible;
         return (
             <Modal
@@ -286,6 +288,7 @@ export default class PlaylistScreen extends React.Component {
     }
 
     renderSeparator = () => {
+        const common = StyleManager.getStyles("styles");
         return (
             <View
                 style={common.separator}
@@ -294,6 +297,8 @@ export default class PlaylistScreen extends React.Component {
     };
 
     renderItem = ({item}) => {
+        const styles = StyleManager.getStyles("playlistStyles");
+        const common = StyleManager.getStyles("styles");
         let timeTrack;
         if (item.time) {
             timeTrack = "Time: "+item.time;
@@ -365,6 +370,8 @@ export default class PlaylistScreen extends React.Component {
     }
 
     render() {
+        const styles = StyleManager.getStyles("playlistStyles");
+        const common = StyleManager.getStyles("styles");
         const {height, width} = Dimensions.get('window');
         let actionButtonSize = 40;
         if (height < 570) {

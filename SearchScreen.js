@@ -27,7 +27,7 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import NewPlaylistModal from './NewPlaylistModal';
 import AlbumArt from './AlbumArt';
-import { styles as common, searchStyles as styles } from './Styles';
+import { StyleManager } from './Styles';
 
 export default class SearchScreen extends React.Component {
 
@@ -202,6 +202,7 @@ export default class SearchScreen extends React.Component {
     }
 
     renderSeparator = () => {
+        const common = StyleManager.getStyles("styles");
         return (
             <View
                 style={common.separator}
@@ -210,6 +211,8 @@ export default class SearchScreen extends React.Component {
     };
 
     render() {
+        const styles = StyleManager.getStyles("searchStyles");
+        const common = StyleManager.getStyles("styles");
         return (
             <View style={common.container1}>
                 <View style={common.container2}>
@@ -257,7 +260,7 @@ export default class SearchScreen extends React.Component {
                                     <View style={[styles.container1, common.rowFront, {height: 85}]}>
                                         <View style={styles.paddingLeft}/>
                                         {item.imagePath === undefined &&
-                                            <FontAwesome5 name="compact-disc" size={20} style={common.icon}/>
+                                            <Icon name="ios-musical-notes" size={20} style={common.icon}/>
                                         }
                                         {item.imagePath !== undefined &&
                                             <Image style={styles.albumart} source={{uri: item.imagePath}}/>

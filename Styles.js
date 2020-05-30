@@ -14,10 +14,9 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 * DEALINGS IN THE SOFTWARE.
 */
-
 import { StyleSheet } from 'react-native'
 
-let darkMode = true;
+var darkMode = false;
 
 const Colors = {
     dark: '#000',
@@ -28,13 +27,42 @@ const Colors = {
     searchbarLight: '#EBECEC'
 };
 
-let iconColor = darkMode ? Colors.light : Colors.dark;
-let bgColor = darkMode ? Colors.dark : Colors.light;
-let textColor = darkMode ? Colors.light : Colors.dark;
-let separatorColor = darkMode ? Colors.separatorDark : Colors.separatorLight;
-let searchbarColor = darkMode ? Colors.searchbarDark : Colors.searchbarLight;
+var bgColor = darkMode ? Colors.dark : Colors.light;
+var textColor = darkMode ? Colors.light : Colors.dark;
+var separatorColor = darkMode ? Colors.separatorDark : Colors.separatorLight;
+var searchbarColor = darkMode ? Colors.searchbarDark : Colors.searchbarLight;
 
-const styles = StyleSheet.create({
+const stylesMapping = {
+    bgColor: [
+        "icon", 
+        "searchbarContainer", 
+        "sectionHeader", 
+        "sectionHeaderAlt",
+        "rowFront",
+        "containerStyle",
+        "container1",
+        "container2",
+        "container3",
+        "container4"
+    ],
+    textColor: [
+        "icon",
+        "text",
+        "backTextWhite",
+        "sectionHeader",
+        "sectionHeaderAlt",
+        "selectedTextStyle",
+    ],
+    separatorColor: [
+        "separator"
+    ],
+    searchbarColor: [
+        "searchbarInputContainer",
+        "searchbarInput"
+    ]
+};
+
+var styles = {
     separator: {
         height: 1,
         width: "95%",
@@ -45,7 +73,8 @@ const styles = StyleSheet.create({
     icon: { 
         paddingLeft: 20, 
         paddingRight: 20,
-        backgroundColor: bgColor
+        backgroundColor: bgColor,
+        color: textColor
     },
     loading: {
         position: 'absolute',
@@ -149,9 +178,24 @@ const styles = StyleSheet.create({
     container2: { flex: .1, flexDirection: 'row', alignItems: 'center', backgroundColor: bgColor },
     container3: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: bgColor },
     container4: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5, backgroundColor: bgColor }
-});
+};
 
-const albumsStyles = StyleSheet.create({
+const albumsStylesMapping = {
+    bgColor: [
+        "container1",
+        "container3"
+    ],
+    textColor: [
+        "item",
+        "albumGridItem",
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var albumsStyles = {
     item: {
         fontFamily: 'GillSans-Italic',
         padding: 10,
@@ -174,9 +218,23 @@ const albumsStyles = StyleSheet.create({
     },
     container1: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', height: 65, backgroundColor: bgColor },
     container3: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5, backgroundColor: bgColor },
-});
+};
 
-const appStyles = StyleSheet.create({
+const appStylesMapping = {
+    bgColor: [
+        "headerStyle",
+        "tabBar"
+    ],
+    textColor: [
+        "headerTitleStyle"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var appStyles = {
     connectiing: {
         left: 0,
         right: 0,
@@ -195,9 +253,29 @@ const appStyles = StyleSheet.create({
     tabBar: {
         backgroundColor: bgColor
     }
-});
+};
 
-const artistsStyles = StyleSheet.create({
+const artistsStylesMapping = {
+    bgColor: [
+        "itemContainer",
+        "itemTextContainer",
+        "genreContainer",
+        "gridItem",
+        "iconAlbumArt",
+        "iconGenre"
+    ],
+    textColor: [
+        "item",
+        "albumItem",
+        "albumGridItem"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var artistsStyles = {
     item: {
         fontFamily: 'GillSans-Italic',
         padding: 10,
@@ -220,9 +298,27 @@ const artistsStyles = StyleSheet.create({
     gridItem: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: 5, paddingBottom: 5, paddingLeft: 5, paddingRight: 5, backgroundColor: bgColor},
     iconAlbumArt: {width: 55, height: 55, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain', backgroundColor: bgColor },
     iconGenre: {width: 20, height: 20, paddingLeft: 20, paddingRight: 20, resizeMode: 'contain', backgroundColor: bgColor }
-});
+};
 
-const connectionsStyles = StyleSheet.create({
+const connectionsStylesMapping = {
+    bgColor: [
+        "dialog1",
+        "dialog2",
+        "dialog3",
+        "dialogtext"
+    ],
+    textColor: [
+        "item",
+        "label",
+        "dialogtext"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var connectionsStyles = {
     item: {
         fontFamily: 'GillSans-Italic',
         paddingLeft: 10,
@@ -251,9 +347,24 @@ const connectionsStyles = StyleSheet.create({
     dialog2: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor},
     dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: bgColor },
     dialogtext: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor, color: textColor}
-});
+};
 
-const debugStyles = StyleSheet.create({
+const debugStylesMapping = {
+    bgColor: [
+        "container3",
+        "container4"
+    ],
+    textColor: [
+        "textInput",
+        "item"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var debugStyles = {
     textInput: {
       borderColor: '#CCCCCC',
       borderTopWidth: 1,
@@ -272,9 +383,23 @@ const debugStyles = StyleSheet.create({
     },
     container3: { flex: .1, flexDirection: 'row', alignItems: 'center', backgroundColor: bgColor },
     container4: { flex: 1, backgroundColor: bgColor }
-});
+};
 
-const filesStyles = StyleSheet.create({
+const filesStylesMapping = {
+    bgColor: [
+        "container3"
+    ],
+    textColor: [
+        "item",
+        "file"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var filesStyles = {
     item: {
         fontFamily: 'GillSans-Italic',
         padding: 10,
@@ -288,9 +413,34 @@ const filesStyles = StyleSheet.create({
         color: textColor
     },
     container3: { flex: .5, backgroundColor: bgColor }
-});
+};
 
-const newPlaylistStyles = StyleSheet.create({
+const newPlaylistStylesMapping = {
+    bgColor: [
+        "container3",
+        "container4",
+        "container5",
+        "container6",
+        "container7",
+        "container8",
+        "container9",
+        "container10",
+        "container13"
+    ],
+    textColor: [
+        "item",
+        "text1",
+        "text2",
+        "text3",
+        "icon"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var newPlaylistStyles = {
     entryField: {
         width: 150,
         height: 30,
@@ -322,25 +472,70 @@ const newPlaylistStyles = StyleSheet.create({
     text1: {fontSize: 20, fontFamily: 'GillSans-Italic', color: textColor},
     text2: {fontSize: 16, fontFamily: 'GillSans-Italic', color: textColor},
     text3: {fontSize: 15,fontFamily: 'GillSans-Italic', color: textColor},
-    icon: {paddingRight: 5, color: iconColor}
-});
+    icon: {paddingRight: 5, color: textColor}
+};
 
-const outputsStyles = StyleSheet.create({
+const outputsStylesMapping = {
+    bgColor: [
+    ],
+    textColor: [
+        "item",
+        "headerStyle"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+        "container1",
+        "headerStyle"
+    ]
+};
+
+var outputsStyles = {
     container1 : { backgroundColor: searchbarColor, flex:1 },
     item: {color: textColor},
     headerStyle: {marginTop:15, color: textColor, backgroundColor: searchbarColor}
-});
+};
 
-const playlistDetailsStyles = StyleSheet.create({
+const playlistDetailsStylesMapping = {
+    bgColor: [
+        "container5"
+    ],
+    textColor: [
+        "item"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var playlistDetailsStyles = {
     item: {
         fontFamily: 'GillSans-Italic',
         color: textColor
     },
-    container5: { flex: .9, flexDirection: 'row', alignItems: 'stretch', backgroundColor: bgColor },
+    container5: { flex: .9, flexDirection: 'row', alignItems: 'stretch', backgroundColor: bgColor }
+};
 
-});
+const playlistEditorStylesMapping = {
+    bgColor: [
+        "container5",
+        "dialog1",
+        "dialog2",
+        "dialog3"
+    ],
+    textColor: [
+        "item",
+        "label",
+        "dialogtext"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
 
-const playlistEditorStyles = StyleSheet.create({
+var playlistEditorStyles = {
     item: {
         fontFamily: 'GillSans-Italic',
         padding: 10,
@@ -357,9 +552,30 @@ const playlistEditorStyles = StyleSheet.create({
     dialog2: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor },
     dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: bgColor },
     dialogtext: {fontSize: 20, fontFamily: 'GillSans-Italic', color: textColor}
-});
+};
 
-const playlistStyles = StyleSheet.create({
+const playlistStylesMapping = {
+    bgColor: [
+        "container1",
+        "container2",
+        "container3",
+        "container4",
+        "dialog1",
+        "dialog2",
+        "dialog3"
+    ],
+    textColor: [
+        "item",
+        "label",
+        "dialogtext"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var playlistStyles = {
     item: {
         fontFamily: 'GillSans-Italic',
         color: textColor
@@ -410,9 +626,33 @@ const playlistStyles = StyleSheet.create({
     dialog2: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor },
     dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: bgColor },
     dialogtext: {fontSize: 20, fontFamily: 'GillSans-Italic', color: textColor}
-});
+};
 
-const playStyles = StyleSheet.create({
+const playStylesMapping = {
+    bgColor: [
+        "container",
+        "content",
+        "menu",
+        "tabcontainer1",
+        "container1",
+        "container2",
+        "container4",
+        "container5",
+        "container6"
+    ],
+    textColor: [
+        "item",
+        "meniItem",
+        "paddingRight",
+        "paddingLeft"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var playStyles = {
     container: {
         flex: 1,
         backgroundColor: bgColor
@@ -487,9 +727,25 @@ const playStyles = StyleSheet.create({
     iconMore: { paddingLeft: 1 },
     positionSlider: {width: "80%"},
     volumeSlider: {width: "85%"}
-})
+};
 
-const searchStyles = StyleSheet.create({
+const searchStylesMapping = {
+    bgColor: [
+        "container1",
+        "container3",
+        "container4",
+        "container7"
+    ],
+    textColor: [
+        "item"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var searchStyles = {
     item: {
         fontFamily: 'GillSans-Italic',
         paddingLeft: 10,
@@ -509,9 +765,38 @@ const searchStyles = StyleSheet.create({
         paddingRight: 20, 
         resizeMode: 'contain'
     }
-});
+};
 
-const settingsStyles = StyleSheet.create({
+const settingsStylesMapping = {
+    bgColor: [
+        "container1",
+        "container2",
+        "container3",
+        "container4",
+        "container5",
+        "container6",
+        "textInput1",
+        "textInput2",
+        "picker"
+    ],
+    textColor: [
+        "label",
+        "text1",
+        "text2",
+        "textInput1",
+        "textInput2",
+        "item",
+        "picker"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+        "container7",
+        "headerStyle"
+    ]
+};
+
+var settingsStyles = {
     entryField: {
         width: 150,
         height: 30,
@@ -565,9 +850,24 @@ const settingsStyles = StyleSheet.create({
         backgroundColor: bgColor,
         color: textColor
     }
-});
+};
 
-const songsStyles = StyleSheet.create({
+const songsStylesMapping = {
+    bgColor: [
+        "albumart",
+        "container5",
+        "container6"
+    ],
+    textColor: [
+        "item"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var songsStyles = {
     item: {
         fontFamily: 'GillSans-Italic',
         color: textColor
@@ -585,9 +885,23 @@ const songsStyles = StyleSheet.create({
     },
     container5: { flex: .9, flexDirection: 'row', alignItems: 'stretch', backgroundColor: bgColor },
     container6: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', backgroundColor: bgColor },
-});
+};
 
-const welcomeStyles = StyleSheet.create({
+const welcomeStylesMapping = {
+    bgColor: [
+        "container2"
+    ],
+    textColor: [
+        "title",
+        "intro"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var welcomeStyles = {
     title: {
         fontSize: 30,
         fontFamily: 'GillSans-Italic',
@@ -602,29 +916,29 @@ const welcomeStyles = StyleSheet.create({
         color: textColor
     },
     container2: { flex: .3, alignItems: 'center', justifyContent: 'center', paddingTop: 10, backgroundColor: bgColor }
-});
+};
 
-const rawstyles = {
-    styles: styles, 
-    albumsStyles: albumsStyles,
-    appStyles: appStyles,
-    artistsStyles: artistsStyles,
-    connectionsStyles: connectionsStyles,
-    debugStyles: debugStyles,
-    filesStyles: filesStyles,
-    newPlaylistStyles: newPlaylistStyles,
-    outputsStyles: outputsStyles,
-    playlistDetailsStyles: playlistDetailsStyles,
-    playlistEditorStyles: playlistEditorStyles,
-    playlistStyles: playlistStyles,
-    playStyles: playStyles,
-    searchStyles: searchStyles,
-    settingsStyles: settingsStyles,
-    songsStyles: songsStyles,
-    welcomeStyles: welcomeStyles
-}
+var rawstyles = {
+    styles: {styles: styles, mappings: stylesMapping},
+    albumsStyles: {styles: albumsStyles, mappings: albumsStylesMapping},
+    appStyles: {styles: appStyles, mappings: appStylesMapping},
+    artistsStyles: {styles: artistsStyles, mappings: artistsStylesMapping},
+    connectionsStyles: {styles: connectionsStyles, mappings: connectionsStylesMapping},
+    debugStyles: {styles: debugStyles, mappings: debugStylesMapping},
+    filesStyles: {styles: filesStyles, mappings: filesStylesMapping},
+    newPlaylistStyles: {styles: newPlaylistStyles, mappings: newPlaylistStylesMapping},
+    outputsStyles: {styles: outputsStyles, mappings: outputsStylesMapping},
+    playlistDetailsStyles: {styles: playlistDetailsStyles, mappings: playlistDetailsStylesMapping},
+    playlistEditorStyles: {styles: playlistEditorStyles, mappings: playlistEditorStylesMapping},
+    playlistStyles: {styles: playlistStyles, mappings: playlistStylesMapping},
+    playStyles: {styles: playStyles, mappings: playStylesMapping},
+    searchStyles: {styles: searchStyles, mappings: searchStylesMapping},
+    settingsStyles: {styles: settingsStyles, mappings: settingsStylesMapping},
+    songsStyles: {styles: songsStyles, mappings: songsStylesMapping},
+    welcomeStyles: {styles: welcomeStyles, mappings: welcomeStylesMapping}
+};
 
-let stylesheets = {
+var stylesheets = {
     styles: undefined, 
     albumsStyles: undefined,
     appStyles: undefined,
@@ -645,18 +959,29 @@ let stylesheets = {
 };
 
 function build() {
-    iconColor = darkMode ? Colors.light : Colors.dark;
     bgColor = darkMode ? Colors.dark : Colors.light;
     textColor = darkMode ? Colors.light : Colors.dark;
     separatorColor = darkMode ? Colors.separatorDark : Colors.separatorLight;
     searchbarColor = darkMode ? Colors.searchbarDark : Colors.searchbarLight;
-    
     for (let name in stylesheets) {
-        stylesheets[name] = StyleSheet.create(rawstyles[name]);
+        rawstyles[name].mappings.bgColor.forEach((mapping) => {
+            rawstyles[name].styles[mapping].backgroundColor = bgColor;
+        });
+        rawstyles[name].mappings.textColor.forEach((mapping) => {
+            rawstyles[name].styles[mapping].color = textColor;
+        });
+        rawstyles[name].mappings.separatorColor.forEach((mapping) => {
+            rawstyles[name].styles[mapping].backgroundColor = separatorColor;
+        });
+        rawstyles[name].mappings.searchbarColor.forEach((mapping) => {
+            rawstyles[name].styles[mapping].backgroundColor = searchbarColor;
+        });        
+        const clone = JSON.parse(JSON.stringify(rawstyles[name].styles));
+        stylesheets[name] = StyleSheet.create(clone);
     }
 }
 
-//build();
+build();
 
 const StyleManager = {
     getStyles: (name) => {
@@ -669,23 +994,6 @@ const StyleManager = {
 }
 
 export { 
-    styles, 
-    albumsStyles,
-    appStyles,
-    artistsStyles,
-    connectionsStyles,
-    debugStyles,
-    filesStyles,
-    newPlaylistStyles,
-    outputsStyles,
-    playlistDetailsStyles,
-    playlistEditorStyles,
-    playlistStyles,
-    playStyles,
-    searchStyles,
-    settingsStyles,
-    songsStyles,
-    welcomeStyles,
     bgColor,
     StyleManager
 }; 

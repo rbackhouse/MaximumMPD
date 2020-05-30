@@ -33,7 +33,7 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
 import Config from './Config';
-import { styles as common, playStyles as styles } from './Styles';
+import { StyleManager } from './Styles';
 
 const { VolumeControl } = NativeModules;
 const volumeEmitter = new NativeEventEmitter(VolumeControl);
@@ -357,6 +357,8 @@ export default class PlayScreen extends React.Component {
     }
 
     render() {
+      const styles = StyleManager.getStyles("playStyles");
+      const common = StyleManager.getStyles("styles");
       const playPauseIcon = this.state.isPlaying == true ? "pause" : "play";
       let timeTrack = "";
       let time = 0;

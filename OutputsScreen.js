@@ -19,7 +19,7 @@ import React from 'react';
 import { View, Alert, ActivityIndicator } from 'react-native';
 import SettingsList from 'react-native-settings-list';
 import MPDConnection from './MPDConnection';
-import { styles as common, outputsStyles as styles, bgColor } from './Styles';
+import { StyleManager, bgColor } from './Styles';
 
 export default class OutputsScreen extends React.Component {
     static navigationOptions = {
@@ -108,6 +108,8 @@ export default class OutputsScreen extends React.Component {
     }
 
     render() {
+        const styles = StyleManager.getStyles("outputsStyles");
+        const common = StyleManager.getStyles("styles");
         const outputs = this.state.outputs.map((output) => 
             <SettingsList.Item
                         hasNavArrow={false}

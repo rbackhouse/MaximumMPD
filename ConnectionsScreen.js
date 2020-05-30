@@ -31,7 +31,7 @@ import { Input, Button } from 'react-native-elements'
 import ActionButton from 'react-native-action-button';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Config from './Config';
-import { styles as common, connectionsStyles as styles } from './Styles';
+import { StyleManager } from './Styles';
 
 class AddConnectionModal extends React.Component {
     state = {
@@ -50,6 +50,9 @@ class AddConnectionModal extends React.Component {
     }
 
     render() {
+        const styles = StyleManager.getStyles("connectionsStyles");
+        const common = StyleManager.getStyles("styles");
+
         const visible = this.props.visible;
         return (
             <Modal
@@ -332,6 +335,7 @@ export default class ConnectionsScreen extends React.Component {
     }
 
     renderSeparator = () => {
+        const common = StyleManager.getStyles("styles");
         return (
             <View
                 style={common.separator}
@@ -340,6 +344,9 @@ export default class ConnectionsScreen extends React.Component {
     };
 
     render() {
+        const styles = StyleManager.getStyles("connectionsStyles");
+        const common = StyleManager.getStyles("styles");
+
         const navigation = this.props.navigation;
         return (
             <View style={common.container1}>

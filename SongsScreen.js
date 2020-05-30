@@ -31,7 +31,7 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
 import NewPlaylistModal from './NewPlaylistModal';
-import { styles as common, songsStyles as styles } from './Styles';
+import { StyleManager } from './Styles';
 
 export default class SongsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -311,6 +311,7 @@ export default class SongsScreen extends React.Component {
     };
 
     renderSeparator = () => {
+        const common = StyleManager.getStyles("styles");
         return (
             <View
                 style={common.separator}
@@ -319,6 +320,8 @@ export default class SongsScreen extends React.Component {
     };
 
     render() {
+        const styles = StyleManager.getStyles("songsStyles");
+        const common = StyleManager.getStyles("styles");
         return (
             <View style={common.container1}>
                 <View style={common.container2}>
@@ -366,7 +369,7 @@ export default class SongsScreen extends React.Component {
                             <View style={[styles.container6, common.rowFront, {height: 85}]}>
                                 <View style={styles.paddingLeft}/>
                                 {this.state.imagePath.length < 1 &&
-                                    <FontAwesome5 name="compact-disc" size={20} style={common.icon}/>
+                                    <Icon name="ios-musical-notes" size={20} style={common.icon}/>
                                 }
                                 {this.state.imagePath.length > 0 &&
                                     <Image style={styles.albumart} source={{uri: this.state.imagePath}}/>

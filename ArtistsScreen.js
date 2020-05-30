@@ -28,7 +28,7 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
 import Config from './Config';
-import { styles as common, artistsStyles as styles } from './Styles';
+import { StyleManager } from './Styles';
 
 export default class ArtistsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -373,6 +373,8 @@ export default class ArtistsScreen extends React.Component {
     }
 
     renderSeparator = () => {
+        const common = StyleManager.getStyles("styles");
+
         return (
             <View
                 style={common.separator}
@@ -381,6 +383,8 @@ export default class ArtistsScreen extends React.Component {
     };
 
     renderItem = ({item}) => {
+        const styles = StyleManager.getStyles("artistsStyles");
+        const common = StyleManager.getStyles("styles");
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
                 <View onLayout={(event) => {
@@ -404,6 +408,8 @@ export default class ArtistsScreen extends React.Component {
     };
 
     renderGenreItem = (data, map) => {
+        const styles = StyleManager.getStyles("artistsStyles");
+        const common = StyleManager.getStyles("styles");
         const item = data.item;
         return (
             <SwipeRow rightOpenValue={-150}>
@@ -427,6 +433,8 @@ export default class ArtistsScreen extends React.Component {
     }
 
     renderAlbumItem = ({item}) => {
+        const styles = StyleManager.getStyles("artistsStyles");
+        const common = StyleManager.getStyles("styles");
         return (
             <TouchableOpacity onPress={this.onAlbumPress.bind(this, item)}>
                 <View onLayout={(event) => {
@@ -451,6 +459,9 @@ export default class ArtistsScreen extends React.Component {
     }
 
     renderGridAlbumItem = ({item}) => {
+        const styles = StyleManager.getStyles("artistsStyles");
+        const common = StyleManager.getStyles("styles");
+
         const size = Dimensions.get('window').width/this.state.numColumns;
         const gridStyles = StyleSheet.create({
           itemContainer: {
@@ -487,6 +498,8 @@ export default class ArtistsScreen extends React.Component {
     }
 
     render() {
+        const styles = StyleManager.getStyles("artistsStyles");
+        const common = StyleManager.getStyles("styles");
         const {height, width} = Dimensions.get('window');
         let bg = .07;
         let sb = .1;
