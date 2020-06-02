@@ -14,9 +14,9 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 * DEALINGS IN THE SOFTWARE.
 */
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Appearance } from 'react-native'
 
-var darkMode = false;
+var darkMode = Appearance.getColorScheme() === 'dark' ? true : false;
 
 const Colors = {
     dark: '#000',
@@ -982,6 +982,11 @@ function build() {
 }
 
 build();
+
+const subscription = Appearance.addChangeListener(({ colorScheme }) => {
+    darkMode = colorScheme === 'dark' ? true : false;
+    build();
+});
 
 const StyleManager = {
     getStyles: (name) => {

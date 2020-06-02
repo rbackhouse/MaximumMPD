@@ -683,12 +683,6 @@ export default class SettingsScreen extends React.Component {
                 <SettingsList backgroundColor={bgColor} underlayColor={bgColor} borderColor='#c8c7cc' defaultTitleStyle={styles.item} defaultItemSize={50}>
                     <SettingsList.Header headerStyle={styles.headerStyle}/>
                     <SettingsList.Item
-                                hasNavArrow={false}
-                                switchState={this.state.darkMode}
-                                hasSwitch={true}
-                                switchOnValueChange={(value) => this.onDarkModeChange(value)}
-                                title='Dark Mode'/>
-                    <SettingsList.Item
                         hasNavArrow={true}
                         title='About'
                         onPress={() => this.setState({aboutVisible: true})}
@@ -799,3 +793,11 @@ export default class SettingsScreen extends React.Component {
         );
     }
 }
+/*
+                    <SettingsList.Item
+                        hasNavArrow={false}
+                        switchState={this.state.darkMode}
+                        hasSwitch={true}
+                        switchOnValueChange={(value) => this.onDarkModeChange(value)}
+                        title='Dark Mode'/>
+*/
