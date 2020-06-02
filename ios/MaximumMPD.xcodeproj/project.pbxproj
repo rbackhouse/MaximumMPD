@@ -25,6 +25,7 @@
 		F66D3B2323363B9600A9C9C8 /* VolumeControl.m in Sources */ = {isa = PBXBuildFile; fileRef = F66D3B2223363B9600A9C9C8 /* VolumeControl.m */; };
 		F6736300214BE4DA00CEFEEA /* SocketConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = F67362FD214BE4DA00CEFEEA /* SocketConnection.m */; };
 		F6736301214BE4DA00CEFEEA /* BonjourListener.m in Sources */ = {isa = PBXBuildFile; fileRef = F67362FF214BE4DA00CEFEEA /* BonjourListener.m */; };
+		F6D8CD332486AC17005CB50A /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D8CD322486AC17005CB50A /* File.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +82,7 @@
 		F6930E0022EDAB9100918027 /* MaximumMPD.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MaximumMPD.entitlements; path = MaximumMPD/MaximumMPD.entitlements; sourceTree = "<group>"; };
 		F6930E0A22EDAFD500918027 /* libRCTLinking.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRCTLinking.a; path = "../../../../Library/Developer/Xcode/DerivedData/MaximumMPD-gkcsojzgceeuxceofndwejndpwhr/Build/Products/Debug-iphonesimulator/libRCTLinking.a"; sourceTree = "<group>"; };
 		F6D8CD2D2486A6E8005CB50A /* MaximumMPD-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MaximumMPD-Bridging-Header.h"; sourceTree = "<group>"; };
+		F6D8CD322486AC17005CB50A /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = File.swift; path = MaximumMPD/File.swift; sourceTree = "<group>"; };
 		F767E9F878644B6296303F7F /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
 		FCA866DE1175A88262663594 /* Pods-MaximumMPDTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaximumMPDTests.release.xcconfig"; path = "Target Support Files/Pods-MaximumMPDTests/Pods-MaximumMPDTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -151,6 +153,7 @@
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
+				F6D8CD322486AC17005CB50A /* File.swift */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
@@ -654,6 +657,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				F6D8CD332486AC17005CB50A /* File.swift in Sources */,
 				F6736301214BE4DA00CEFEEA /* BonjourListener.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				F6736300214BE4DA00CEFEEA /* SocketConnection.m in Sources */,
@@ -710,6 +714,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1FE0D3F85A5082B6EB1070A8 /* Pods-MaximumMPD-MaximumMPDTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = P9NAZG5MLK;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -740,6 +745,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3FE14D949B9896B0449D4BF5 /* Pods-MaximumMPD-MaximumMPDTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = P9NAZG5MLK;
@@ -772,7 +778,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = MaximumMPD/MaximumMPD.entitlements;
 				CURRENT_PROJECT_VERSION = 3.7;
-				DEAD_CODE_STRIPPING = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = P9NAZG5MLK;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1006,6 +1012,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
+					"FB_SONARKIT_ENABLED=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
