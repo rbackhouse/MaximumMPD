@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native';
+import { Text, View, TouchableOpacity, ActivityIndicator, Alert, Image, Appearance } from 'react-native';
 import { SearchBar } from "react-native-elements";
 
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -107,10 +107,16 @@ export default class SongsScreen extends React.Component {
                 this.props.navigation.popToTop();
             }
         );
+        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
+            this.setState({loading: this.state.loading});
+        });        
     }
 
     componentWillUnmount() {
         this.onDisconnect.remove();
+        if (this.onApperance) {
+            this.onApperance.remove();
+        }
     }
 
     search = (text) => {

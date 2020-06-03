@@ -51,14 +51,13 @@ const stylesMapping = {
         "backTextWhite",
         "sectionHeader",
         "sectionHeaderAlt",
-        "selectedTextStyle",
+        "searchbarInput"
     ],
     separatorColor: [
         "separator"
     ],
     searchbarColor: [
-        "searchbarInputContainer",
-        "searchbarInput"
+        "searchbarInputContainer"
     ]
 };
 
@@ -171,7 +170,7 @@ var styles = {
     },
     containerStyle: { height: 28, backgroundColor: bgColor },
     selectedButtonStyle: {backgroundColor: '#3396FF'},    
-    selectedTextStyle: {color: textColor},    
+    selectedTextStyle: {color: 'white'},    
     flex75: {flex: .75},
     flex25: {flex: .25},
     container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch', backgroundColor: bgColor},
@@ -548,7 +547,7 @@ var playlistEditorStyles = {
         color: textColor
     },
     container5: { flex: .9, flexDirection: 'row', alignItems: 'flex-start', backgroundColor: bgColor },
-    dialog1: {marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around', backgroundColor: bgColor },
+    dialog1: {marginTop: 22, flex: 1, flexDirection: 'column', justifyContent: 'space-around', backgroundColor: bgColor },
     dialog2: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor },
     dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: bgColor },
     dialogtext: {fontSize: 20, fontFamily: 'GillSans-Italic', color: textColor}
@@ -821,7 +820,7 @@ var settingsStyles = {
     flex1: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
     flex2: {flex: .2, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'flex-start'},
     flex3: { flex: .3, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'},
-    container1: { marginTop: 22, flex: .6, flexDirection: 'column', justifyContent: 'space-around', backgroundColor: bgColor },
+    container1: { marginTop: 22, flex: 1, flexDirection: 'column', justifyContent: 'space-around', backgroundColor: bgColor },
     container2: { flex: .1, flexDirection: 'row', alignItems: 'center', margin: 15, backgroundColor: bgColor },
     container3: { flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: bgColor },
     container4: { flex: .2, flexDirection: 'row', alignItems: 'center', margin: 15, backgroundColor: bgColor },

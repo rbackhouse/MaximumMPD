@@ -57,9 +57,8 @@ class AddStreamURLModal extends React.Component {
         return (
             <Modal
                 animationType="fade"
-                transparent={false}
+                transparent={true}
                 visible={visible}
-                statusBarTranslucent={false}
                 onRequestClose={() => {
             }}>
                 <View style={styles.dialog1}>

@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { View, Picker, Modal, Text, Alert, Linking, TextInput, Switch, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { View, Picker, Modal, Text, Alert, Linking, TextInput, Switch, Keyboard, TouchableWithoutFeedback, Appearance } from 'react-native';
 import SettingsList from 'react-native-settings-list';
 import { Input, Button } from 'react-native-elements'
 import MPDConnection from './MPDConnection';
@@ -139,7 +139,7 @@ class AlbumArtModal extends React.Component {
         return (
             <Modal
                 animationType="fade"
-                transparent={false}
+                transparent={true}
                 visible={visible}
                 onRequestClose={() => {
             }}>
@@ -287,7 +287,7 @@ class CrossfadeModal extends React.Component {
         return (
             <Modal
                 animationType="fade"
-                transparent={false}
+                transparent={true}
                 visible={visible}
                 onRequestClose={() => {
             }}>
@@ -338,7 +338,7 @@ class ReplayGainModal extends React.Component {
         return (
             <Modal
                 animationType="fade"
-                transparent={false}
+                transparent={true}
                 visible={visible}
                 onRequestClose={() => {
             }}>
@@ -388,7 +388,7 @@ class AboutModal extends React.Component {
         return (
             <Modal
                 animationType="fade"
-                transparent={false}
+                transparent={true}
                 visible={visible}
                 onRequestClose={() => {
             }}>
@@ -441,7 +441,7 @@ class MaxListSizeModal extends React.Component {
         return (
             <Modal
                 animationType="fade"
-                transparent={false}
+                transparent={true}
                 visible={visible}
                 onRequestClose={() => {
             }}>
@@ -540,6 +540,9 @@ export default class SettingsScreen extends React.Component {
                 });
             }
         );
+        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
+            this.setState({darkMode: this.state.darkMode});
+        });
         if (MPDConnection.isConnected()) {
             this.getStatus();
         }
@@ -548,6 +551,9 @@ export default class SettingsScreen extends React.Component {
     componentWillUnmount() {
         this.onConnect.remove();
         this.onDisconnect.remove();
+        if (this.onApperance) {
+            this.onApperance.remove();
+        }
     }
 
     getStatus() {

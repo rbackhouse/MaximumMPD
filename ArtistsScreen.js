@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, InteractionManager, Dimensions } from 'react-native';
+import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions, Appearance } from 'react-native';
 import { SearchBar, ButtonGroup } from "react-native-elements";
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -122,6 +122,11 @@ export default class ArtistsScreen extends React.Component {
                 this.updateAlbumArt();
             }
         );
+
+        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
+            this.setState({loading: this.state.loading});
+        });
+
         Config.getMaxListSize()
         .then((size) => {
             //this.setState({maxListSize: size});
@@ -212,6 +217,9 @@ export default class ArtistsScreen extends React.Component {
         this.onAlbumArtEnd.remove();
         this.onAlbumArtComplete.remove();
         this.onAlbumArtError.remove();
+        if (this.onApperance) {
+            this.onApperance.remove();
+        }
     }
 
     search = (text) => {

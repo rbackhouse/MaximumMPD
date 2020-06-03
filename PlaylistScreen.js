@@ -49,7 +49,7 @@ class RandomPlaylistTypeModal extends React.Component {
         return (
             <Modal
                 animationType="fade"
-                transparent={false}
+                transparent={true}
                 visible={visible}
                 onRequestClose={() => {
             }}>

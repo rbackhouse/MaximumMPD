@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { ActivityIndicator, View, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, View, TouchableOpacity, Appearance } from 'react-native';
 import Icon  from 'react-native-vector-icons/Ionicons';
 import FAIcon  from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/dist/MaterialIcons';
@@ -65,12 +65,19 @@ class Header extends React.Component {
                 this.setState({connectionState: 0});
             }
         );
+
+        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
+            this.setState({connectionState: this.state.connectionState});
+        });
     }
 
     componentWillUnmount() {
         this.onConnect.remove();
         this.onConnecting.remove();
         this.onDisconnect.remove();
+        if (this.onApperance) {
+            this.onApperance.remove();
+        }
     }
 
     render() {

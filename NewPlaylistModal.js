@@ -112,7 +112,7 @@ export default class NewPlaylistModal extends React.Component {
         return (
             <Modal
                 animationType="fade"
-                transparent={false}
+                transparent={true}
                 visible={visible}
                 onShow={() => {this.load();}}
             >

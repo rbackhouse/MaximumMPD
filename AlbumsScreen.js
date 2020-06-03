@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions } from 'react-native';
+import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions, Appearance } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
@@ -102,10 +102,16 @@ export default class AlbumsScreen extends React.Component {
                 this.props.navigation.popToTop();
             }
         );
+        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
+            this.setState({loading: this.state.loading});
+        });
     }
 
     componentWillUnmount() {
         this.onDisconnect.remove();
+        if (this.onApperance) {
+            this.onApperance.remove();
+        }
     }
 
     addAll(toPlaylist) {

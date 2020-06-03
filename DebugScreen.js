@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { View, Text, TextInput, FlatList, Alert, ActivityIndicator} from 'react-native';
+import { View, Text, TextInput, FlatList, Alert, ActivityIndicator, Appearance } from 'react-native';
 import ActionButton from 'react-native-action-button';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 
@@ -47,11 +47,18 @@ export default class DebugScreen extends React.Component {
                 this.setState({debug: []});
             }
         );
+
+        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
+            this.setState({loading: this.state.loading});
+        });        
     }
 
     componentWillUnmount() {
         this.onConnect.remove();
         this.onDisconnect.remove();
+        if (this.onApperance) {
+            this.onApperance.remove();
+        }
     }
 
     onRun() {

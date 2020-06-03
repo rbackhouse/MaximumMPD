@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { View, Text, ActivityIndicator, TouchableOpacity, Alert, Image } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity, Alert, Image, Appearance } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -65,11 +65,17 @@ export default class SearchScreen extends React.Component {
                 this.setState({artists: [], albums: [], songs: [], searchValue: ""});
             }
         );
+        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
+            this.setState({loading: this.state.loading});
+        });        
     }
 
     componentWillUnmount() {
         this.onConnect.remove();
         this.onDisconnect.remove();
+        if (this.onApperance) {
+            this.onApperance.remove();
+        }
     }
 
     search = (text) => {

@@ -22,7 +22,8 @@ import {
     TouchableOpacity,
     Modal,
     Alert,
-    ActivityIndicator
+    ActivityIndicator,
+    Appearance
 } from 'react-native';
 import MPDConnection from './MPDConnection';
 import IonIcon  from 'react-native-vector-icons/Ionicons';
@@ -57,7 +58,7 @@ class AddConnectionModal extends React.Component {
         return (
             <Modal
                 animationType="fade"
-                transparent={false}
+                transparent={true}
                 visible={visible}
                 onRequestClose={() => {
             }}>
@@ -176,11 +177,19 @@ export default class ConnectionsScreen extends React.Component {
                 }
             });
         }
+        /*
+        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
+            this.setState({loading: this.state.loading});
+        });
+        */
     }
 
     componentWillUnmount() {
         this.onDisconnect.remove();
         this.onDiscover.remove();
+        if (this.onApperance) {
+            this.onApperance.remove();
+        }
     }
 
     keyExtractor = (item, index) => item.name+item.ipAddress+item.port;

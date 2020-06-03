@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, TouchableOpacity, Image, Alert, Platform, Linking, ActivityIndicator } from 'react-native';
+import { Text, View, TouchableOpacity, Image, Alert, Platform, Linking, ActivityIndicator, Appearance } from 'react-native';
 import { Slider, ButtonGroup } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -226,6 +226,10 @@ export default class PlayScreen extends React.Component {
             }
         );
 
+        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
+            this.setState({loading: this.state.loading});
+        });        
+
         Linking.addEventListener('url', this.handleOpenURL);
     }
 
@@ -240,6 +244,9 @@ export default class PlayScreen extends React.Component {
         this.onDisconnect.remove();
         this.onConnect.remove();
         this.onInternalConnect.remove();
+        if (this.onApperance) {
+            this.onApperance.remove();
+        }
         Linking.removeEventListener('url', this.handleOpenURL);
     }
 
