@@ -57,7 +57,8 @@ const stylesMapping = {
         "separator"
     ],
     searchbarColor: [
-        "searchbarInputContainer"
+        "searchbarInputContainer",
+        "searchbarInput"
     ]
 };
 
@@ -91,7 +92,8 @@ var styles = {
         backgroundColor: searchbarColor
     },
     searchbarInput: { 
-        backgroundColor: searchbarColor
+        backgroundColor: searchbarColor,
+        color: textColor
     },
     text: {
         fontSize: 15,

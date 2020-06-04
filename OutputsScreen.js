@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { View, Alert, ActivityIndicator } from 'react-native';
+import { View, Alert, ActivityIndicator, Appearance } from 'react-native';
 import SettingsList from 'react-native-settings-list';
 import MPDConnection from './MPDConnection';
 import { StyleManager, bgColor } from './Styles';
@@ -28,7 +28,7 @@ export default class OutputsScreen extends React.Component {
 
     state = {
         outputs: [],
-        laoding: false
+        loading: false
     }
 
     componentDidMount() {
@@ -46,6 +46,10 @@ export default class OutputsScreen extends React.Component {
             }
         );
 
+        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
+            this.setState({loading: this.state.loading});
+        });
+
         if (MPDConnection.isConnected()) {
             this.getOutputs();
         }
@@ -54,6 +58,9 @@ export default class OutputsScreen extends React.Component {
     componentWillUnmount() {
         this.onConnect.remove();
         this.onDisconnect.remove();
+        if (this.onApperance) {
+            this.onApperance.remove();
+        }
     }
 
     getOutputs() {

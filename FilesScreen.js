@@ -16,11 +16,11 @@
 */
 
 import React from 'react';
-import { Text, View, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { Text, View, TouchableOpacity, ActivityIndicator, Alert, Appearance } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
-import { HeaderBackButton } from 'react-navigation';
+import { HeaderBackButton } from 'react-navigation-stack';
 import { Button } from 'react-native-elements'
 import ActionButton from 'react-native-action-button';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
@@ -99,6 +99,9 @@ export default class FilesScreen extends React.Component {
                 this.load(uri);
             }
         );
+        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
+            this.setState({loading: this.state.loading});
+        });
     }
 
     componentWillUnmount() {
@@ -106,6 +109,9 @@ export default class FilesScreen extends React.Component {
         this.onDisconnect.remove();
         this.didBlurSubscription.remove();
         this.didFocusSubscription.remove();
+        if (this.onApperance) {
+            this.onApperance.remove();
+        }
     }
 
     sort = () => {

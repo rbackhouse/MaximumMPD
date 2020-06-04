@@ -16,7 +16,8 @@
 */
 
 import React from 'react';
-import { View, Picker, Modal, Text, Alert, Linking, TextInput, Switch, Keyboard, TouchableWithoutFeedback, Appearance } from 'react-native';
+import { View, Modal, Text, Alert, Linking, TextInput, Switch, Keyboard, TouchableWithoutFeedback, Appearance } from 'react-native';
+import {Picker} from '@react-native-community/picker';
 import SettingsList from 'react-native-settings-list';
 import { Input, Button } from 'react-native-elements'
 import MPDConnection from './MPDConnection';

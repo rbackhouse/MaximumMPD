@@ -176,12 +176,10 @@ export default class ConnectionsScreen extends React.Component {
                     this.connect(autoConnect.server.name, autoConnect.server.host, autoConnect.server.port, autoConnect.server.pwd);
                 }
             });
-        }
-        /*
+        }        
         this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
             this.setState({loading: this.state.loading});
         });
-        */
     }
 
     componentWillUnmount() {

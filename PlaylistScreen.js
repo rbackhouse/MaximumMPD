@@ -16,7 +16,8 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Modal, Picker, PickerIOS, Dimensions } from 'react-native';
+import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Modal, PickerIOS, Dimensions } from 'react-native';
+import {Picker} from '@react-native-community/picker';
 import { SearchBar, Input, Button } from 'react-native-elements'
 
 import ActionButton from 'react-native-action-button';

@@ -16,12 +16,15 @@
 */
 
 import React from 'react';
-import { ActivityIndicator, View, TouchableOpacity, Appearance } from 'react-native';
+import { ActivityIndicator, View, TouchableOpacity, Appearance, useColorScheme } from 'react-native';
 import Icon  from 'react-native-vector-icons/Ionicons';
 import FAIcon  from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/dist/MaterialIcons';
 
-import { createStackNavigator, createBottomTabNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+
 import { StyleManager } from './Styles';
 
 import PlayScreen from './PlayScreen';
@@ -292,14 +295,14 @@ const MainPage = createBottomTabNavigator(
             if (MPDConnection.isConnected()) {
                 defaultHandler();
             }
+        },
+        tabBarOptions: {
+            activeTintColor: 'red',
+            inactiveTintColor: 'gray',
+            style: StyleManager.getStyles("appStyles").tabBar
         }
     }),
     tabBarPosition: 'bottom',
-    tabBarOptions: {
-        activeTintColor: 'red',
-        inactiveTintColor: 'gray',
-        style: StyleManager.getStyles("appStyles").tabBar
-    },
     animationEnabled: true,
     swipeEnabled: false
   }
@@ -315,4 +318,11 @@ const SwitchPage = createSwitchNavigator(
     }
 );
 
-export default createAppContainer(SwitchPage);
+let App = createAppContainer(SwitchPage);
+
+export default () => {
+    let theme = useColorScheme();
+    return (
+        <App theme={theme}/>
+    )
+}

@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native';
+import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Appearance } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
@@ -56,10 +56,17 @@ export default class PlaylistDetails extends React.Component {
                 this.load();
             }
         );
+
+        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
+            this.setState({loading: this.state.loading});
+        });
     }
 
     componentWillUnmount() {
         this.didFocusSubscription.remove();
+        if (this.onApperance) {
+            this.onApperance.remove();
+        }
     }
 
     load() {
