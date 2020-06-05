@@ -16,11 +16,27 @@
 */
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Appearance } from 'react-native';
 import ConnectionsScreen from './ConnectionsScreen';
 import { StyleManager } from './Styles';
 
 export default class WelcomeScreen extends React.Component {
+    state = {
+        loading: false
+    }
+
+    componentDidMount() {
+        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
+            this.setState({loading: this.state.loading});
+        });
+    }
+
+    componentWillUnmount() {
+        if (this.onApperance) {
+            this.onApperance.remove();
+        }
+    }
+
     render() {
         const styles = StyleManager.getStyles("welcomeStyles");
         const common = StyleManager.getStyles("styles");

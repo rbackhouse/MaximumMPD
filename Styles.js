@@ -347,7 +347,7 @@ var connectionsStyles = {
     dialog1: {marginTop: 22, flex: .8, flexDirection: 'column', justifyContent: 'space-around', backgroundColor: bgColor},
     dialog2: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor},
     dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: bgColor },
-    dialogtext: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor, color: textColor}
+    dialogtext: { fontSize: 20, fontFamily: 'GillSans-Italic', color: textColor}
 };
 
 const debugStylesMapping = {
@@ -433,7 +433,8 @@ const newPlaylistStylesMapping = {
         "text1",
         "text2",
         "text3",
-        "icon"
+        "icon",
+        "label"
     ],
     separatorColor: [
     ],
@@ -473,7 +474,7 @@ var newPlaylistStyles = {
     text1: {fontSize: 20, fontFamily: 'GillSans-Italic', color: textColor},
     text2: {fontSize: 16, fontFamily: 'GillSans-Italic', color: textColor},
     text3: {fontSize: 15,fontFamily: 'GillSans-Italic', color: textColor},
-    icon: {paddingRight: 5, color: textColor}
+    icon: {paddingRight: 5}
 };
 
 const outputsStylesMapping = {

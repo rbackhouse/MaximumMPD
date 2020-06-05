@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, Modal, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Text, View, Modal, FlatList, TouchableOpacity, ActivityIndicator, Appearance } from 'react-native';
 import { SearchBar, Input, Button } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
@@ -109,6 +109,12 @@ export default class NewPlaylistModal extends React.Component {
         const common = StyleManager.getStyles("styles");
         const visible = this.props.visible;
         const value = this.props.value;
+
+        let theme = Appearance.getColorScheme();
+        let createIconColor = "black";
+        if (theme === 'dark') {
+            createIconColor = this.state.createDisabled ? "white" : "black";
+        }
         return (
             <Modal
                 animationType="fade"
@@ -126,19 +132,21 @@ export default class NewPlaylistModal extends React.Component {
                         </View>
                     </View>
                     <View style={styles.container7}>
-                        <Input placeholder="Click here to enter name" label="Create New Playlist" autoCapitalize="none" onChangeText={(playlistName) => { this.setState({playlistName}); playlistName.length < 1 ?  this.setState({createDisabled: true}) : this.setState({createDisabled: false}); }} style={styles.entryField} inputStyle={styles.label} labelStyle={styles.label}></Input>
+                        <Input placeholder="Click here to enter name" 
+                            label="Create New Playlist" 
+                            autoCapitalize="none" 
+                            onChangeText={(playlistName) => { 
+                                this.setState({playlistName}); playlistName.length < 1 ?  this.setState({createDisabled: true}) : this.setState({createDisabled: false}); 
+                            }} 
+                            style={styles.entryField} 
+                            inputStyle={styles.label} 
+                            labelStyle={styles.label}/>
                     </View>
                     <View style={styles.container8}>
                         <Button
                             onPress={() => {this.onOk();}}
                             title="Create"
-                            icon={
-                                <FAIcon
-                                  name="check"
-                                  size={15}                                  
-                                  style={styles.icon}
-                                />
-                            }
+                            icon={{name: 'check',  size: 15, type: 'font-awesome', color: createIconColor}}
                             raised={true}
                             type="outline"
                             disabled={this.state.createDisabled}
@@ -146,13 +154,7 @@ export default class NewPlaylistModal extends React.Component {
                         <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
-                            icon={
-                                <FAIcon
-                                  name="times-circle"
-                                  size={15}
-                                  style={styles.icon}
-                                />
-                            }
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: 'black'}}
                             raised={true}
                             type="outline"
                         />
@@ -164,6 +166,7 @@ export default class NewPlaylistModal extends React.Component {
                                     round
                                     clearIcon
                                     lightTheme
+                                    platform="ios"
                                     cancelButtonTitle="Cancel"
                                     placeholder='Search'
                                     onChangeText={this.search}
