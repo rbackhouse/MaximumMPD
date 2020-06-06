@@ -408,7 +408,7 @@ export default class PlayScreen extends React.Component {
       if (width < 321) {
           padding = 45;
           isMedium = true;
-          bg = .1;
+          bg = .13;
       }
       albumArtSize = Math.round((height/10) * 4) - padding;
       const title = currentsong.name !== undefined ? currentsong.name : currentsong.title

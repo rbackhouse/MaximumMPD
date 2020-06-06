@@ -372,13 +372,14 @@ export default class FilesScreen extends React.Component {
                             lightTheme
                             round
                             platform="ios"
-                            cancelButtonTitle="Cancel"
+                            cancelButtonTitle=""
                             placeholder='Search'
                             onChangeText={this.search}
                             value={this.state.searchValue}
                             containerStyle={common.searchbarContainer}
                             inputContainerStyle={common.searchbarInputContainer}
                             inputStyle={common.searchbarInput}
+                            showCancel={true}
                     />
                     </View>
                     <View style={styles.container3}>
@@ -387,7 +388,7 @@ export default class FilesScreen extends React.Component {
                         </Text>
                     </View>
                 </View>
-                <View style={common.container4}>
+                <View style={styles.container4}>
                 <SwipeListView
 					useFlatList
                     data={this.state.files}

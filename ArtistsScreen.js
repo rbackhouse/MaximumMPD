@@ -514,8 +514,8 @@ export default class ArtistsScreen extends React.Component {
         let fl = .84;
 
         if (width < 321) {
-            bg = .08;
-            fl = .82;
+            bg = .1;
+            fl = .8;
         }
         if (this.state.selectedTab === 0) {
             return (

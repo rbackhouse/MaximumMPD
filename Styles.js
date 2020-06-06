@@ -413,7 +413,8 @@ var filesStyles = {
         paddingBottom: 2,
         color: textColor
     },
-    container3: { flex: .5, backgroundColor: bgColor }
+    container3: { flex: .5, backgroundColor: bgColor },
+    container4: { flex: .9, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5, backgroundColor: bgColor }
 };
 
 const newPlaylistStylesMapping = {
