@@ -105,6 +105,9 @@ export default class PlayScreen extends React.Component {
                     currenttitle = this.state.status.currentsong.name !== undefined ? this.state.status.currentsong.name : this.state.status.currentsong.title;
                 } else {
                     let volume = parseInt(status.volume);
+                    if (isNaN(volume)) {
+                        volume = 0;
+                    }
                     this.setState({volume:volume});
                     Config.isUseDeviceVolume()
                     .then((useDeviceVolume) => {
