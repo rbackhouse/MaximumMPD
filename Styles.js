@@ -388,7 +388,8 @@ var debugStyles = {
 
 const filesStylesMapping = {
     bgColor: [
-        "container3"
+        "container3",
+        "container4"
     ],
     textColor: [
         "item",
