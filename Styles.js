@@ -988,7 +988,7 @@ function build() {
 build();
 
 const subscription = Appearance.addChangeListener(({ colorScheme }) => {
-    darkMode = colorScheme === 'dark' ? true : false;
+    darkMode = Appearance.getColorScheme() === 'dark' ? true : false;
     build();
 });
 
