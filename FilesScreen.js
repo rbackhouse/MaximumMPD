@@ -179,11 +179,10 @@ export default class FilesScreen extends React.Component {
     }
 
     onPress(item, toPlaylist) {
-        this.load(item.b64dir);
-        this.state.dirs.push(item.b64dir);
+        this.load(item.b64dir, true);
     }
 
-    load(uri) {
+    load(uri, pushDir) {
         let path = "";
 		if (uri) {
 			path += Base64.atob(uri);
@@ -191,7 +190,19 @@ export default class FilesScreen extends React.Component {
         this.setState({loading: true});
         MPDConnection.current().listFiles(path)
         .then((files) => {
+            let startIndex = 0;
+            files.files.forEach((file, index) => {
+                file.key = ""+(startIndex+index+1);
+            });
+            startIndex += files.files.length;
+            files.dirs.forEach((dir, index) => {
+                dir.key = ""+(startIndex+index+1);
+            });
+
             this.setState({loading: false, defaultSort: true, files: [...files.files, ...files.dirs], fullset: [...files.files, ...files.dirs]});
+            if (pushDir) {
+                this.state.dirs.push(uri);                
+            }
             if (this.state.dirs.length < 1) {
                 this.props.navigation.setParams({ showBackbutton: false });
             } else {
@@ -224,8 +235,8 @@ export default class FilesScreen extends React.Component {
     };
 
     queue(rowMap, item, autoplay) {
-        if (rowMap[item.b64file]) {
-			rowMap[item.b64file].closeRow();
+        if (rowMap[item.key]) {
+			rowMap[item.key].closeRow();
 		}
         const path = Base64.atob(item.b64file);
 
@@ -268,8 +279,8 @@ export default class FilesScreen extends React.Component {
     }
 
     playlist(rowMap, item) {
-        if (rowMap[item.b64file]) {
-			rowMap[item.b64file].closeRow();
+        if (rowMap[item.key]) {
+			rowMap[item.key].closeRow();
 		}
         if (MPDConnection.current().isPlaylistFile(item.file)) {
             Alert.alert(
@@ -392,7 +403,7 @@ export default class FilesScreen extends React.Component {
                 <SwipeListView
 					useFlatList
                     data={this.state.files}
-                    keyExtractor={item => item.b64file || item.b64dir}
+                    keyExtractor={item => item.key}
                     renderItem={(data, map) => {
                         const item = data.item;
                         if (item.file) {

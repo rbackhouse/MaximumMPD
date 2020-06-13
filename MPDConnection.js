@@ -76,7 +76,7 @@ class Discoverer {
                     }
                 } else if (discovered.type === "remove") {
                     if (discovered.name) {
-                        this.discovered[discovered.name] = undefined;
+                        delete this.discovered[discovered.name];
                         mpdEventEmiiter.emit('OnDiscover', discovered);
                     }
                 } else if (discovered.type === "discover") {
@@ -1182,7 +1182,7 @@ class MPDConnection {
                     f = undefined;
 					const file = line.substring(FILE_PREFIX.length);
                     for (let suffix of this.fileSuffixes) {
-						if (MPDConnection._endsWith(file, suffix)) {
+						if (file.indexOf('.') === -1 || MPDConnection._endsWith(file, suffix)) {
                             const b64file = this.toBase64(file);
                             f = {file: file, b64file: b64file};
 							files.push(f);
@@ -1191,8 +1191,11 @@ class MPDConnection {
 					}
 				} else if (line.indexOf(DIR_PREFIX) === 0) {
 					const dir = line.substring(DIR_PREFIX.length);
-					const b64dir = this.toBase64(dir);
-					dirs.push({dir: dir, b64dir: b64dir});
+                    const b64dir = this.toBase64(dir);
+                    const dirEntry = {dir: dir, b64dir: b64dir};
+                    if (dirs.indexOf(dirEntry) === -1) {
+                        dirs.push(dirEntry);
+                    }
                 } else if (line.indexOf(PLAYLIST_PREFIX) === 0) {
                     const playlist = line.substring(PLAYLIST_PREFIX.length);
                     if (this.isPlaylistFile(playlist)) {
@@ -1638,7 +1641,7 @@ class MPDConnection {
 			lines.forEach((line) => {
 				const suffix = line.substring(SUFFIX_PREFIX.length);
 				if (line.indexOf(SUFFIX_PREFIX) === 0 && this.fileSuffixes.indexOf(suffix) === -1) {
-					this.fileSuffixes.push(suffix);
+					this.fileSuffixes.push("."+suffix);
 				}
 			});
 		};
