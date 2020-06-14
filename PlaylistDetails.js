@@ -25,6 +25,9 @@ import ActionButton from 'react-native-action-button';
 import MPDConnection from './MPDConnection';
 import { StyleManager } from './Styles';
 
+const DELETE_MODE = 1;
+const GOTO_MODE = 2;
+
 export default class PlaylistDetails extends React.Component {
     static navigationOptions = ({ navigation }) => {
         return {
@@ -38,7 +41,8 @@ export default class PlaylistDetails extends React.Component {
           searchValue: "",
           playlist: [],
           fullset: [],
-          loading: false
+          loading: false,
+          pressMode: DELETE_MODE
         };
     }
 
@@ -102,28 +106,39 @@ export default class PlaylistDetails extends React.Component {
     }
 
     onPress(item, index) {
-        Alert.alert(
-            "Delete Playlist Entry",
-            "Are you sure you want to delete ''"+item.title+"'' ?",
-            [
-                {text: 'OK', onPress: () => {
-                    this.setState({loading: true});
-                    MPDConnection.current().deletePlayListItem(this.playlistName, index)
-                    .then(() => {
-                        this.setState({loading: false});
-                        this.load();
-                    })
-                    .catch((err) => {
-                        this.setState({loading: false});
-                        Alert.alert(
-                            "MPD Error",
-                            "Error : "+err
-                        );
-                    });
-                }},
-                {text: 'Cancel'}
-            ]
-        );
+        switch (this.state.pressMode) {
+            case DELETE_MODE:
+                Alert.alert(
+                    "Delete Playlist Entry",
+                    "Are you sure you want to delete ''"+item.title+"'' ?",
+                    [
+                        {text: 'OK', onPress: () => {
+                            this.setState({loading: true});
+                            MPDConnection.current().deletePlayListItem(this.playlistName, index)
+                            .then(() => {
+                                this.setState({loading: false});
+                                this.load();
+                            })
+                            .catch((err) => {
+                                this.setState({loading: false});
+                                Alert.alert(
+                                    "MPD Error",
+                                    "Error : "+err
+                                );
+                            });
+                        }},
+                        {text: 'Cancel'}
+                    ]
+                );
+                break;
+            case GOTO_MODE:
+                const { navigation } = this.props;
+                if (item.artist && item.album) {
+                    navigation.navigate('Browse');
+                    navigation.navigate('Songs', {artist: item.artist, album: item.album});
+                }
+                break;
+        }    
     }
 
     onDelete() {
@@ -168,6 +183,17 @@ export default class PlaylistDetails extends React.Component {
         });
     }
 
+    onSwitchMode() {
+        switch (this.state.pressMode) {
+            case DELETE_MODE:
+                this.setState({pressMode: GOTO_MODE})
+                break;
+            case GOTO_MODE:
+                this.setState({pressMode: DELETE_MODE})
+                break;
+        }
+    }
+
     renderSeparator = () => {
         const common = StyleManager.getStyles("styles");
         return (
@@ -180,6 +206,17 @@ export default class PlaylistDetails extends React.Component {
     renderItem = ({item, index}) => {
         const styles = StyleManager.getStyles("playlistDetailsStyles");
         const common = StyleManager.getStyles("styles");
+
+        let pressModeIcon;
+        switch (this.state.pressMode) {
+            case DELETE_MODE:
+                pressModeIcon = "ios-trash"
+                break;
+            case GOTO_MODE:
+                pressModeIcon = "ios-arrow-round-forward"
+                break;
+        }
+
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item, index)}>
                 <View style={common.container3}>
@@ -195,7 +232,7 @@ export default class PlaylistDetails extends React.Component {
                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>Time: {item.time}</Text>
                         }
                     </View>
-                    <Icon name="ios-trash" size={28} style={common.icon}/>
+                    <Icon name={pressModeIcon} size={28} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -243,6 +280,9 @@ export default class PlaylistDetails extends React.Component {
                     </View>
                 }
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
+                    <ActionButton.Item size={40} buttonColor='#3498db' title="Switch Mode" textStyle={common.actionButtonText} onPress={this.onSwitchMode.bind(this)}>
+                        <FAIcon name="edit" size={15} color="#e6e6e6" />
+                    </ActionButton.Item>
                     <ActionButton.Item buttonColor='#1abc9c' title="Play Now" size={40} textStyle={common.actionButtonText} onPress={() => {this.onLoad(true);}}>
                         <FAIcon name="play" size={15} color="#e6e6e6" />
                     </ActionButton.Item>

@@ -366,6 +366,18 @@ export default class PlayScreen extends React.Component {
         MPDConnection.current().clearPlayList();
     }
 
+    onGoTo = () => {
+        this.menu.hide();
+        if (this.state.status && this.state.status.currentsong) {
+            currentsong = this.state.status.currentsong;
+            if (currentsong.artist && currentsong.album) {
+                const { navigation } = this.props;
+                navigation.navigate('Browse');
+                navigation.navigate('Songs', {artist: currentsong.artist, album: currentsong.album});
+            }
+        }
+    }
+
     render() {
       const styles = StyleManager.getStyles("playStyles");
       const common = StyleManager.getStyles("styles");
@@ -528,6 +540,7 @@ export default class PlayScreen extends React.Component {
                               <MenuItem textStyle={styles.meniItem} onPress={this.addToPlaylist}>Add to Playlist</MenuItem>
                               <MenuItem textStyle={styles.meniItem} onPress={this.onRandom}>Random Playlist</MenuItem>
                               <MenuItem textStyle={styles.meniItem} onPress={this.onClear}>Clear Queue</MenuItem>
+                              <MenuItem textStyle={styles.meniItem} onPress={this.onGoTo}>Goto Album</MenuItem>
                             </Menu>
                         </View>
                   </View>

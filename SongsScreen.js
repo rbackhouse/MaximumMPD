@@ -47,23 +47,56 @@ export default class SongsScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-          songs: [],
-          fullset: [],
-          loading: false,
-          modalVisible: false,
-          selectedItem: "",
-          imagePath: "",
-          searchValue: "",
-          defaultSort: true
+            artist: "",
+            album: "",
+            genre: "",
+            songs: [],
+            fullset: [],
+            loading: false,
+            modalVisible: false,
+            selectedItem: "",
+            imagePath: "",
+            searchValue: "",
+            defaultSort: true
         };
     }
 
     componentDidMount() {
         const { navigation } = this.props;
+        navigation.setParams({ sort: this.sort });
+        //this.load();
+        this.onDisconnect = MPDConnection.getEventEmitter().addListener(
+            "OnDisconnect",
+            () => {
+                this.setState({songs: [], fullset: []});
+                this.props.navigation.popToTop();
+            }
+        );
+        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
+            this.setState({loading: this.state.loading});
+        });
+        this.didFocusSubscription = this.props.navigation.addListener(
+            'didFocus',
+            payload => {
+                this.load();
+            }
+        );
+    }
+
+    componentWillUnmount() {
+        this.onDisconnect.remove();
+        this.didFocusSubscription.remove();
+        if (this.onApperance) {
+            this.onApperance.remove();
+        }
+    }
+
+    load() {
+        const { navigation } = this.props;
         const artist = navigation.getParam('artist');
         const album = navigation.getParam('album');
         const genre = navigation.getParam('genre');
-        navigation.setParams({ sort: this.sort });
+        console.log("load "+artist+" "+album+" "+genre);
 
         this.setState({loading: true});
 
@@ -100,23 +133,7 @@ export default class SongsScreen extends React.Component {
                 );
             });
         }
-        this.onDisconnect = MPDConnection.getEventEmitter().addListener(
-            "OnDisconnect",
-            () => {
-                this.setState({songs: [], fullset: []});
-                this.props.navigation.popToTop();
-            }
-        );
-        this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
-            this.setState({loading: this.state.loading});
-        });        
-    }
 
-    componentWillUnmount() {
-        this.onDisconnect.remove();
-        if (this.onApperance) {
-            this.onApperance.remove();
-        }
     }
 
     search = (text) => {
