@@ -150,64 +150,67 @@ export default class ArtistsScreen extends React.Component {
     }
 
     load() {
-        const allArtist = MPDConnection.current().getAllArtists();
-        const allAlbums = MPDConnection.current().getAllAlbums(true);
-        const allGenres = MPDConnection.current().getAllGenres();
+        Config.getSortSettings()
+        .then((sortSettings) => {
+            const allArtist = MPDConnection.current().getAllArtists();
+            const allAlbums = MPDConnection.current().getAllAlbums(true, sortSettings.albumSortByArtist);
+            const allGenres = MPDConnection.current().getAllGenres();
 
-        this.setState({loading: true});
+            this.setState({loading: true, defaultAlbumSort: !sortSettings.albumSortByArtist});
 
-        Promise.all([allArtist, allAlbums, allGenres])
-        .then((results) => {
-            this.setState({loading: false});
-            let artists = results[0];
-            let albums = results[1];
-            let genres = results[2];
+            Promise.all([allArtist, allAlbums, allGenres])
+            .then((results) => {
+                this.setState({loading: false});
+                let artists = results[0];
+                let albums = results[1];
+                let genres = results[2];
 
-            artists.forEach((artist, index) => {
-                artist.key = ""+(index+1);
-            });
-
-            this.setState({artists: artists, fullset: artists});
-            AlbumArt.getAlbumArtForArtists()
-            .then((artMap) => {
-                artists.forEach((artist) => {
-                    if (artMap[artist.name]) {
-                        artist.imagePath = "file://"+artMap[artist.name];
-                    }
-                })
-                this.setState({artists: this.state.artists, fullset: this.state.fullset});
-            });
-            albums.forEach((album, index) => {
-                album.key = ""+(index+1);
-            });
-            AlbumArt.getAlbumArtForAlbums(albums).then((albums) => {
-                this.setState({albums: this.subset(albums), albumsFullset: albums});
-            });
-            let genreList = [];
-            let index = 0;
-            for (let genre in genres) {
-                genreList.push({
-                    key: ""+(++index),
-                    name: genre
+                artists.forEach((artist, index) => {
+                    artist.key = ""+(index+1);
                 });
-            }
-            genreList.sort((a,b) => {
-				if (a.name < b.name) {
-					return -1;
-				} else if (a.name > b.name) {
-					return 1;
-				} else {
-					return 0;
-				}
+
+                this.setState({artists: artists, fullset: artists});
+                AlbumArt.getAlbumArtForArtists()
+                .then((artMap) => {
+                    artists.forEach((artist) => {
+                        if (artMap[artist.name]) {
+                            artist.imagePath = "file://"+artMap[artist.name];
+                        }
+                    })
+                    this.setState({artists: this.state.artists, fullset: this.state.fullset});
+                });
+                albums.forEach((album, index) => {
+                    album.key = ""+(index+1);
+                });
+                AlbumArt.getAlbumArtForAlbums(albums).then((albums) => {
+                    this.setState({albums: this.subset(albums), albumsFullset: albums});
+                });
+                let genreList = [];
+                let index = 0;
+                for (let genre in genres) {
+                    genreList.push({
+                        key: ""+(++index),
+                        name: genre
+                    });
+                }
+                genreList.sort((a,b) => {
+                    if (a.name < b.name) {
+                        return -1;
+                    } else if (a.name > b.name) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                });
+                this.setState({genres: genreList, genresFullset: genreList, genreMap: genres});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
             });
-            this.setState({genres: genreList, genresFullset: genreList, genreMap: genres});
-        })
-        .catch((err) => {
-            this.setState({loading: false});
-            Alert.alert(
-                "MPD Error",
-                "Error : "+err
-            );
         });
     }
 

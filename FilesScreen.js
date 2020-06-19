@@ -29,6 +29,7 @@ import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
 import NewPlaylistModal from './NewPlaylistModal';
 import { StyleManager } from './Styles';
+import Config from './Config';
 
 export default class FilesScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -64,8 +65,6 @@ export default class FilesScreen extends React.Component {
 
         this.props.navigation.setParams({ backlinkHandler: this.backlinkHandler });
         this.props.navigation.setParams({ sort: this.sort });
-
-        this.load();
 
         this.onConnect = MPDConnection.getEventEmitter().addListener(
             "OnConnect",
@@ -187,35 +186,38 @@ export default class FilesScreen extends React.Component {
 		if (uri) {
 			path += Base64.atob(uri);
 		}
-        this.setState({loading: true});
-        MPDConnection.current().listFiles(path)
-        .then((files) => {
-            let startIndex = 0;
-            files.files.forEach((file, index) => {
-                file.key = ""+(startIndex+index+1);
+        Config.getSortSettings()
+        .then((sortSettings) => {
+            this.setState({loading: true, defaultSort: !sortSettings.fileSortByTitle});
+            MPDConnection.current().listFiles(path, sortSettings.fileSortByTitle)
+            .then((files) => {
+                let startIndex = 0;
+                files.files.forEach((file, index) => {
+                    file.key = ""+(startIndex+index+1);
+                });
+                startIndex += files.files.length;
+                files.dirs.forEach((dir, index) => {
+                    dir.key = ""+(startIndex+index+1);
+                });
+    
+                this.setState({loading: false, files: [...files.files, ...files.dirs], fullset: [...files.files, ...files.dirs]});
+                if (pushDir) {
+                    this.state.dirs.push(uri);                
+                }
+                if (this.state.dirs.length < 1) {
+                    this.props.navigation.setParams({ showBackbutton: false });
+                } else {
+                    this.props.navigation.setParams({ showBackbutton: true });
+                }
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                console.log(err);
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
             });
-            startIndex += files.files.length;
-            files.dirs.forEach((dir, index) => {
-                dir.key = ""+(startIndex+index+1);
-            });
-
-            this.setState({loading: false, defaultSort: true, files: [...files.files, ...files.dirs], fullset: [...files.files, ...files.dirs]});
-            if (pushDir) {
-                this.state.dirs.push(uri);                
-            }
-            if (this.state.dirs.length < 1) {
-                this.props.navigation.setParams({ showBackbutton: false });
-            } else {
-                this.props.navigation.setParams({ showBackbutton: true });
-            }
-        })
-        .catch((err) => {
-            this.setState({loading: false});
-            console.log(err);
-            Alert.alert(
-                "MPD Error",
-                "Error : "+err
-            );
         });
     }
 

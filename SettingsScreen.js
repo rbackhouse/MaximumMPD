@@ -497,7 +497,9 @@ export default class SettingsScreen extends React.Component {
         autoConnect: false,
         useDeviceVolume: false,
         useGridView: false,
-        darkMode: false
+        darkMode: false,
+        sortAlbumsByArtist: false,
+        sortFilesByTitle: false
     }
 
     componentDidMount() {
@@ -521,6 +523,10 @@ export default class SettingsScreen extends React.Component {
         .then((value) => {
             this.setState({useGridView: value});
         });
+        Config.getSortSettings()
+        .then((sortSettings) => {
+            this.setState({sortAlbumsByArtist: sortSettings.albumSortByArtist, sortFilesByTitle: sortSettings.fileSortByTitle});
+        })
         this.onConnect = MPDConnection.getEventEmitter().addListener(
             "OnConnect",
             () => {
@@ -656,6 +662,16 @@ export default class SettingsScreen extends React.Component {
         Config.setUseGridView(value);
     }
 
+    onSortAlbumsByArtist(value) {
+        this.setState({sortAlbumsByArtist: value});
+        Config.setSortSettings({albumSortByArtist: value, fileSortByTitle: this.state.sortFilesByTitle});
+    }
+
+    onSortFilesByTitle(value) {
+        this.setState({sortFilesByTitle: value});
+        Config.setSortSettings({albumSortByArtist: this.state.sortAlbumsByArtist, fileSortByTitle: value});
+    }
+
     setCrossfade(value) {
         this.setState({crossfade: value});
         this.setState({crossfadeVisible: false});
@@ -784,6 +800,19 @@ export default class SettingsScreen extends React.Component {
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onUseGridViewChange(value)}
                                 title='Use Grid View by default'/>
+                    <SettingsList.Header headerStyle={styles.headerStyle} headerText="Sort Options"/>
+                    <SettingsList.Item
+                        hasNavArrow={false}
+                                switchState={this.state.sortAlbumsByArtist}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onSortAlbumsByArtist(value)}
+                                title='Sort Albums by Artist'/>
+                    <SettingsList.Item
+                        hasNavArrow={false}
+                                switchState={this.state.sortFilesByTitle}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onSortFilesByTitle(value)}
+                                title='Sort Files by Title'/>
                     <SettingsList.Header headerStyle={styles.headerStyle} headerText="Debug Options"/>
                     <SettingsList.Item
                         hasNavArrow={true}

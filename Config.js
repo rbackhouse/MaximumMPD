@@ -189,5 +189,35 @@ export default {
             });
         });
         return promise;
+    },
+    getSortSettings: () => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                if (config.sortSettings !== undefined) {
+                    resolve(config.sortSettings);
+                } else {
+                    config.sortSettings = {albumSortByArtist: false, fileSortByTitle: false};
+                    configStorage.setConfig(config)
+                    .then(() => {
+                        resolve(config.sortSettings);
+                    });
+                }
+            });
+        });
+        return promise;
+    },
+    setSortSettings: (sortSettings) => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                config.sortSettings = sortSettings;
+                configStorage.setConfig(config)
+                .then(() => {
+                    resolve();
+                })
+            });
+        });
+        return promise;
     }
 }

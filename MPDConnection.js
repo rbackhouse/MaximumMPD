@@ -438,7 +438,7 @@ class MPDConnection {
         return this.createPromise("list artist", processor);
 	}
 
-	getAllAlbums(useAlbumArtist) {
+	getAllAlbums(useAlbumArtist, sortByArtist) {
 		const processor = (data) => {
 			const lines = MPDConnection._lineSplit(data);
 			let albums = [];
@@ -486,13 +486,19 @@ class MPDConnection {
 				}
 			});
 			albums.sort((a,b) => {
-				if (a.name < b.name) {
-					return -1;
-				} else if (a.name > b.name) {
-					return 1;
-				} else {
-					return 0;
-				}
+                comp1 = a.name;
+                comp2 = b.name;
+                if (sortByArtist && a.artist && b.artist) {
+                    comp1 = a.artist;
+                    comp2 = b.artist;
+                }
+                if (comp1 < comp2) {
+                    return -1;
+                } else if (comp1 > comp2) {
+                    return 1;
+                } else {
+                    return 0;
+                }    
 			});
 			return albums;
         };
@@ -1171,7 +1177,7 @@ class MPDConnection {
         return promise;
 	}
 
-	listFiles(uri) {
+	listFiles(uri, sortByTitle) {
 		const processor = (data) => {
 			const lines = MPDConnection._lineSplit(data);
 			let dirs = [];
@@ -1216,13 +1222,28 @@ class MPDConnection {
 				}
 			});
             files.sort((a,b) => {
-				if (a.file < b.file) {
-					return -1;
-				} else if (a.file > b.file) {
-					return 1;
-				} else {
-					return 0;
-				}
+                let comp1 = a.file || a.dir;
+                let comp2 = b.file || b.dir;
+    
+                if (sortByTitle && a.title && b.title) {
+                    comp1 = a.title;
+                    comp2 = b.title;
+                    if (comp1 < comp2) {
+                        return -1;
+                    } else if (comp1 > comp2) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                } else {
+                    if (comp1 < comp2) {
+                        return sortByTitle ? -1 : 1;
+                    } else if (comp1 > comp2) {
+                        return sortByTitle ? 1 : -1;
+                    } else {
+                        return 0;
+                    }                
+                }
 			});
             dirs.sort((a,b) => {
 				if (a.dir < b.dir) {
