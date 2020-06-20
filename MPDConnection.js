@@ -1237,9 +1237,9 @@ class MPDConnection {
                     }
                 } else {
                     if (comp1 < comp2) {
-                        return sortByTitle ? -1 : 1;
+                        return !sortByTitle ? -1 : 1;
                     } else if (comp1 > comp2) {
-                        return sortByTitle ? 1 : -1;
+                        return !sortByTitle ? 1 : -1;
                     } else {
                         return 0;
                     }                
