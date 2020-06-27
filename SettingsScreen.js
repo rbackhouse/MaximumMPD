@@ -397,7 +397,7 @@ class AboutModal extends React.Component {
                     <View style={styles.flex3}>
                         <Text style={styles.text2}>About Maximum MPD</Text>
                     </View>
-                    <Text style={[styles.text1, {padding: 15}]}>Version: 3.8</Text>
+                    <Text style={[styles.text1, {padding: 15}]}>Version: 3.9</Text>
                     <Text style={[styles.text1, {padding: 15}]}>Author: Richard Backhouse</Text>
                     <Text style={[styles.text1, {padding: 15}]}>Various Images provided by Icons8 (https://icons8.com)</Text>
                     <View style={styles.flex1}>

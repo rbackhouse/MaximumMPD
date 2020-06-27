@@ -22,22 +22,14 @@
 
 - (id)init {
   self = [super init];
+  self.listening = NO;
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onPause) name:UIApplicationDidEnterBackgroundNotification object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onResume) name:UIApplicationWillEnterForegroundNotification object:nil];
-  [self start];
   return self;
 }
 
-- (void)startObserving {
-    self.listening = YES;
-}
-
-- (void)stopObserving {
-    self.listening = NO;
-}
-
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-    if ([keyPath isEqual:@"outputVolume"] && self.listening) {
+    if ([keyPath isEqual:@"outputVolume"] && self.listening == YES) {
       float newVolume = [self.audioSession outputVolume];
       NSLog(@"newVolume  %f", newVolume);
       [self sendEventWithName:@"OnVolumeChange" body:@{@"volume": [NSNumber numberWithFloat: newVolume]}];
@@ -49,11 +41,15 @@
 }
 
 - (void) onPause {
-  [self cleanup];
+  if (self.listening == YES) {
+    [self cleanup];
+  }
 }
 
 - (void) onResume {
-  [self start];
+  if (self.listening == YES) {
+    [self start];
+  }
 }
 
 - (void) start {
@@ -75,15 +71,21 @@
 }
 
 - (void) cleanup {
-  [self.audioSession removeObserver:self forKeyPath:@"outputVolume"];
-  self.audioSession = nil;
-  self.volumeView = nil;
-  self.volumeViewSlider = nil;
+  if (self.audioSession != nil) {
+    [self.audioSession removeObserver:self forKeyPath:@"outputVolume"];
+    self.audioSession = nil;
+    self.volumeView = nil;
+    self.volumeViewSlider = nil;
+  }
 }
 
 RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(setVolume:(float)volume) {
+  if (self.listening == NO) {
+    self.listening = YES;
+    [self start];
+  }
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
     NSLog(@"setVolume  %f", volume);
     self.volumeViewSlider.value = volume;
