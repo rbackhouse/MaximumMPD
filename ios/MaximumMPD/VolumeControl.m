@@ -58,16 +58,18 @@
 
   [self.audioSession addObserver:self forKeyPath:@"outputVolume" options:0 context:nil];
 
-  self.volumeView = [[MPVolumeView alloc] init];
-  self.volumeView.showsRouteButton = NO;
-  self.volumeView.showsVolumeSlider = NO;
-  
-  for (UIView *view in self.volumeView.subviews) {
-      if ([view isKindOfClass:[UISlider class]]) {
-          self.volumeViewSlider = (UISlider *)view;
-          break;
-      }
-  }
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    self.volumeView = [[MPVolumeView alloc] init];
+    self.volumeView.showsRouteButton = NO;
+    self.volumeView.showsVolumeSlider = NO;
+    
+    for (UIView *view in self.volumeView.subviews) {
+        if ([view isKindOfClass:[UISlider class]]) {
+            self.volumeViewSlider = (UISlider *)view;
+            break;
+        }
+    }
+  });
 }
 
 - (void) cleanup {

@@ -219,5 +219,35 @@ export default {
             });
         });
         return promise;
+    },
+    isUseNowPlayingControl: () => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                if (config.useNowPlayingControl !== undefined) {
+                    resolve(config.useNowPlayingControl);
+                } else {
+                    config.useNowPlayingControl = false;
+                    configStorage.setConfig(config)
+                    .then(() => {
+                        resolve(config.useNowPlayingControl);
+                    });
+                }
+            });
+        });
+        return promise;
+    },
+    setUseNowPlayingControl: (useNowPlayingControl) => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                config.useNowPlayingControl = useNowPlayingControl;
+                configStorage.setConfig(config)
+                .then(() => {
+                    resolve();
+                })
+            });
+        });
+        return promise;
     }
 }

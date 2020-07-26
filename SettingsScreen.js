@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { View, Modal, Text, Alert, Linking, TextInput, Switch, Keyboard, TouchableWithoutFeedback, Appearance } from 'react-native';
+import { View, Modal, Text, Alert, Linking, TextInput, Switch, Keyboard, TouchableWithoutFeedback, Appearance, NativeModules } from 'react-native';
 import {Picker} from '@react-native-community/picker';
 import SettingsList from 'react-native-settings-list';
 import { Input, Button } from 'react-native-elements'
@@ -24,6 +24,7 @@ import MPDConnection from './MPDConnection';
 import AlbumArt from './AlbumArt';
 import Config from './Config';
 import { StyleManager, bgColor } from './Styles';
+const { NowPlayingControl } = NativeModules;
 
 class AlbumArtModal extends React.Component {
     state = {
@@ -397,7 +398,7 @@ class AboutModal extends React.Component {
                     <View style={styles.flex3}>
                         <Text style={styles.text2}>About Maximum MPD</Text>
                     </View>
-                    <Text style={[styles.text1, {padding: 15}]}>Version: 3.9</Text>
+                    <Text style={[styles.text1, {padding: 15}]}>Version: 4.0</Text>
                     <Text style={[styles.text1, {padding: 15}]}>Author: Richard Backhouse</Text>
                     <Text style={[styles.text1, {padding: 15}]}>Various Images provided by Icons8 (https://icons8.com)</Text>
                     <View style={styles.flex1}>
@@ -499,7 +500,8 @@ export default class SettingsScreen extends React.Component {
         useGridView: false,
         darkMode: false,
         sortAlbumsByArtist: false,
-        sortFilesByTitle: false
+        sortFilesByTitle: false,
+        useNowPlayingControl: false
     }
 
     componentDidMount() {
@@ -526,7 +528,11 @@ export default class SettingsScreen extends React.Component {
         Config.getSortSettings()
         .then((sortSettings) => {
             this.setState({sortAlbumsByArtist: sortSettings.albumSortByArtist, sortFilesByTitle: sortSettings.fileSortByTitle});
-        })
+        });
+        Config.isUseNowPlayingControl()
+        .then((value) => {
+            this.setState({useNowPlayingControl: value});
+        });
         this.onConnect = MPDConnection.getEventEmitter().addListener(
             "OnConnect",
             () => {
@@ -660,6 +666,16 @@ export default class SettingsScreen extends React.Component {
     onUseGridViewChange(value) {
         this.setState({useGridView: value});
         Config.setUseGridView(value);
+    }
+
+    onUseNowPlayingControl(value) {
+        this.setState({useNowPlayingControl: value});
+        Config.setUseNowPlayingControl(value);
+        if (value === true) {
+            NowPlayingControl.start();
+        } else {
+            NowPlayingControl.stop();
+        }
     }
 
     onSortAlbumsByArtist(value) {
@@ -800,6 +816,12 @@ export default class SettingsScreen extends React.Component {
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onUseGridViewChange(value)}
                                 title='Use Grid View by default'/>
+                    <SettingsList.Item
+                        hasNavArrow={false}
+                                switchState={this.state.useNowPlayingControl}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onUseNowPlayingControl(value)}
+                                title='Use Now Playing Control'/>
                     <SettingsList.Header headerStyle={styles.headerStyle} headerText="Sort Options"/>
                     <SettingsList.Item
                         hasNavArrow={false}

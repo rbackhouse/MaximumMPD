@@ -20,12 +20,16 @@ import EventEmitter from "react-native/Libraries/vendor/emitter/EventEmitter";
 
 import { NativeEventEmitter, NativeModules } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import Config from './Config';
 
 const { SocketConnection } = NativeModules;
 const { BonjourListener } = NativeModules;
+const { NowPlayingControl } = NativeModules;
 
 const socketConnectionEmitter = new NativeEventEmitter(SocketConnection);
 const bonjourListenerEmitter = new NativeEventEmitter(BonjourListener);
+const nowPlayingEmitter = new NativeEventEmitter(NowPlayingControl);
+
 const mpdEventEmiiter = new EventEmitter();
 
 const ARTIST_PREFIX = "Artist: ";
@@ -58,6 +62,13 @@ const INITIAL = 0;
 const WRITTEN = 1;
 const READING = 2;
 const COMPLETE = 3;
+
+Config.isUseNowPlayingControl()
+.then((value) => {
+    if (value === true) {
+        NowPlayingControl.start();
+    }
+});
 
 class Discoverer {
     constructor() {
@@ -260,6 +271,39 @@ class MPDConnection {
             }
         );
 
+        this.nowPlayingSubscription = nowPlayingEmitter.addListener(
+            "OnNowPlayingEvent",
+            (event) => {
+                switch (event.type) {
+                    case "play":
+                        this.play(undefined, true);
+                        break;
+                    case "pause":
+                        this.pause(true);
+                        break;
+                    case "stop":
+                        this.stop();
+                        break;
+                    case "previous":
+                        this.previous();
+                        break;
+                    case "next":
+                        this.next();
+                        break;
+                    case "next":
+                        this.next();
+                        break;
+                    case "playpause":
+                        if (this.currentstatus.state === "play") {
+                            this.pause(true);
+                        } else if (this.currentstatus.state === "pause") {
+                            this.play(undefined, true);
+                        }
+                        break;
+                }
+            }
+        );
+
 		SocketConnection.connect(this.host, this.port);
 
 		let processQueue = () => {
@@ -300,6 +344,7 @@ class MPDConnection {
         this.responseSubscription.remove();
         this.initSubscription.remove();
         this.timeoutSubscription.remove();
+        this.nowPlayingSubscription.remove();
         this.pauseResumeSubscription.remove();
 		this.isConnected = false;
 		SocketConnection.disconnect();
@@ -543,7 +588,11 @@ class MPDConnection {
 					status[key] = value;
 				}
 			}
-			status.currentsong = currentsong;
+            status.currentsong = currentsong;
+            this.currentstatus = status;
+            if (status.elapsed) {
+                this.updateNowPlaying(status.state);
+            }            
 			return status;
 		}.bind(this);
 		var cmd = "command_list_begin\n";
@@ -836,49 +885,50 @@ class MPDConnection {
 	}
 
 	next() {
-		this.queue.push({
-			cmd: "next",
-			response: "",
-			state: INITIAL
-		});
+        this.createPromise("next")
+        .then(() => {
+            this.updateNowPlaying("play");
+        });
 	}
 
 	previous() {
-		this.queue.push({
-			cmd: "previous",
-			response: "",
-			state: INITIAL
-		});
+        this.createPromise("previous")
+        .then(() => {
+            this.updateNowPlaying("play");
+        });
 	}
 
-	play(songid) {
+	play(songid, dontPlaySilence) {
 		var cmd;
 		if (songid) {
 			cmd = "playid "+songid;
 		} else {
 			cmd = "play";
-		}
-		this.queue.push({
-			cmd: cmd,
-			response: "",
-			state: INITIAL
-		});
+        }
+        this.createPromise(cmd)
+        .then(() => {
+            this.updateNowPlaying("play");
+            if (!dontPlaySilence) {
+                NowPlayingControl.playSilence();
+            }
+        });
 	}
 
-	pause() {
-		this.queue.push({
-			cmd: "pause",
-			response: "",
-			state: INITIAL
-		});
+	pause(dontPauseSilence) {
+        this.createPromise("pause")
+        .then(() => {
+            this.updateNowPlaying("pause");
+            if (!dontPauseSilence) {                
+                NowPlayingControl.pauseSilence();
+            }
+        });
 	}
 
 	stop() {
-		this.queue.push({
-			cmd: "stop",
-			response: "",
-			state: INITIAL
-		});
+        this.createPromise("stop")
+        .then(() => {
+            this.updateNowPlaying("stop");
+        });
 	}
 
 	setVolume(volume) {
@@ -887,7 +937,37 @@ class MPDConnection {
 			response: "",
 			state: INITIAL
 		});
-	}
+    }
+    
+    updateNowPlaying(state) {
+        let nowPlayingStatus = {};
+        nowPlayingStatus.state = state;
+
+        const currentsong = this.currentstatus.currentsong;
+
+        if (currentsong.title) {
+            nowPlayingStatus.title = currentsong.title;
+            nowPlayingStatus.artist = currentsong.artist;
+            nowPlayingStatus.albumTitle = currentsong.album;
+            nowPlayingStatus.albumTrackNumber = this.currentstatus.Track;
+            let time = 0;
+            if (this.currentstatus.elapsed) {
+                time = Math.floor(parseInt(this.currentstatus.elapsed));
+            }
+            let dur = 0;
+            if (this.currentstatus.duration) {
+                dur = Math.floor(parseInt(this.currentstatus.duration));
+            } else {
+                dur = parseInt(this.currentstatus.Time);
+            }
+            if (isNaN(dur)) {
+                dur = 0;
+            }
+            nowPlayingStatus.MPNowPlayingInfoPropertyElapsedPlaybackTime = time;
+            nowPlayingStatus.playbackDuration = dur;
+        }
+        NowPlayingControl.setNowPlaying(nowPlayingStatus);
+    }
 
 	addAlbumToPlayList(albumName, artistName, autoplay) {
         const promise = new Promise((resolve, reject) => {
