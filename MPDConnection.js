@@ -1608,6 +1608,10 @@ class MPDConnection {
     seekCurrrent(value) {
         return this.createPromise("seekcur "+value);
     }
+
+    swap(id1, id2) {
+        return this.createPromise("swapid "+id1+" "+id2);
+    }
 /*
     createPlaylistsFromAlbums(cb, errorcb) {
         this.getAllAlbums(

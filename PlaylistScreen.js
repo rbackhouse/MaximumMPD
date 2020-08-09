@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Modal, PickerIOS, Dimensions } from 'react-native';
+import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Modal, ActionSheetIOS, Dimensions } from 'react-native';
 import {Picker} from '@react-native-community/picker';
 import { Input, Button } from 'react-native-elements'
 
@@ -28,10 +28,6 @@ import FAIcon from 'react-native-vector-icons/FontAwesome';
 import MPDConnection from './MPDConnection';
 import Config from './Config';
 import { StyleManager } from './Styles';
-
-const PLAY_MODE = 1;
-const EDIT_MODE = 2;
-const GOTO_MODE = 3;
 
 class RandomPlaylistTypeModal extends React.Component {
     state = {
@@ -112,8 +108,7 @@ export default class PlaylistScreen extends React.Component {
           isPlaying: false,
           currentSongId: -1,
           modalVisible: false,
-          totalTime: "",
-          pressMode: PLAY_MODE
+          totalTime: ""
         };
     }
 
@@ -178,42 +173,79 @@ export default class PlaylistScreen extends React.Component {
     }
 
     onPress(item) {
-        switch (this.state.pressMode) {
-            case PLAY_MODE:
-                MPDConnection.current().play(item.id);
-                break;
-            case EDIT_MODE:
-                Alert.alert(
-                    "Remove Song from Queue",
-                    "Are you sure you want to remove ''"+item.title+"'' ?",
-                    [
-                        {text: 'OK', onPress: () => {
-                            this.setState({loading: true});
-                            MPDConnection.current().removeSong(item.id)
-                            .then(() => {
-                                this.setState({loading: false});
-                                this.load();
-                            })
-                            .catch((err) => {
-                                this.setState({loading: false});
-                                Alert.alert(
-                                    "MPD Error",
-                                    "Error : "+err
-                                );
-                            });
-                        }},
-                        {text: 'Cancel'}
-                    ]
-                );
-                break;
-            case GOTO_MODE:
-                const { navigation } = this.props;
-                if (item.artist && item.album) {
-                    navigation.navigate('Browse');
-                    navigation.navigate('Songs', {artist: item.artist, album: item.album});
-                }
-                break;
-        }
+        MPDConnection.current().play(item.id);
+    }
+
+    onLongPress(item) {
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: ['Delete', 'Goto Album', 'Move Up', 'Move Down', 'Cancel'],
+            title: item.title,
+            message: item.artist,
+            cancelButtonIndex: 4
+          }, (idx) => {
+              switch (idx) {
+                case 0:
+                    Alert.alert(
+                        "Remove Song from Queue",
+                        "Are you sure you want to remove ''"+item.title+"'' ?",
+                        [
+                            {text: 'OK', onPress: () => {
+                                this.setState({loading: true});
+                                MPDConnection.current().removeSong(item.id)
+                                .then(() => {
+                                    this.setState({loading: false});
+                                    this.load();
+                                })
+                                .catch((err) => {
+                                    this.setState({loading: false});
+                                    Alert.alert(
+                                        "MPD Error",
+                                        "Error : "+err
+                                    );
+                                });
+                            }},
+                            {text: 'Cancel'}
+                        ]
+                    );
+                    break;
+                case 1: 
+                    const { navigation } = this.props;
+                    if (item.artist && item.album) {
+                        navigation.navigate('Browse');
+                        navigation.navigate('Songs', {artist: item.artist, album: item.album});
+                    }
+                    break;
+                case 2:
+                    if (item.pos > 0) {
+                        MPDConnection.current().swap(item.id, this.state.playlist[item.pos-1].id)
+                        .then(() => {
+                            this.load();
+                        })
+                        .catch((err) => {
+                            Alert.alert(
+                                "MPD Error",
+                                "Error : "+err
+                            );
+                        });                                        
+
+                    }
+                    break;
+                case 3:
+                    if (item.pos < (this.state.playlist.length-1)) {
+                        MPDConnection.current().swap(item.id, this.state.playlist[item.pos+1].id)
+                        .then(() => {
+                            this.load();
+                        })
+                        .catch((err) => {
+                            Alert.alert(
+                                "MPD Error",
+                                "Error : "+err
+                            );
+                        });                                        
+                    }
+                    break;
+              }
+          });
     }
 
     onRandom(type, value) {
@@ -236,20 +268,6 @@ export default class PlaylistScreen extends React.Component {
     onClear() {
         MPDConnection.current().clearPlayList();
         this.load();
-    }
-
-    onEdit() {
-        switch (this.state.pressMode) {
-            case PLAY_MODE:
-                this.setState({pressMode: EDIT_MODE})
-                break;
-            case EDIT_MODE:
-                this.setState({pressMode: GOTO_MODE})
-                break;
-            case GOTO_MODE:
-                this.setState({pressMode: PLAY_MODE})
-                break;
-        }
     }
 
     load() {
@@ -332,18 +350,7 @@ export default class PlaylistScreen extends React.Component {
         let audio;
         const isSelected = this.state.selected.get(item.artist+item.album+item.title)
         const selected = isSelected ? "flex" : "none";
-        let pressModeIcon;
-        switch (this.state.pressMode) {
-            case PLAY_MODE:
-                pressModeIcon = "ios-musical-notes"
-                break;
-            case EDIT_MODE:
-                pressModeIcon = "ios-trash"
-                break;
-            case GOTO_MODE:
-                pressModeIcon = "ios-arrow-round-forward"
-                break;
-        }
+        let pressModeIcon = "ios-musical-notes";
 
         const name = item.name !== undefined ? item.name : "";
 
@@ -358,7 +365,7 @@ export default class PlaylistScreen extends React.Component {
             audio = "Format: "+this.state.status.audio;
         }
         return (
-            <TouchableOpacity onPress={this.onPress.bind(this, item)}>
+            <TouchableOpacity onPress={this.onPress.bind(this, item)} onLongPress={this.onLongPress.bind(this, item)}>
                 <View onLayout={(event) => {
                     const {x, y, width, height} = event.nativeEvent.layout;
                     if (isSelected) {
@@ -443,9 +450,6 @@ export default class PlaylistScreen extends React.Component {
                     </View>
                 }
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
-                    <ActionButton.Item size={actionButtonSize} buttonColor='#3498db' title="Edit/Select/Goto" textStyle={common.actionButtonText} onPress={this.onEdit.bind(this)}>
-                        <FAIcon name="edit" size={15} color="#e6e6e6" />
-                    </ActionButton.Item>
                     <ActionButton.Item size={actionButtonSize} buttonColor='#3498db' title="Random Playlist" textStyle={common.actionButtonText} onPress={() => this.doRandom()}>
                         <FAIcon name="random" size={15} color="#e6e6e6" />
                     </ActionButton.Item>

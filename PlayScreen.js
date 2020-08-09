@@ -16,14 +16,13 @@
 */
 
 import React from 'react';
-import { Text, View, TouchableOpacity, Image, Alert, Platform, Linking, ActivityIndicator, Appearance } from 'react-native';
+import { Text, View, TouchableOpacity, Image, Alert, Platform, Linking, ActivityIndicator, Appearance, ActionSheetIOS } from 'react-native';
 import { Slider, ButtonGroup } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import HeaderButtons from 'react-navigation-header-buttons';
 
 import { NativeEventEmitter, NativeModules, Dimensions } from 'react-native';
-import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 
 import PlaylistScreen from './PlaylistScreen';
 import PlaylistEditor from './PlaylistEditor';
@@ -297,10 +296,6 @@ export default class PlayScreen extends React.Component {
         this.setVolume(100);
     }
 
-    onMore() {
-        this.menu.show();
-    }
-
     setVolume = (value) => {
         this.setState({volume:value});
         Config.isUseDeviceVolume()
@@ -316,16 +311,10 @@ export default class PlayScreen extends React.Component {
         MPDConnection.current().seekCurrrent(value);
     };
 
-    setMenuRef = ref => {
-        this.menu = ref;
-    };
-
     addToPlaylist = () => {
-        this.menu.hide(() => {
-            if (this.state.status.currentsong.b64file) {
-                this.setState({modalVisible: true, selectedItem: this.state.status.currentsong.b64file});
-            }
-        });
+        if (this.state.status.currentsong.b64file) {
+            this.setState({modalVisible: true, selectedItem: this.state.status.currentsong.b64file});
+        }
     };
 
     finishAdd(name, selectedItem) {
@@ -345,7 +334,6 @@ export default class PlayScreen extends React.Component {
     }
 
     onRandom = () => {
-        this.menu.hide();
         MPDConnection.current().clearPlayList();
         this.setState({loading: true});
         MPDConnection.current().randomPlayList()
@@ -362,12 +350,10 @@ export default class PlayScreen extends React.Component {
     }
 
     onClear= () => {
-        this.menu.hide();
         MPDConnection.current().clearPlayList();
     }
 
     onGoTo = () => {
-        this.menu.hide();
         if (this.state.status && this.state.status.currentsong) {
             currentsong = this.state.status.currentsong;
             if (currentsong.artist && currentsong.album) {
@@ -376,6 +362,28 @@ export default class PlayScreen extends React.Component {
                 navigation.navigate('Songs', {artist: currentsong.artist, album: currentsong.album});
             }
         }
+    }
+
+    onMore = () => {
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: ['Add to Playlist', 'Random Playlist', 'Clear Queue', 'Goto Album', 'Cancel'],
+            cancelButtonIndex: 4
+          }, (idx) => {
+              switch (idx) {
+                case 0:
+                    this.addToPlaylist();
+                    break;
+                case 1: 
+                    this.onRandom();
+                    break;
+                case 2:
+                    this.onClear();
+                    break;
+                case 3:
+                    this.onGoTo();
+                    break;
+              }
+          });
     }
 
     render() {
@@ -527,21 +535,12 @@ export default class PlayScreen extends React.Component {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.tabBarButton}>
-                            <Menu
-                                ref={this.setMenuRef}
-                                button={<TouchableOpacity
-                                onPress={this.onMore.bind(this)}>
-                                      <View style={[styles.button, styles.smallButton]}>
-                                          <IonIcon name="ios-more" size={20} color="#e6e6e6" style={styles.iconMore}/>
-                                      </View>
-                                </TouchableOpacity>}
-                                style={styles.menu}
-                            >
-                              <MenuItem textStyle={styles.meniItem} onPress={this.addToPlaylist}>Add to Playlist</MenuItem>
-                              <MenuItem textStyle={styles.meniItem} onPress={this.onRandom}>Random Playlist</MenuItem>
-                              <MenuItem textStyle={styles.meniItem} onPress={this.onClear}>Clear Queue</MenuItem>
-                              <MenuItem textStyle={styles.meniItem} onPress={this.onGoTo}>Goto Album</MenuItem>
-                            </Menu>
+                            <TouchableOpacity
+                             onPress={this.onMore}>
+                                    <View style={[styles.button, styles.smallButton]}>
+                                        <IonIcon name="ios-more" size={20} color="#e6e6e6" style={styles.iconMore}/>
+                                    </View>
+                            </TouchableOpacity>
                         </View>
                   </View>
                   <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
