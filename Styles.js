@@ -43,7 +43,8 @@ const stylesMapping = {
         "container1",
         "container2",
         "container3",
-        "container4"
+        "container4",
+        "picker"
     ],
     textColor: [
         "icon",
@@ -51,7 +52,8 @@ const stylesMapping = {
         "backTextWhite",
         "sectionHeader",
         "sectionHeaderAlt",
-        "searchbarInput"
+        "searchbarInput",
+        "picker"
     ],
     separatorColor: [
         "separator"
@@ -178,7 +180,11 @@ var styles = {
     container1: { flex: 1, justifyContent: 'flex-start', alignItems: 'stretch', backgroundColor: bgColor},
     container2: { flex: .1, flexDirection: 'row', alignItems: 'center', backgroundColor: bgColor },
     container3: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: bgColor },
-    container4: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5, backgroundColor: bgColor }
+    container4: { flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5, backgroundColor: bgColor },
+    picker: {
+        backgroundColor: bgColor,
+        color: textColor
+    }
 };
 
 const albumsStylesMapping = {
@@ -780,8 +786,7 @@ const settingsStylesMapping = {
         "container5",
         "container6",
         "textInput1",
-        "textInput2",
-        "picker"
+        "textInput2"
     ],
     textColor: [
         "label",
@@ -789,8 +794,7 @@ const settingsStylesMapping = {
         "text2",
         "textInput1",
         "textInput2",
-        "item",
-        "picker"
+        "item"
     ],
     separatorColor: [
     ],
@@ -849,11 +853,7 @@ var settingsStyles = {
         color: textColor                 
     },
     item: {color: textColor},
-    headerStyle: {marginTop:15, color: textColor, backgroundColor: searchbarColor},
-    picker: {
-        backgroundColor: bgColor,
-        color: textColor
-    }
+    headerStyle: {marginTop:15, color: textColor, backgroundColor: searchbarColor}
 };
 
 const songsStylesMapping = {

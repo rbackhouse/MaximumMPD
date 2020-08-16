@@ -336,6 +336,7 @@ class ReplayGainModal extends React.Component {
 
     render() {
         const styles = StyleManager.getStyles("settingsStyles");
+        const common = StyleManager.getStyles("styles");
         const visible = this.props.visible;
         return (
             <Modal
@@ -349,7 +350,7 @@ class ReplayGainModal extends React.Component {
                         <Text style={styles.text2}>Set Replay Gain</Text>
                     </View>
                     <Picker
-                        itemStyle={styles.picker}
+                        itemStyle={common.picker}
                         selectedValue={this.state.replayGain}
                         onValueChange={(itemValue, itemIndex) => this.setState({replayGain: itemValue})}>
                         <Picker.Item label="Off" value="off" />
