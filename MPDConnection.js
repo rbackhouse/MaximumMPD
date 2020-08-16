@@ -151,6 +151,12 @@ class MPDConnection {
     					callback();
     				}
                     this._loadFileSuffixes();
+                    this.getStats((stats) => {
+                        this.stats = {};
+                        this.stats.numberOfSongs = parseInt(stats["songs"]);
+                        this.stats.numberOfArtists = parseInt(stats["artists"]);
+                        this.stats.numberOfAlbums = parseInt(stats["albums"]);
+                    });
     			} else if (state == "internalConnected") {
                     this.albumArtDir = status.albumArtDir;
     				this.queue = [];
@@ -1201,9 +1207,70 @@ class MPDConnection {
 			return lines;
 		};
         return this.createPromise(cmd, processor);
-	}
+    }
+    
+    randomPlayList(type, typevalue) {
+        if (this.version < 20 || type != undefined) {
+            return this.randomPlayListOrig(type, typevalue);
+        } else {
+            return this.randomPlayListAlt(type, typevalue);
+        }
+    }
 
-	randomPlayList(type, typevalue) {
+    randomPlayListAlt(type, typevalue) {
+        let cmdPrefix = "search ";
+        if (type) {
+            cmdPrefix += type;
+            cmdPrefix += " \"";
+            cmdPrefix += typevalue;
+            cmdPrefix += "\"";
+        } else {
+            cmdPrefix += "title \"\"";
+        }
+        const promise = new Promise((resolve, reject) => {
+    		const processor = (data) => {
+    			const lines = MPDConnection._lineSplit(data);
+    			let songs = [];
+    			let count = 0;
+                lines.forEach((line) => {
+    				if (line.indexOf(FILE_PREFIX) === 0) {
+    					songs.push(line.substring(FILE_PREFIX.length));
+    				}
+    			});
+    			return songs;
+    		};
+
+            let indexes = [];
+            const playlistSize = this.stats.numberOfSongs < 50 ? this.stats.numberOfSongs : 50;
+            for (let i = 0;  i < playlistSize; i++) {
+                indexes[i] = Math.floor((Math.random()*this.stats.numberOfSongs-1)+1);
+            }
+            let cmd = "command_list_begin\n";
+            indexes.forEach((index) => {
+                if (index < (this.stats.numberOfSongs-1)) {
+                    cmd += cmdPrefix+" window "+index+":"+(index+1)+"\n";
+                }
+            })
+            cmd += "command_list_end";
+            this.createPromise(cmd, processor)
+            .then((songs) => {
+    			this.addSongsToPlayList(songs)
+                .then(() => {
+    				resolve();
+    			})
+                .catch((err) => {
+                    reject(err);
+                });
+            })
+            .catch((err) => {
+                reject(err);
+            })
+
+        });
+        return promise;
+    }
+
+	randomPlayListOrig(type, typevalue) {
         const promise = new Promise((resolve, reject) => {
     		const processor = (data) => {
     			const lines = MPDConnection._lineSplit(data);

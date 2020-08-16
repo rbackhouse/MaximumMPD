@@ -59,6 +59,7 @@ class RandomPlaylistTypeModal extends React.Component {
                         <Text style={styles.dialogtext}>Random Playlist Type</Text>
                     </View>
                     <Picker
+                        itemStyle={common.picker}                        
                         selectedValue={this.state.type}
                         onValueChange={(itemValue, itemIndex) => this.setState({type: itemValue})}
                         >
