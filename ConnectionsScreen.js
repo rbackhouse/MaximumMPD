@@ -157,18 +157,7 @@ export default class ConnectionsScreen extends React.Component {
         if (currentConnection !== undefined && currentConnection.isConnected) {
             this.state.selected.set(currentConnection.name+currentConnection.host+currentConnection.port, true);
         }
-        let discovered = MPDConnection.getDiscoveredList();
-        discovered.forEach((d) => {
-            d.key = d.name+d.ipAddress+d.port;
-        })
-        this.setState({discovered: discovered});
-        MPDConnection.getConnectionList()
-        .then((connections) => {
-            connections.forEach((c) => {
-                c.key = c.name+c.ipAddress+c.port;
-            })
-            this.setState({configured: connections});
-        });
+        this.load();
         if (this.navigateOnConnect) {
             Config.isAutoConnect()
             .then((autoConnect) => {
@@ -188,6 +177,21 @@ export default class ConnectionsScreen extends React.Component {
         if (this.onApperance) {
             this.onApperance.remove();
         }
+    }
+
+    load() {
+        let discovered = MPDConnection.getDiscoveredList();
+        discovered.forEach((d) => {
+            d.key = d.name+d.ipAddress+d.port;
+        });
+        this.setState({discovered: discovered});
+        MPDConnection.getConnectionList()
+        .then((connections) => {
+            connections.forEach((c) => {
+                c.key = c.name+c.ipAddress+c.port;
+            })
+            this.setState({configured: connections});
+        });
     }
 
     keyExtractor = (item, index) => item.name+item.ipAddress+item.port;
@@ -213,6 +217,7 @@ export default class ConnectionsScreen extends React.Component {
         }
         MPDConnection.connect(name, ipAddress, port, pwd).then(
             () => {
+                this.load();
                 this.setState((state) => {
                     const selected = new Map(state.selected);
                     selected.set(name+ipAddress+port, true);
@@ -368,6 +373,10 @@ export default class ConnectionsScreen extends React.Component {
                         const openVal = data.section.title === "Discovered" ? -75 : -150;
                         const item = data.item;
                         const selected = this.state.selected.get(item.name+item.ipAddress+item.port) === true ? "flex" : "none";
+                        let stats;
+                        if (item.stats) {
+                            stats = "Artists: "+item.stats.numberOfArtists+" Albums: "+item.stats.numberOfAlbums+" Songs: "+item.stats.numberOfSongs;
+                        }
                         return (
                         <SwipeRow rightOpenValue={openVal}>
                             <View style={common.rowBack}>
@@ -385,6 +394,9 @@ export default class ConnectionsScreen extends React.Component {
                                     <Text style={styles.item}>{item.name}</Text>
                                     <Text style={styles.item}>{item.ipAddress}</Text>
                                     <Text style={styles.item}>{item.port}</Text>
+                                    {stats &&
+                                    <Text style={styles.item}>{stats}</Text>
+                                    }
                                 </View>
                                 <Icon name="check" size={15} style={[{ display: selected }, common.icon]}/>
                             </View>

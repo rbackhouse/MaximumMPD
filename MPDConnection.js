@@ -82,7 +82,15 @@ class Discoverer {
                 console.log("Discovered : "+JSON.stringify(discovered));
                 if (discovered.type === "add") {
                     if (discovered.name) {
+                        if (connection && connection.isConnected) {
+                            if (discovered.name === connection.name &&
+                                discovered.ipAddress === connection.host &&
+                                discovered.port === connection.port) {
+                                discovered.stats = connection.stats;
+                            }
+                        }
                         this.discovered[discovered.name] = discovered;
+
                         mpdEventEmiiter.emit('OnDiscover', discovered);
                     }
                 } else if (discovered.type === "remove") {
@@ -108,6 +116,16 @@ class Discoverer {
         for (let name in this.discovered) {
             discoveredList.push(this.discovered[name]);
         }
+        if (connection && connection.isConnected) {
+            discoveredList.forEach((c) => {
+                if (c.name === connection.name &&
+                    c.ipAddress === connection.host &&
+                    c.port === connection.port) {
+                    c.stats = connection.stats;
+                }
+            });
+        }
+
         return discoveredList;
     }
 }
@@ -147,15 +165,15 @@ class MPDConnection {
                         mpdEventEmiiter.emit('OnConnect', {host: this.host, port: this.port});
                         console.log("Connected");
                     }
-    				if (callback) {
-    					callback();
-    				}
                     this._loadFileSuffixes();
                     this.getStats((stats) => {
                         this.stats = {};
                         this.stats.numberOfSongs = parseInt(stats["songs"]);
                         this.stats.numberOfArtists = parseInt(stats["artists"]);
                         this.stats.numberOfAlbums = parseInt(stats["albums"]);
+                        if (callback) {
+                            callback();
+                        }
                     });
     			} else if (state == "internalConnected") {
                     this.albumArtDir = status.albumArtDir;
@@ -1882,6 +1900,15 @@ class ConnectionsStorage {
                 connectionList = [];
             } else {
                 connectionList = JSON.parse(connstr);
+            }
+            if (connection && connection.isConnected) {
+                connectionList.forEach((c) => {
+                    if (c.name === connection.name &&
+                        c.ipAddress === connection.host &&
+                        c.port === connection.port) {
+                        c.stats = connection.stats;
+                    }
+                });
             }
             return connectionList;
         } catch (e) {
