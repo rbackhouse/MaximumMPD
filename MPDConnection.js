@@ -1697,6 +1697,10 @@ class MPDConnection {
     swap(id1, id2) {
         return this.createPromise("swapid "+id1+" "+id2);
     }
+
+    move(id1, id2) {
+        return this.createPromise("moveid "+id1+" "+id2);
+    }
 /*
     createPlaylistsFromAlbums(cb, errorcb) {
         this.getAllAlbums(

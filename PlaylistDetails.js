@@ -106,7 +106,7 @@ export default class PlaylistDetails extends React.Component {
             options: ['Delete Playlist Entry', 'Goto Album', 'Cancel'],
             title: item.title,
             message: item.artist,
-            cancelButtonIndex: 4
+            cancelButtonIndex: 2
           }, (idx) => {
                 switch (idx) {
                     case 0:

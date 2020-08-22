@@ -179,10 +179,10 @@ export default class PlaylistScreen extends React.Component {
 
     onLongPress(item) {
         ActionSheetIOS.showActionSheetWithOptions({
-            options: ['Delete', 'Goto Album', 'Move Up', 'Move Down', 'Cancel'],
+            options: ['Delete', 'Goto Album', 'Move Up', 'Move Down', 'Move after Current Song', 'Cancel'],
             title: item.title,
             message: item.artist,
-            cancelButtonIndex: 4
+            cancelButtonIndex: 5
           }, (idx) => {
               switch (idx) {
                 case 0:
@@ -227,8 +227,7 @@ export default class PlaylistScreen extends React.Component {
                                 "MPD Error",
                                 "Error : "+err
                             );
-                        });                                        
-
+                        });
                     }
                     break;
                 case 3:
@@ -245,6 +244,21 @@ export default class PlaylistScreen extends React.Component {
                         });                                        
                     }
                     break;
+                case 4:
+                    if (this.state.status && this.state.status.song) {
+                        MPDConnection.current().move(item.id, this.state.status.song)
+                        .then(() => {
+                            this.load();
+                        })
+                        .catch((err) => {
+                            Alert.alert(
+                                "MPD Error",
+                                "Error : "+err
+                            );
+                        });
+
+                    }
+                    break;   
               }
           });
     }
