@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions, Appearance } from 'react-native';
+import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions, Appearance, ActionSheetIOS } from 'react-native';
 import { SearchBar, ButtonGroup } from "react-native-elements";
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -25,10 +25,10 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import ActionButton from 'react-native-action-button';
 
 import MPDConnection from './MPDConnection';
-import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
 import Config from './Config';
 import { StyleManager } from './Styles';
+import NewPlaylistModal from './NewPlaylistModal';
 
 export default class ArtistsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -61,7 +61,9 @@ export default class ArtistsScreen extends React.Component {
           numColumns: 1,
           defaultArtistSort: true,
           defaultAlbumSort: true,
-          defaultGenreSort: true
+          defaultGenreSort: true,
+          modalVisible: false,
+          selectedItem: {}
         };
     }
 
@@ -329,6 +331,54 @@ export default class ArtistsScreen extends React.Component {
         navigation.navigate('Songs', {album: item.name});
     }
 
+    onLongPress(item) {
+        console.log(item);
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: ['Add to Queue', 'Add to Playlist', 'Cancel'],
+            title: item.artist,
+            message: item.name,
+            cancelButtonIndex: 2
+        }, (idx) => {
+            switch (idx) {
+                case 0:
+                    this.setState({loading: true});
+                    MPDConnection.current().addAlbumToPlayList(item.name, item.artist)
+                    .then(() => {
+                        this.setState({loading: false});
+                    })
+                    .catch((err) => {
+                        this.setState({loading: false});
+                        Alert.alert(
+                            "MPD Error",
+                            "Error : "+err
+                        );
+                    });
+                    break;
+                case 1:
+                    this.setState({modalVisible: true, selectedItem: {artist: item.artist, album: item.name}});
+                    break;
+            }
+        });
+    }
+
+    finishAdd(name, selectedItem) {
+        this.setState({modalVisible: false});
+        MPDConnection.current().setCurrentPlaylistName(name);
+        this.setState({loading: true});
+
+        MPDConnection.current().addAlbumToNamedPlayList(selectedItem.album, selectedItem.artist, MPDConnection.current().getCurrentPlaylistName())
+        .then(() => {
+            this.setState({loading: false});
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
+    }
+
     subset(albums) {
         this.setState({realTotal: albums.length});
         const maxListSize = this.state.maxListSize;
@@ -447,7 +497,7 @@ export default class ArtistsScreen extends React.Component {
         const styles = StyleManager.getStyles("artistsStyles");
         const common = StyleManager.getStyles("styles");
         return (
-            <TouchableOpacity onPress={this.onAlbumPress.bind(this, item)}>
+            <TouchableOpacity onPress={this.onAlbumPress.bind(this, item)} onLongPress={this.onLongPress.bind(this, item)}>
                 <View onLayout={(event) => {
                     const {x, y, width, height} = event.nativeEvent.layout;
                     this.albumRowHeight = height+1;
@@ -483,7 +533,7 @@ export default class ArtistsScreen extends React.Component {
         });
 
         return (
-            <TouchableOpacity onPress={this.onAlbumPress.bind(this, item)}>
+            <TouchableOpacity onPress={this.onAlbumPress.bind(this, item)} onLongPress={this.onLongPress.bind(this, item)}>
                 <View style={gridStyles.itemContainer}>
                     {item.imagePath === undefined &&
                         <Image style={{width: size-30, height: size-30, paddingLeft: 5, paddingRight: 5, resizeMode: 'contain'}} source={require('./images/cd-large.png')}/>
@@ -636,6 +686,7 @@ export default class ArtistsScreen extends React.Component {
                             />
                         }
                     </View>
+                    <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
                     <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                         <ActionButton.Item buttonColor='#3498db' title="List View" size={40} textStyle={common.actionButtonText} onPress={() => {this.setState({grid: false, numColumns: 1});}}>
                             <Icon name="ios-list" size={20} color="white"/>

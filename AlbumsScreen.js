@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions, Appearance } from 'react-native';
+import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions, Appearance, ActionSheetIOS } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
@@ -120,7 +120,7 @@ export default class AlbumsScreen extends React.Component {
         const artist = navigation.getParam('artist');
 
         if (toPlaylist) {
-            this.setState({modalVisible: true});
+            this.setState({modalVisible: true, selectedItem: {}});
         } else {
             this.state.albums.forEach((album) => {
                 this.setState({loading: true});
@@ -159,15 +159,44 @@ export default class AlbumsScreen extends React.Component {
         navigation.navigate('Songs', {artist: artist, album: item.name});
     }
 
-    finishAdd(name) {
+    onLongPress(item) {
+        console.log(item);
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: ['Add to Queue', 'Add to Playlist', 'Cancel'],
+            title: item.artist,
+            message: item.name,
+            cancelButtonIndex: 2
+        }, (idx) => {
+            switch (idx) {
+                case 0:
+                    this.setState({loading: true});
+                    MPDConnection.current().addAlbumToPlayList(item.name, item.artist)
+                    .then(() => {
+                        this.setState({loading: false});
+                    })
+                    .catch((err) => {
+                        this.setState({loading: false});
+                        Alert.alert(
+                            "MPD Error",
+                            "Error : "+err
+                        );
+                    });
+                    break;
+                case 1:
+                    this.setState({modalVisible: true, selectedItem: {artist: item.artist, album: item.name}});
+                    break;
+            }
+        });
+    }
+
+    finishAdd(name, selectedItem) {
         this.setState({modalVisible: false});
         MPDConnection.current().setCurrentPlaylistName(name);
-        const { navigation } = this.props;
-        const artist = navigation.getParam('artist');
-        this.state.albums.forEach((album) => {
+
+        if (selectedItem.album) {
             this.setState({loading: true});
 
-            MPDConnection.current().addAlbumToNamedPlayList(album.name, artist, MPDConnection.current().getCurrentPlaylistName())
+            MPDConnection.current().addAlbumToNamedPlayList(selectedItem.album, selectedItem.artist, MPDConnection.current().getCurrentPlaylistName())
             .then(() => {
                 this.setState({loading: false});
             })
@@ -177,8 +206,26 @@ export default class AlbumsScreen extends React.Component {
                     "MPD Error",
                     "Error : "+err
                 );
+            });                
+        } else {
+            const { navigation } = this.props;
+            const artist = navigation.getParam('artist');
+            this.state.albums.forEach((album) => {
+                this.setState({loading: true});
+
+                MPDConnection.current().addAlbumToNamedPlayList(album.name, artist, MPDConnection.current().getCurrentPlaylistName())
+                .then(() => {
+                    this.setState({loading: false});
+                })
+                .catch((err) => {
+                    this.setState({loading: false});
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                });
             });
-        });
+        }
     }
 
     renderSeparator = () => {
@@ -194,7 +241,7 @@ export default class AlbumsScreen extends React.Component {
         const styles = StyleManager.getStyles("albumsStyles");
         const common = StyleManager.getStyles("styles");
         return (
-            <TouchableOpacity onPress={this.onPress.bind(this, item)}>
+            <TouchableOpacity onPress={this.onPress.bind(this, item)} onLongPress={this.onLongPress.bind(this, item)}>
                 <View onLayout={(event) => {
                     const {x, y, width, height} = event.nativeEvent.layout;
                     this.rowHeight = height+1;
@@ -237,7 +284,7 @@ export default class AlbumsScreen extends React.Component {
         });
 
         return (
-            <TouchableOpacity onPress={this.onPress.bind(this, item)}>
+            <TouchableOpacity onPress={this.onPress.bind(this, item)} onLongPress={this.onLongPress.bind(this, item)}>
                 <View style={gridStyles.itemContainer}>
                     {item.imagePath === undefined &&
                         <Image style={gridStyles.albumartbig} source={require('./images/cd-large.png')}/>
@@ -318,7 +365,7 @@ export default class AlbumsScreen extends React.Component {
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 }
-                <NewPlaylistModal visible={this.state.modalVisible} onSet={(name) => {this.finishAdd(name);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
+                <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                     <ActionButton.Item buttonColor='#3498db' title="List View" size={40} textStyle={common.actionButtonText} onPress={() => {this.setState({grid: false, numColumns: 1});}}>
                         <Icon name="ios-list" size={20} color="white"/>

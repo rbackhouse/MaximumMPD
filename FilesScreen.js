@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, TouchableOpacity, ActivityIndicator, Alert, Appearance } from 'react-native';
+import { Text, View, TouchableOpacity, ActivityIndicator, Alert, Appearance, ActionSheetIOS } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
@@ -51,7 +51,7 @@ export default class FilesScreen extends React.Component {
           fullset: [],
           loading: false,
           modalVisible: false,
-          selectedItem: "",
+          selectedItem: {},
           searchValue: "",
           defaultSort: true
         };
@@ -155,11 +155,14 @@ export default class FilesScreen extends React.Component {
         }
     }
 
-    addAll(toPlaylist) {
-        const path = Base64.atob(this.state.dirs[this.state.dirs.length-1]);
+    addAll(toPlaylist, dir) {
         if (toPlaylist) {
-            this.setState({modalVisible: true, selectedItem: "all"});
+            this.setState({modalVisible: true, selectedItem: {type: "all", dir: dir}});
         } else {
+            let path = Base64.atob(this.state.dirs[this.state.dirs.length-1]);
+            if (dir) {
+                path = Base64.atob(dir);
+            }    
             this.setState({loading: true});
 
             MPDConnection.current().addDirectoryToPlayList(decodeURIComponent(path))
@@ -179,6 +182,24 @@ export default class FilesScreen extends React.Component {
 
     onPress(item, toPlaylist) {
         this.load(item.b64dir, true);
+    }
+
+    onLongPress(item) {
+        console.log(item);
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: ['Add to Queue', 'Add to Playlist', 'Cancel'],
+            title: item.dir,
+            cancelButtonIndex: 2
+        }, (idx) => {
+            switch (idx) {
+                case 0:
+                    this.addAll(false, item.b64dir);
+                    break;
+                case 1:
+                    this.addAll(true, item.b64dir);
+                    break;
+            }
+        });
     }
 
     load(uri, pushDir) {
@@ -292,7 +313,7 @@ export default class FilesScreen extends React.Component {
 
             return;
         }
-        this.setState({modalVisible: true, selectedItem: item.b64file});
+        this.setState({modalVisible: true, selectedItem: {type: "single", file: item.b64file}});
     }
 
     finishAdd(name, selectedItem) {
@@ -301,8 +322,11 @@ export default class FilesScreen extends React.Component {
 
         this.setState({loading: true});
 
-        if (selectedItem === "all") {
-            const path = Base64.atob(this.state.dirs[this.state.dirs.length-1]);
+        if (selectedItem.type === "all") {
+            let path = Base64.atob(this.state.dirs[this.state.dirs.length-1]);
+            if (selectedItem.dir) {
+                path = Base64.atob(selectedItem.dir);
+            }
 
             MPDConnection.current().addDirectoryToNamedPlayList(decodeURIComponent(path), MPDConnection.current().getCurrentPlaylistName())
             .then(() => {
@@ -317,7 +341,7 @@ export default class FilesScreen extends React.Component {
                 );
             });
         } else {
-            const path = Base64.atob(selectedItem);
+            const path = Base64.atob(selectedItem.file);
 
             MPDConnection.current().addSongToNamedPlayList(decodeURIComponent(path), MPDConnection.current().getCurrentPlaylistName())
             .then(() => {
@@ -451,7 +475,7 @@ export default class FilesScreen extends React.Component {
                                 dir = dir.substring(dir.lastIndexOf('/')+1);
                             }
                             return (
-                                <TouchableOpacity onPress={this.onPress.bind(this, item)}>
+                                <TouchableOpacity onPress={this.onPress.bind(this, item)} onLongPress={this.onLongPress.bind(this, item)}>
                                     <View style={common.container3}>
                                         <Icon name="ios-folder" size={20} style={common.icon}/>
                                         <View style={common.container4}>
