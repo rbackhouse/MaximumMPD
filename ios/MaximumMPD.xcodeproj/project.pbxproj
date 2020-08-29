@@ -790,6 +790,7 @@
 				CURRENT_PROJECT_VERSION = 4.5;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = P9NAZG5MLK;
+				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
