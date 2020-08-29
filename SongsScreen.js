@@ -96,7 +96,6 @@ export default class SongsScreen extends React.Component {
         const artist = navigation.getParam('artist');
         const album = navigation.getParam('album');
         const genre = navigation.getParam('genre');
-        console.log("load "+artist+" "+album+" "+genre);
 
         this.setState({loading: true});
 

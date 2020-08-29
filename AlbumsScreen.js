@@ -160,7 +160,6 @@ export default class AlbumsScreen extends React.Component {
     }
 
     onLongPress(item) {
-        console.log(item);
         ActionSheetIOS.showActionSheetWithOptions({
             options: ['Add to Queue', 'Add to Playlist', 'Cancel'],
             title: item.artist,
