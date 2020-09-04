@@ -246,7 +246,11 @@ export default class PlaylistScreen extends React.Component {
                     break;
                 case 4:
                     if (this.state.status && this.state.status.song) {
-                        MPDConnection.current().move(item.id, this.state.status.song)
+                        let toIdx = -1;
+                        if (this.state.status.song == this.state.playlist.length-1) {
+                            toIdx = this.state.status.song;
+                        }
+                        MPDConnection.current().move(item.id, toIdx)
                         .then(() => {
                             this.load();
                         })
