@@ -102,7 +102,7 @@ export default class ArtistsScreen extends React.Component {
             (album) => {
                 let idx = this.state.fullset.findIndex((a) => {return a.name === album.artist});
                 if (idx !== -1 && this.state.fullset[idx].imagePath === undefined) {
-                    this.state.fullset[idx].imagePath = "file ://"+album.path;
+                    this.state.fullset[idx].imagePath = "file://"+album.path;
                     this.setState({artists: this.state.artists, fullset: this.state.fullset});
                 }
                 idx = this.state.albumsFullset.findIndex((a) => {return a.name === album.name && a.artist === album.artist});
@@ -334,10 +334,10 @@ export default class ArtistsScreen extends React.Component {
     onLongPress(item) {
         console.log(item);
         ActionSheetIOS.showActionSheetWithOptions({
-            options: ['Add to Queue', 'Add to Playlist', 'Cancel'],
+            options: ['Add to Queue', 'Add to Playlist', 'Reload Album Art', 'Cancel'],
             title: item.artist,
             message: item.name,
-            cancelButtonIndex: 2
+            cancelButtonIndex: 3
         }, (idx) => {
             switch (idx) {
                 case 0:
@@ -356,6 +356,13 @@ export default class ArtistsScreen extends React.Component {
                     break;
                 case 1:
                     this.setState({modalVisible: true, selectedItem: {artist: item.artist, album: item.name}});
+                    break;
+                case 2:
+                    this.setState({loading: true});
+                    AlbumArt.reloadAlbumArt(item.name, item.artist)
+                    .then(()=> {
+                        this.setState({loading: false});
+                    });
                     break;
             }
         });

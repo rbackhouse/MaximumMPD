@@ -376,5 +376,24 @@ export default {
             });
         });
         return promise;
+    },
+    reloadAlbumArt: (album, artist) => {
+        let promise = new Promise((resolve, reject) => {
+            Promise.all([albumArtStorage.getOptions(), albumArtStorage.getState()])
+            .then((results) => {
+                const options = results[0];
+                const state = results[1];
+                const key = MPDConnection.current().toAlbumArtFilename(artist, album);
+                const filename = 'albumart_'+key+".png";
+                const path = MPDConnection.current().getAlbumArtDir()+'/'+filename;
+    
+                if (state[key] && state[key] === COMPLETE) {
+                    MPDConnection.current().deleteAlbumArt(filename);
+                }
+                getAlbumArt({name: album, artist: artist, path: path}, options);
+                resolve();
+            });
+        });
+        return promise;
     }
 }

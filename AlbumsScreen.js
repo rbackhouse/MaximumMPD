@@ -105,9 +105,20 @@ export default class AlbumsScreen extends React.Component {
         this.onApperance = Appearance.addChangeListener(({ colorScheme }) => {
             this.setState({loading: this.state.loading});
         });
+        this.onAlbumArtEnd = AlbumArt.getEventEmitter().addListener(
+            "OnAlbumArtEnd",
+            (album) => {
+                idx = this.state.fullset.findIndex((a) => {return a.name === album.name && a.artist === album.artist});
+                if (idx !== -1) {
+                    this.state.fullset[idx].imagePath = "file://"+album.path;
+                    this.setState({albums: this.state.albums, fullset: this.state.fullset});
+                }
+            }
+        );
     }
 
     componentWillUnmount() {
+        this.onAlbumArtEnd.remove();
         this.onDisconnect.remove();
         if (this.onApperance) {
             this.onApperance.remove();
@@ -161,10 +172,10 @@ export default class AlbumsScreen extends React.Component {
 
     onLongPress(item) {
         ActionSheetIOS.showActionSheetWithOptions({
-            options: ['Add to Queue', 'Add to Playlist', 'Cancel'],
+            options: ['Add to Queue', 'Add to Playlist', 'Reload Album Art', 'Cancel'],
             title: item.artist,
             message: item.name,
-            cancelButtonIndex: 2
+            cancelButtonIndex: 3
         }, (idx) => {
             switch (idx) {
                 case 0:
@@ -183,6 +194,13 @@ export default class AlbumsScreen extends React.Component {
                     break;
                 case 1:
                     this.setState({modalVisible: true, selectedItem: {artist: item.artist, album: item.name}});
+                    break;
+                case 2:
+                    this.setState({loading: true});
+                    AlbumArt.reloadAlbumArt(item.name, item.artist)
+                    .then(()=> {
+                        this.setState({loading: false});
+                    });
                     break;
             }
         });
