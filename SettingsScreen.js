@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { View, Modal, Text, Alert, Linking, TextInput, Switch, Keyboard, TouchableWithoutFeedback, Appearance, NativeModules } from 'react-native';
+import { View, Modal, Text, Alert, Linking, TextInput, Switch, Keyboard, TouchableWithoutFeedback, Appearance, NativeModules, ActionSheetIOS, Dimensions } from 'react-native';
 import {Picker} from '@react-native-community/picker';
 import SettingsList from 'react-native-settings-list';
 import { Input, Button } from 'react-native-elements'
@@ -499,6 +499,7 @@ export default class SettingsScreen extends React.Component {
         autoConnect: false,
         useDeviceVolume: false,
         useGridView: false,
+        gridViewColumns: 2,
         darkMode: false,
         sortAlbumsByArtist: false,
         sortFilesByTitle: false,
@@ -522,9 +523,9 @@ export default class SettingsScreen extends React.Component {
         .then((value) => {
             this.setState({useDeviceVolume: value});
         });
-        Config.isUseGrdiView()
-        .then((value) => {
-            this.setState({useGridView: value});
+        Config.getGridViewConfig()
+        .then((gridViewConfig) => {
+            this.setState({useGridView: gridViewConfig[0], gridViewColumns: gridViewConfig[1]});
         });
         Config.getSortSettings()
         .then((sortSettings) => {
@@ -667,6 +668,28 @@ export default class SettingsScreen extends React.Component {
     onUseGridViewChange(value) {
         this.setState({useGridView: value});
         Config.setUseGridView(value);
+    }
+
+    onGridViewColumns() {
+        const {height, width} = Dimensions.get('window');
+        let options = ['2', '3', '4', 'Cancel'];
+        let cancelButtonIndex = 3;
+        if (width > 767) {
+            options = ['2', '3', '4', '5', '6', 'Cancel'];
+            cancelButtonIndex = 5;
+        }
+
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: options,
+            title: "Number of Grid View Columns",
+            cancelButtonIndex: cancelButtonIndex
+        }, (idx) => {
+            if (idx != cancelButtonIndex) {
+                const gridViewColumns = idx+2;
+                this.setState({gridViewColumns: gridViewColumns});
+                Config.setGridViewColumns(gridViewColumns);
+            }
+        });
     }
 
     onUseNowPlayingControl(value) {
@@ -817,6 +840,13 @@ export default class SettingsScreen extends React.Component {
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onUseGridViewChange(value)}
                                 title='Use Grid View by default'/>
+                    <SettingsList.Item
+                        hasNavArrow={true}
+                        title='Number of Grid View Columns'
+                        titleInfo={""+this.state.gridViewColumns}
+                        titleInfoStyle={{fontFamily: 'GillSans-Italic'}}
+                        onPress={() => this.onGridViewColumns()}
+                    />
                     <SettingsList.Item
                         hasNavArrow={false}
                                 switchState={this.state.useNowPlayingControl}

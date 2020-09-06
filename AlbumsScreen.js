@@ -61,12 +61,10 @@ export default class AlbumsScreen extends React.Component {
 
     componentDidMount() {
         const { navigation } = this.props;
-        Config.isUseGrdiView()
-        .then((useGridView) => {
-            if (useGridView) {
-                const {height, width} = Dimensions.get('window');
-                numColumns = width > 375 ? 3 : 2;
-                this.setState({grid: true, numColumns: numColumns});
+        Config.getGridViewConfig()
+        .then((gridViewConfig) => {
+            if (gridViewConfig[0]) {
+                this.setState({grid: true, numColumns: gridViewConfig[1]});
             }
         });
         const artist = navigation.getParam('artist');
@@ -388,9 +386,10 @@ export default class AlbumsScreen extends React.Component {
                         <Icon name="ios-list" size={20} color="white"/>
                     </ActionButton.Item>
                     <ActionButton.Item buttonColor='#9b59b6' title="Grid View" size={40} textStyle={common.actionButtonText} onPress={() => {
-                        const {height, width} = Dimensions.get('window');
-                        numColumns = width > 375 ? 3 : 2;
-                        this.setState({grid: true, numColumns: numColumns});
+                        Config.getGridViewColumns()
+                        .then((numColumns) => {
+                            this.setState({grid: true, numColumns: numColumns});
+                        });
                     }}>
                         <Icon name="ios-grid" size={20} color="white"/>
                     </ActionButton.Item>

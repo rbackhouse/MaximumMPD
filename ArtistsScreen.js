@@ -73,9 +73,9 @@ export default class ArtistsScreen extends React.Component {
             this.props.navigation.navigate('Connections');
         }
 
-        Config.isUseGrdiView()
-        .then((useGridView) => {
-            if (useGridView) {
+        Config.getGridViewConfig()
+        .then((gridViewConfig) => {
+            if (gridViewConfig[0]) {
                 this.setState({grid: true});
             }
         });
@@ -332,7 +332,6 @@ export default class ArtistsScreen extends React.Component {
     }
 
     onLongPress(item) {
-        console.log(item);
         ActionSheetIOS.showActionSheetWithOptions({
             options: ['Add to Queue', 'Add to Playlist', 'Reload Album Art', 'Cancel'],
             title: item.artist,
@@ -429,15 +428,21 @@ export default class ArtistsScreen extends React.Component {
     }
 
     changeTab(index) {
-        let numColumns = 1;
         const {height, width} = Dimensions.get('window');
         if (index === 1 && this.state.grid) {
-            numColumns = width > 375 ? 3 : 2;
+            Config.getGridViewColumns()
+            .then((numColumns) => {
+                this.setState({
+                    selectedTab: index,
+                    numColumns: numColumns
+                });
+            });
+        } else {
+            this.setState({
+                selectedTab: index,
+                numColumns: 1
+            });
         }
-        this.setState({
-            selectedTab: index,
-            numColumns: numColumns
-        });
     }
 
     renderSeparator = () => {
@@ -699,9 +704,10 @@ export default class ArtistsScreen extends React.Component {
                             <Icon name="ios-list" size={20} color="white"/>
                         </ActionButton.Item>
                         <ActionButton.Item buttonColor='#9b59b6' title="Grid View" size={40} textStyle={common.actionButtonText} onPress={() => {
-                            const {height, width} = Dimensions.get('window');
-                            numColumns = width > 375 ? 3 : 2;
-                            this.setState({grid: true, numColumns: numColumns});
+                            Config.getGridViewColumns()
+                            .then((numColumns) => {
+                                this.setState({grid: true, numColumns: numColumns});
+                            });
                         }}>
                             <Icon name="ios-grid" size={20} color="white"/>
                         </ActionButton.Item>

@@ -53,6 +53,24 @@ class ConfigStorage {
 
 const configStorage = new ConfigStorage();
 
+function getConfigValue(prop, defaultValue) {
+    let promise = new Promise((resolve, reject) => {
+        configStorage.getConfig()
+        .then((config) => {
+            if (config[prop] !== undefined) {
+                resolve(config[prop]);
+            } else {
+                config[prop] = defaultValue;
+                configStorage.setConfig(config)
+                .then(() => {
+                    resolve(config[prop]);
+                });
+            }
+        });
+    });
+    return promise;
+}
+
 export default {
     isRandomPlaylistByType: () => {
         let promise = new Promise((resolve, reject) => {
@@ -189,6 +207,39 @@ export default {
             });
         });
         return promise;
+    },
+    getGridViewColumns: () => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                if (config.gridViewColumns !== undefined) {
+                    resolve(config.gridViewColumns);
+                } else {
+                    config.gridViewColumns = 2;
+                    configStorage.setConfig(config)
+                    .then(() => {
+                        resolve(config.gridViewColumns);
+                    });
+                }
+            });
+        });
+        return promise;
+    },
+    setGridViewColumns: (gridViewColumns) => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                config.gridViewColumns = gridViewColumns;
+                configStorage.setConfig(config)
+                .then(() => {
+                    resolve();
+                })
+            });
+        });
+        return promise;
+    },
+    getGridViewConfig: () => {
+        return Promise.all([getConfigValue("useGridView", false), getConfigValue("gridViewColumns", 2)])
     },
     getSortSettings: () => {
         let promise = new Promise((resolve, reject) => {
