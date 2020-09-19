@@ -135,6 +135,9 @@ export default class PlaylistScreen extends React.Component {
                         this.load();
                     }
                 }
+                if (status.reloadqueue) {
+                    this.load();
+                }
                 this.setState({currentSongId: status.songid});
             }
         );

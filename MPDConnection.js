@@ -175,6 +175,12 @@ class MPDConnection {
                             callback();
                         }
                     });
+                    AsyncStorage.getItem('@MPD:'+this.host+'_'+this.port+'_autoplaysong')
+                    .then((autoplaysong) => {
+                        if (autoplaysong !== null) {
+                            this.autoplaysong = autoplaysong;
+                        }
+                    });
     			} else if (state == "internalConnected") {
                     this.albumArtDir = status.albumArtDir;
     				this.queue = [];
@@ -379,7 +385,25 @@ class MPDConnection {
         this.intervalId = setInterval(() => {
             if (this.isConnected) {
                 this.getStatus((status) => {
-                    mpdEventEmiiter.emit('OnStatus', status);
+                    if (this.autoplaysong && this.autoplaysong !== status.currentsong.b64file) {
+                        this.autoplaysong = undefined;
+                        AsyncStorage.removeItem('@MPD:'+this.host+'_'+this.port+'_autoplaysong');
+                        status.reloadqueue = true;
+                        let restorecmd = "command_list_begin\n";
+                        restorecmd += "clear\n";
+                        restorecmd += "load __playlist_to_restore\n";
+                        restorecmd += "rm __playlist_to_restore\n";
+                        restorecmd += "command_list_end";
+                        this.createPromise(restorecmd)
+                        .then(() => {
+                            mpdEventEmiiter.emit('OnStatus', status);
+                        })
+                        .catch((err) => {
+                            mpdEventEmiiter.emit('OnStatus', status);
+                        });
+                    } else {
+                        mpdEventEmiiter.emit('OnStatus', status);
+                    }
                 });
             }
         }, timeout);
@@ -1105,6 +1129,11 @@ class MPDConnection {
 	addSongToPlayList(song, autoplay) {
         if (autoplay) {
             let cmd = "command_list_begin\n";
+            if (this.currentstatus.playlistlength && parseInt(this.currentstatus.playlistlength) > 0) {
+                cmd += "save __playlist_to_restore\n";
+                this.autoplaysong = this.toBase64(song);
+                AsyncStorage.setItem('@MPD:'+this.host+'_'+this.port+'_autoplaysong', this.autoplaysong);
+            }
             cmd += "clear\n";
             cmd += "add \""+song+"\"\n";
             cmd += "play\n";
