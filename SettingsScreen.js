@@ -16,259 +16,14 @@
 */
 
 import React from 'react';
-import { View, Modal, Text, Alert, Linking, TextInput, Switch, Keyboard, TouchableWithoutFeedback, Appearance, NativeModules, ActionSheetIOS, Dimensions } from 'react-native';
+import { View, Modal, Text, Alert, Linking, Appearance, NativeModules, ActionSheetIOS, Dimensions } from 'react-native';
 import {Picker} from '@react-native-community/picker';
 import SettingsList from 'react-native-settings-list';
 import { Input, Button } from 'react-native-elements'
 import MPDConnection from './MPDConnection';
-import AlbumArt from './AlbumArt';
 import Config from './Config';
 import { StyleManager, bgColor } from './Styles';
 const { NowPlayingControl } = NativeModules;
-
-class AlbumArtModal extends React.Component {
-    state = {
-        albumart: false,
-        status: 'Idle',
-        downloadStatus: "",
-        count: '',
-        port: 8080,
-        useHTTP: false,
-        urlPrefix: "",
-        filename: ""
-    }
-
-    onOk() {
-        this.props.onOk();
-    }
-
-    componentDidMount() {
-        this.setState({count: ""+AlbumArt.getQueueSize()});
-        this.onAlbumArtStart = AlbumArt.getEventEmitter().addListener(
-            "OnAlbumArtStart",
-            (album) => {
-                this.setState({count: ""+AlbumArt.getQueueSize(), status:"Started download of album art for "+album.name, downloadStatus: ""});
-            }
-        );
-        this.OnAlbumArtStatus = AlbumArt.getEventEmitter().addListener(
-            "OnAlbumArtStatus",
-            (status) => {
-                this.setState({status: status.album.artist+" : "+status.album.name, downloadStatus: "Size: "+status.size+"k "+status.percentageDowloaded+"% downloaded"});
-            }
-        );
-        this.onAlbumArtEnd = AlbumArt.getEventEmitter().addListener(
-            "OnAlbumArtEnd",
-            (album) => {
-                this.setState({status:"Completed download of album art for "+album.name, count: ""+AlbumArt.getQueueSize(), downloadStatus: ""});
-            }
-        );
-        this.onAlbumArtError = AlbumArt.getEventEmitter().addListener(
-            "OnAlbumArtError",
-            (details) => {
-                this.setState({status: details.album.artist+" : "+details.album.name+" "+details.err, count: ""+AlbumArt.getQueueSize(), downloadStatus:""});
-            }
-        );
-        this.onAlbumArtComplete = AlbumArt.getEventEmitter().addListener(
-            "OnAlbumArtComplete",
-            (details) => {
-                this.setState({status: "Complete", count: ""+AlbumArt.getQueueSize(), downloadStatus:""});
-            }
-        );
-        AlbumArt.getOptions()
-        .then((options) => {
-            this.setState({albumart: options.enabled, useHTTP: options.useHTTP, port: options.port, urlPrefix: options.urlPrefix, filename: options.fileName});
-        });
-    }
-
-    componentWillUnmount() {
-        this.onAlbumArtStart.remove();
-        this.OnAlbumArtStatus.remove();
-        this.onAlbumArtEnd.remove();
-        this.onAlbumArtError.remove();
-        this.onAlbumArtComplete.remove();
-    }
-
-    clearAlbumArt() {
-        Alert.alert(
-            "Clear Album Art",
-            "Are you sure you want to clear the Album Art Cache?",
-            [
-                {text: 'OK', onPress: () => {
-                    AlbumArt.clearCache();
-                }},
-                {text: 'Cancel'}
-            ]
-        );
-    }
-
-    onAlbumArtChange(value) {
-        this.setState({albumart: value});
-
-        if (value === true) {
-            AlbumArt.enable();
-        } else {
-            AlbumArt.disable();
-        }
-    }
-
-    onUseHTTPSChange(value) {
-        this.setState({useHTTP: value});
-        AlbumArt.setUseHTTP(value);
-    }
-
-    onPortChange(value) {
-        let port = parseInt(value);
-        if (!isNaN(port)) {
-            this.setState({port: port});
-            AlbumArt.setHTTPSPort(port);
-        }
-    }
-
-    onURLPrefixChange(value) {
-        this.setState({urlPrefix: value});
-        AlbumArt.setURLPrefix(value);
-    }
-
-    onFilenameChange(value) {
-        this.setState({filename: value});
-        AlbumArt.setFileName(value);
-    }
-
-    render() {
-        const styles = StyleManager.getStyles("settingsStyles");
-        const visible = this.props.visible;
-        const queueText = "Queue : "+this.state.count;
-        return (
-            <Modal
-                animationType="fade"
-                transparent={true}
-                visible={visible}
-                onRequestClose={() => {
-            }}>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={styles.container5}>
-                <View style={styles.container6}>
-                    <Text style={styles.text2}>Album Art</Text>
-                </View>
-                <View style={styles.container2}>
-                    <View style={styles.flexStart}>
-                        <Text style={styles.text1}>
-                            Enable
-                        </Text>
-                    </View>
-                    <View style={styles.flexEnd}>
-                        <Switch
-                            onValueChange={(value) => this.onAlbumArtChange(value)}
-                            value={this.state.albumart}
-                        />
-                    </View>
-                </View>
-                <View style={styles.container2}>
-                    <View style={styles.flexStart}>
-                        <Text style={styles.text1}>
-                            Use HTTP
-                        </Text>
-                    </View>
-                    <View style={styles.flexEnd}>
-                        <Switch
-                            onValueChange={(value) => this.onUseHTTPSChange(value)}
-                            value={this.state.useHTTP}
-                        />
-                    </View>
-                </View>
-                <View style={styles.container2}>
-                    <View style={styles.flexStart}>
-                        <Text style={styles.text1}>
-                            HTTP Port
-                        </Text>
-                    </View>
-                    <View style={styles.flexEnd}>
-                        <TextInput keyboardType='number-pad' 
-                                placeholder="HTTP Port"
-                                onChangeText={(port) => this.onPortChange(port)}
-                                defaultValue={""+this.state.port}
-                                editable={this.state.useHTTP}
-                                style={styles.textInput1} 
-                                inputStyle={styles.label}>
-                        </TextInput>
-                    </View>
-                </View>
-                <View style={styles.container2}>
-                    <View style={styles.flexStart}>
-                        <Text style={styles.text1}>
-                            HTTP URL Prefix
-                        </Text>
-                    </View>
-                    <View style={styles.flexEnd}>
-                        <TextInput keyboardType='default' 
-                                placeholder="HTTP URL Prefix"
-                                onChangeText={(urlPrefix) => this.onURLPrefixChange(urlPrefix)}
-                                defaultValue={""+this.state.urlPrefix}
-                                editable={this.state.useHTTP}
-                                style={styles.textInput2} 
-                                autoCapitalize='none'
-                                inputStyle={styles.label}>
-                        </TextInput>
-                    </View>
-                </View>
-                <View style={styles.container2}>
-                    <View style={styles.flexStart}>
-                        <Text style={styles.text1}>
-                            Album Art Filename
-                        </Text>
-                    </View>
-                    <View style={styles.flexEnd}>
-                        <TextInput keyboardType='default' 
-                                placeholder="Album Art Filename"
-                                onChangeText={(filename) => this.onFilenameChange(filename)}
-                                defaultValue={""+this.state.filename}
-                                editable={this.state.useHTTP}
-                                style={styles.textInput2} 
-                                autoCapitalize='none'
-                                inputStyle={styles.label}>
-                        </TextInput>
-                    </View>
-                </View>
-                <View style={styles.container4}>
-                    <View style={styles.flexStart}>
-                        <Text style={styles.text1}>
-                            Clear Cache
-                        </Text>
-                    </View>
-                    <View style={styles.flexEnd}>
-                        <Button
-                            onPress={() => {this.clearAlbumArt();}}
-                            title="Clear"
-                            icon={{name: 'trash',  size: 15, type: 'font-awesome'}}
-                            raised={true}
-                            type="outline"
-                        />
-                    </View>
-                </View>
-                <View style={styles.flex2}>
-                    <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>{queueText}</Text>
-                </View>
-                <View style={styles.flex2}>
-                    <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>{this.state.status}</Text>
-                </View>
-                <View style={styles.flex2}>
-                    <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>{this.state.downloadStatus}</Text>
-                </View>
-                <View style={styles.container3}>
-                    <Button
-                        onPress={() => {this.onOk();}}
-                        title="Ok"
-                        icon={{name: 'check',  size: 15, type: 'font-awesome'}}
-                        raised={true}
-                        type="outline"
-                    />
-                </View>
-            </View>
-            </TouchableWithoutFeedback>
-            </Modal>
-        );
-    }
-}
 
 class CrossfadeModal extends React.Component {
     state = {
@@ -399,7 +154,7 @@ class AboutModal extends React.Component {
                     <View style={styles.flex3}>
                         <Text style={styles.text2}>About Maximum MPD</Text>
                     </View>
-                    <Text style={[styles.text1, {padding: 15}]}>Version: 4.3</Text>
+                    <Text style={[styles.text1, {padding: 15}]}>Version: 4.4</Text>
                     <Text style={[styles.text1, {padding: 15}]}>Author: Richard Backhouse</Text>
                     <Text style={[styles.text1, {padding: 15}]}>Various Images provided by Icons8 (https://icons8.com)</Text>
                     <View style={styles.flex1}>
@@ -493,7 +248,6 @@ export default class SettingsScreen extends React.Component {
         stopAftetSongPlayed: false,
         removeSongAfterPlay: false,
         randomPlaylistByType: false,
-        albumartVisible: false,
         aboutVisible: false,
         sortAlbumsByDate: false,
         autoConnect: false,
@@ -768,7 +522,7 @@ export default class SettingsScreen extends React.Component {
                     <SettingsList.Item
                         hasNavArrow={true}
                         title='Album Art'
-                        onPress={() => this.setState({albumartVisible: true})}
+                        onPress={() => this.props.navigation.navigate('AlbumArt')}
                     />
                     <SettingsList.Header headerStyle={styles.headerStyle} headerText="MPD Configuration"/>
                     <SettingsList.Item
@@ -876,7 +630,6 @@ export default class SettingsScreen extends React.Component {
                 <ReplayGainModal replayGain={this.state.replayGain} visible={this.state.replayGainVisible} onSet={(value) => {this.setReplayGain(value)}} onCancel={() => this.setState({replayGainVisible: false})}></ReplayGainModal>
                 <CrossfadeModal value={this.state.crossfade} visible={this.state.crossfadeVisible} onSet={(value) => {this.setCrossfade(value)}} onCancel={() => this.setState({crossfadeVisible: false})}></CrossfadeModal>
                 <AboutModal visible={this.state.aboutVisible} onOk={() => this.setState({aboutVisible: false})}></AboutModal>
-                <AlbumArtModal visible={this.state.albumartVisible} onOk={() => this.setState({albumartVisible: false})}></AlbumArtModal>
                 <MaxListSizeModal value={this.state.maxListSize} visible={this.state.maxListSizeVisible} onSet={(value) => {this.setMaxListSize(value)}} onCancel={() => this.setState({maxListSizeVisible: false})}></MaxListSizeModal>
             </View>
         );

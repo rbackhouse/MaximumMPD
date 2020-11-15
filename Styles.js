@@ -652,7 +652,6 @@ const playStylesMapping = {
     ],
     textColor: [
         "item",
-        "meniItem",
         "paddingRight",
         "paddingLeft"
     ],
@@ -714,12 +713,6 @@ var playStyles = {
         alignItems: 'center',
     },
     item: {
-        fontSize: 18,
-        fontFamily: 'GillSans-Italic',
-        color: textColor
-    },
-    meniItem: {
-        fontSize: 16,
         fontFamily: 'GillSans-Italic',
         color: textColor
     },
@@ -922,6 +915,76 @@ var welcomeStyles = {
     container2: { flex: .3, alignItems: 'center', justifyContent: 'center', paddingTop: 10, backgroundColor: bgColor }
 };
 
+const albumArtStylesMapping = {
+    bgColor: [
+        "container",
+        "container1",
+        "container2",
+        "container3",
+        "container4",
+        "container5",
+        "container6"
+    ],
+    textColor: [
+        "text1",
+        "label",
+        "item",
+        "settingsItem",
+        "status",
+        "title"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var albumArtStyles = {
+    container: { flex: 1, justifyContent: 'flex-start', backgroundColor: bgColor},
+    container1: { justifyContent: 'flex-start', marginTop: 5, backgroundColor: bgColor },
+    container2: { justifyContent: 'flex-start', backgroundColor: bgColor},
+    container3: { flex: 1, flexDirection: 'column', justifyContent: 'space-around', backgroundColor: bgColor },
+    container4: { marginTop: 25, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor },
+    container5: {flex: .1, flexDirection: 'row', alignItems: 'center', backgroundColor: bgColor },
+    container6: {flex: .9, flexDirection: 'row', alignItems: 'flex-start', backgroundColor: bgColor },
+    flex1: { flex: .2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' },
+    flex2: { flex: .6, justifyContent: 'flex-start', alignItems: 'stretch', backgroundColor: bgColor },
+
+    scrollview: { flex: 1},
+    containersplit1: { flex: .7},
+    containersplit2: { flex: .3},
+    text1: {fontFamily: 'GillSans-Italic', color: textColor},
+    title: {fontSize: 20, fontFamily: 'GillSans-Italic', color: textColor},
+    flexStart: {flex: .5, alignItems: 'flex-start'},
+    flexEnd: {flex: .5, alignItems: 'flex-end'},
+    entryField: {
+        width: 150,
+        height: 30,
+        margin: 10,
+        borderColor: '#e3e5e5',
+        borderWidth: 1
+    },
+    label: {
+        fontFamily: 'GillSans',
+        fontWeight: 'normal',
+        color: textColor,
+        marginLeft: 6,
+    },
+    item: {
+        fontFamily: 'GillSans-Italic',
+        padding: 3,
+        color: textColor
+    },
+    settingsItem: {color: textColor},
+    status: {
+        fontFamily: 'GillSans-Italic',
+        marginLeft: 15,
+        marginTop: 5,
+        marginBottom: 5,
+        color: textColor
+    },
+};
+
 var rawstyles = {
     styles: {styles: styles, mappings: stylesMapping},
     albumsStyles: {styles: albumsStyles, mappings: albumsStylesMapping},
@@ -939,7 +1002,8 @@ var rawstyles = {
     searchStyles: {styles: searchStyles, mappings: searchStylesMapping},
     settingsStyles: {styles: settingsStyles, mappings: settingsStylesMapping},
     songsStyles: {styles: songsStyles, mappings: songsStylesMapping},
-    welcomeStyles: {styles: welcomeStyles, mappings: welcomeStylesMapping}
+    welcomeStyles: {styles: welcomeStyles, mappings: welcomeStylesMapping},
+    albumArtStyles: {styles: albumArtStyles, mappings: albumArtStylesMapping}
 };
 
 var stylesheets = {
@@ -959,7 +1023,8 @@ var stylesheets = {
     searchStyles: undefined,
     settingsStyles: undefined,
     songsStyles: undefined,
-    welcomeStyles: undefined
+    welcomeStyles: undefined,
+    albumArtStyles: undefined
 };
 
 function build() {

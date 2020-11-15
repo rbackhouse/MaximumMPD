@@ -39,6 +39,7 @@ import PlaylistDetails from './PlaylistDetails';
 import WelcomeScreen from './WelcomeScreen';
 import OutputsScreen from './OutputsScreen';
 import DebugScreen from './DebugScreen';
+import AlbumArtScreen from './AlbumArtScreen';
 import MPDConnection from './MPDConnection';
 
 class Header extends React.Component {
@@ -245,6 +246,9 @@ const SettingsStack = createStackNavigator(
         },
         Debug: { 
             screen: DebugScreen 
+        },
+        AlbumArt: {
+            screen: AlbumArtScreen
         }
     },
     {

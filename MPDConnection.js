@@ -630,6 +630,8 @@ class MPDConnection {
 					currentsong.b64file = this.toBase64(file);
 				} else if (line.indexOf(NAME_PREFIX) === 0) {
                     currentsong.name = line.substring(NAME_PREFIX.length);
+				} else if (line.indexOf(DATE_PREFIX) === 0) {
+                    currentsong.date = line.substring(DATE_PREFIX.length);
 				} else {
 					var key = line.substring(0, line.indexOf(':'));
 					var value = line.substring(line.indexOf(':')+2);
@@ -1503,10 +1505,11 @@ class MPDConnection {
         return promise;
     }
     
-    albumartFromURL(uri, port, artist, album, prefix, suffix) {
+    albumartFromURL(uri, port, artist, album, prefix, suffix, host) {
         const filename = 'albumart_'+this.toAlbumArtFilename(artist, album)+".png";
         let path = uri.substring(0, uri.lastIndexOf('/'))+"/";
-        let url = "http://"+this.host+":"+port;
+        const hostStr = host === undefined ? this.host : host;
+        let url = "http://"+hostStr+":"+port;
         if (prefix && prefix !== "") {
             url += prefix;
         }

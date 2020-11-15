@@ -32,7 +32,7 @@ let artistArt = {};
 let stop = false;
 let queueSize = 0
 
-async function getAlbumArt(album, options) {
+async function getAlbumArt(album, options, queueSize) {
     return new Promise(async (resolve, reject) => {
         const songs = await MPDConnection.current().getSongsForAlbum(album.name, album.artist);
         if (songs.length > 0) {
@@ -41,7 +41,8 @@ async function getAlbumArt(album, options) {
             await albumArtStorage.updateState(key, STARTED);
             try {
                 if (options.useHTTP) {
-                    await MPDConnection.current().albumartFromURL(songs[0].file, options.port, album.artist, album.name, options.urlPrefix, options.fileName);
+                    const host = options.host === "" ? undefined : options.host;
+                    await MPDConnection.current().albumartFromURL(songs[0].file, options.port, album.artist, album.name, options.urlPrefix, options.fileName, host);
                 } else {
                     await MPDConnection.current().albumart(songs[0].file, album.artist, album.name, (offset, size) => {
                         const percentageDowloaded = Math.round((offset / size) * 100);
@@ -68,6 +69,9 @@ async function getAlbumArt(album, options) {
             }
         } else {
             resolve(!stop);
+        }
+        if (queueSize === 0) {
+            albumArtEventEmiiter.emit('OnAlbumArtComplete', {});
         }
     });
 }
@@ -112,11 +116,8 @@ const loader = async (options) => {
             albums.reduce((p, album) => {
                 return p.then((continueOn) => {
                     queueSize--;
-                    if (queueSize === 0) {
-                        albumArtEventEmiiter.emit('OnAlbumArtComplete', {});
-                    }
                     if (continueOn) {
-                        return getAlbumArt(album, options);
+                        return getAlbumArt(album, options, queueSize);
                     } else {
                         return Promise.resolve(false);
                     }
@@ -142,6 +143,47 @@ const migrate = async () => {
         await AsyncStorage.setItem('@MPD:albumart_state', JSON.stringify(state));
         await AsyncStorage.removeItem('@MPD:albumart_missing');
     }
+}
+
+const getMissing = async () => {
+    return new Promise(async (resolve, reject) => {
+        const allAlbums = await MPDConnection.current().getAllAlbums();
+        const state = await albumArtStorage.getState();
+
+        let missing = [];
+
+        allAlbums.forEach((album) => {
+            const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
+            if (state[key] === ERROR) {
+                missing.push(album);
+            }
+        });
+
+        resolve(missing);
+    });
+
+}
+
+const retryMissing = async () => {
+    return new Promise(async (resolve, reject) => {
+        const options = await albumArtStorage.getOptions(); 
+        const missing = await getMissing();
+
+        if (missing.length > 0) {
+            queueSize = missing.length;
+            missing.reduce((p, album) => {
+                return p.then((continueOn) => {
+                    queueSize--;
+                    if (continueOn) {
+                        return getAlbumArt(album, options, queueSize);
+                    } else {
+                        return Promise.resolve(false);
+                    }
+                });
+            }, Promise.resolve(true));
+        }
+        resolve();
+    });
 }
 
 const onConnect = MPDConnection.getEventEmitter().addListener(
@@ -250,7 +292,7 @@ class AlbumArtStorage {
         let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
         let options;
         if (optionsStr === null) {
-            options = {useHTTP: false, port: 8080, urlPrefix: "", fileName: ""};
+            options = {useHTTP: false, host: "", port: 8080, urlPrefix: "", fileName: ""};
             await AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify(options));
         } else {
             options = JSON.parse(optionsStr);
@@ -264,7 +306,14 @@ class AlbumArtStorage {
         }
         if (!options.urlPrefix) {
             options.urlPrefix = "";
+            await AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify(options));
+        }
+        if (!options.fileName) {
             options.fileName = "";
+            await AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify(options));
+        }
+        if (!options.host) {
+            options.host = "";
             await AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify(options));
         }
         return options; 
@@ -273,25 +322,60 @@ class AlbumArtStorage {
     async setHTTPSPort(port) {
         let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
         let options = JSON.parse(optionsStr);
-        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({useHTTP: options.useHTTP, port: port, urlPrefix: options.urlPrefix, fileName: options.fileName}));
+        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({
+            useHTTP: options.useHTTP, 
+            host: options.host, 
+            port: port, 
+            urlPrefix: options.urlPrefix, 
+            fileName: options.fileName
+        }));
+    }
+
+    async setHTTPHost(host) {
+        let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
+        let options = JSON.parse(optionsStr);
+        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({
+            useHTTP: options.useHTTP, 
+            host: host, 
+            port: options.port, 
+            urlPrefix: options.urlPrefix, 
+            fileName: options.fileName
+        }));
     }
 
     async setUseHTTP(useHTTP) {
         let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
         let options = JSON.parse(optionsStr);
-        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({useHTTP: useHTTP, port: options.port, urlPrefix: options.urlPrefix, fileName: options.fileName}));
+        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({
+            useHTTP: useHTTP, 
+            host: options.host, 
+            port: options.port, 
+            urlPrefix: options.urlPrefix, 
+            fileName: options.fileName
+        }));
     }
 
     async setURLPrefix(urlPrefix) {
         let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
         let options = JSON.parse(optionsStr);
-        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({useHTTP: options.useHTTP, port: options.port, urlPrefix: urlPrefix, fileName: options.fileName}));
+        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({
+            useHTTP: options.useHTTP,
+            host: options.host,  
+            port: options.port, 
+            urlPrefix: urlPrefix, 
+            fileName: options.fileName}));
     }
 
     async setFileName(fileName) {
         let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
         let options = JSON.parse(optionsStr);
-        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({useHTTP: options.useHTTP, port: options.port, urlPrefix: options.urlPrefix, fileName: fileName}));
+        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({
+            useHTTP: options.useHTTP, 
+            host: options.host, 
+            port: options.port, 
+            urlPrefix: options.urlPrefix, 
+            fileName: fileName
+        }));
     }
 }
 
@@ -343,6 +427,9 @@ export default {
     setUseHTTP: (useHTTP) => {
         return albumArtStorage.setUseHTTP(useHTTP);
     },
+    setHTTPHost: (host) => {
+        return albumArtStorage.setHTTPHost(host);
+    },
     setURLPrefix: (urlPrefix) => {
         return albumArtStorage.setURLPrefix(urlPrefix);
     },
@@ -377,6 +464,9 @@ export default {
         });
         return promise;
     },
+    getMissing: (albums) => {
+        return getMissing();
+    },
     reloadAlbumArt: (album, artist) => {
         let promise = new Promise((resolve, reject) => {
             Promise.all([albumArtStorage.getOptions(), albumArtStorage.getState()])
@@ -390,10 +480,16 @@ export default {
                 if (state[key] && state[key] === COMPLETE) {
                     MPDConnection.current().deleteAlbumArt(filename);
                 }
-                getAlbumArt({name: album, artist: artist, path: path}, options);
+                getAlbumArt({name: album, artist: artist, path: path}, options, 0);
                 resolve();
             });
         });
         return promise;
+    },
+    retryMissing: () => {
+        return retryMissing();
+    },
+    getState: () => {
+        return albumArtStorage.getState();
     }
 }
