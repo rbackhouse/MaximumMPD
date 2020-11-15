@@ -421,6 +421,9 @@ export default class PlayScreen extends React.Component {
               dsecs = (dsecs < 10 ? '0' : '') + dsecs;
               duration = dmins+":"+dsecs;
               timeTrack = "Track: "+(parseInt(this.state.status.song)+1)+ " Format: "+this.state.status.audio;
+              if (currentsong.date) {
+                timeTrack += " Date: "+currentsong.date;
+              }        
           }
       }
       const {height, width} = Dimensions.get('window');
