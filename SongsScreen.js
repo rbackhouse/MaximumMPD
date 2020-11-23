@@ -96,10 +96,24 @@ export default class SongsScreen extends React.Component {
         const artist = navigation.getParam('artist');
         const album = navigation.getParam('album');
         const genre = navigation.getParam('genre');
+        const hasNoAlbum = navigation.getParam('hasNoAlbum');
 
         this.setState({loading: true});
 
-        if (album) {
+        if (hasNoAlbum) {
+            MPDConnection.current().getSongsWithNoAlbum(artist)
+            .then((songs) => {
+                this.setState({loading: false});
+                this.setState({songs: songs, fullset: songs});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
+        } else if (album) {
             MPDConnection.current().getSongsForAlbum(album, artist)
             .then((songs) => {
                 this.setState({loading: false});
@@ -132,7 +146,6 @@ export default class SongsScreen extends React.Component {
                 );
             });
         }
-
     }
 
     search = (text) => {

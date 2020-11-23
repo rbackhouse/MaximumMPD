@@ -57,6 +57,7 @@ const ALBUMARTIST_PREFIX = "AlbumArtist: ";
 const DATE_PREFIX = "Date: ";
 const NAME_PREFIX = "Name: ";
 const DURATION_PREFIX = "duration: ";
+const SONGS_PREFIX = "songs: ";
 
 const INITIAL = 0;
 const WRITTEN = 1;
@@ -874,7 +875,66 @@ class MPDConnection {
 			type = "title";
 		}
         return this.createPromise("search "+type+" \""+songFilter.replace(/"/g, "\\\"")+"\"", processor);
-	}
+    }
+    
+    getSongCountWithNoAlbum(artist) {
+        if (this.version < 21) {
+            return Promise.resolve(0);
+        }
+
+        const processor = (data) => {
+            const lines = MPDConnection._lineSplit(data);
+            let count = 0;
+            lines.forEach((line) => {
+                if (line.indexOf(SONGS_PREFIX) === 0) {
+                    count = parseInt(line.substring(SONGS_PREFIX.length));
+                }
+            });
+            return count;
+        };
+        const cmd = "count \"((Artist == \\\""+artist.replace(/"/g, "\\\"")+ "\\\") AND (album == \\\"\\\"))\"";
+        return this.createPromise(cmd, processor);
+    }
+
+    getSongsWithNoAlbum(artist) {
+        if (this.version < 21) {
+            return Promise.resolve([]);
+        }
+        const processor = (data) => {
+            const lines = MPDConnection._lineSplit(data);
+			let songs = [];
+			let song;
+            
+            lines.forEach((line) => {
+				if (line.indexOf(TITLE_PREFIX) === 0) {
+					song.title = line.substring(TITLE_PREFIX.length);
+				} else if (line.indexOf(TRACK_PREFIX) === 0) {
+					song.track = line.substring(TRACK_PREFIX.length);
+				} else if (line.indexOf(TIME_PREFIX) === 0) {
+					song.time = MPDConnection._convertTime(line.substring(TIME_PREFIX.length));
+				} else if (line.indexOf(DURATION_PREFIX) === 0) {
+					song.duration = MPDConnection._convertTime(line.substring(DURATION_PREFIX.length));
+				} else if (line.indexOf(ARTIST_PREFIX) === 0) {
+					song.artist = line.substring(ARTIST_PREFIX.length);
+				} else if (line.indexOf(FILE_PREFIX) === 0) {
+					song = {};
+					songs.push(song);
+					var file = line.substring(FILE_PREFIX.length);
+					song.file = file;
+					song.b64file = this.toBase64(file);
+				}
+			});
+            songs.forEach((song) => {
+                if (song.duration) {
+                    song.time = song.duration;
+                    song.duration = undefined;
+                }
+            });
+			return songs;
+        };
+        const cmd = "find \"((Artist == \\\""+artist.replace(/"/g, "\\\"")+ "\\\") AND (album == \\\"\\\"))\"";
+        return this.createPromise(cmd, processor);
+    }
 
     getPlayListInfo() {
         return this.getNamedPlayListInfo(undefined);
