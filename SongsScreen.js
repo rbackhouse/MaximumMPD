@@ -164,11 +164,29 @@ export default class SongsScreen extends React.Component {
         const artist = navigation.getParam('artist');
         const album = navigation.getParam('album');
         const genre = navigation.getParam('genre');
+        const hasNoAlbum = navigation.getParam('hasNoAlbum');
 
         if (toPlaylist === true) {
             this.setState({modalVisible: true, selectedItem: "all"});
         } else {
-            if (album) {
+            if (hasNoAlbum) {
+                this.setState({loading: true});
+                let songs = [];
+                this.state.fullset.forEach((song) => {
+                    songs.push(decodeURIComponent(Base64.atob(song.b64file)));
+                });
+                MPDConnection.current().addSongsToPlayList(songs)
+                .then(() => {
+                    this.setState({loading: false});
+                })
+                .catch((err) => {
+                    this.setState({loading: false});
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                });
+            } else if (album) {
                 this.setState({loading: true});
                 MPDConnection.current().addAlbumToPlayList(album, artist)
                 .then(() => {
@@ -242,7 +260,25 @@ export default class SongsScreen extends React.Component {
             const artist = navigation.getParam('artist');
             const album = navigation.getParam('album');
             const genre = navigation.getParam('genre');
-            if (album) {
+            const hasNoAlbum = navigation.getParam('hasNoAlbum');
+
+            if (hasNoAlbum) {
+                let songs = [];
+                this.state.fullset.forEach((song) => {
+                    songs.push(decodeURIComponent(Base64.atob(song.b64file)));
+                });
+                MPDConnection.current().addSongsToNamedPlayList(songs, MPDConnection.current().getCurrentPlaylistName())
+                .then(() => {
+                    this.setState({loading: false});
+                })
+                .catch((err) => {
+                    this.setState({loading: false});
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                });
+            } else if (album) {
                 MPDConnection.current().addAlbumToNamedPlayList(album, artist, MPDConnection.current().getCurrentPlaylistName())
                 .then(() => {
                     this.setState({loading: false});
@@ -287,8 +323,26 @@ export default class SongsScreen extends React.Component {
         const artist = navigation.getParam('artist');
         const album = navigation.getParam('album');
         const genre = navigation.getParam('genre');
+        const hasNoAlbum = navigation.getParam('hasNoAlbum');
 
-        if (album) {
+        if (hasNoAlbum) {
+            this.setState({loading: true});
+            let songs = [];
+            this.state.fullset.forEach((song) => {
+                songs.push(decodeURIComponent(Base64.atob(song.b64file)));
+            });
+            MPDConnection.current().addSongsToPlayList(songs, true)
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
+        } else if (album) {
             this.setState({loading: true});
             MPDConnection.current().addAlbumToPlayList(album, artist, true)
             .then(() => {

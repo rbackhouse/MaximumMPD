@@ -1210,10 +1210,25 @@ class MPDConnection {
         return this.createPromise("playlistadd \""+playlist+"\" \""+song+"\"");
 	}
 
-	addSongsToPlayList(songs) {
-		let cmd = "command_list_begin\n";
+	addSongsToPlayList(songs, autoplay) {
+        let cmd = "command_list_begin\n";
+        if (autoplay) {
+            cmd += "clear\n";
+        }
         songs.forEach((song) => {
 			cmd += "add \""+song+"\"\n";
+        });
+        if (autoplay) {
+            cmd += "play\n";
+        }
+		cmd += "command_list_end";
+        return this.createPromise(cmd);
+	}
+
+	addSongsToNamedPlayList(songs, playlist) {
+		let cmd = "command_list_begin\n";
+        songs.forEach((song) => {
+			cmd += "playlistadd \""+playlist+"\" \""+song+"\"\n";
 		});
 		cmd += "command_list_end";
         return this.createPromise(cmd);
