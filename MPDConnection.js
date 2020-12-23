@@ -1598,6 +1598,11 @@ class MPDConnection {
         return SocketConnection.writeAlbumArtFromURL(filename, url);
     }
 
+    albumartFromUPnP(url, artist, album) {
+        const filename = 'albumart_'+this.toAlbumArtFilename(artist, album)+".png";
+        return SocketConnection.writeAlbumArtFromURL(filename, url);
+    }
+
     deleteAlbumArt(filename) {
         SocketConnection.deleteAlbumArtFile(filename);
     }

@@ -154,7 +154,7 @@ class AboutModal extends React.Component {
                     <View style={styles.flex3}>
                         <Text style={styles.text2}>About Maximum MPD</Text>
                     </View>
-                    <Text style={[styles.text1, {padding: 15}]}>Version: 4.4</Text>
+                    <Text style={[styles.text1, {padding: 15}]}>Version: 4.5</Text>
                     <Text style={[styles.text1, {padding: 15}]}>Author: Richard Backhouse</Text>
                     <Text style={[styles.text1, {padding: 15}]}>Various Images provided by Icons8 (https://icons8.com)</Text>
                     <View style={styles.flex1}>
@@ -298,7 +298,6 @@ export default class SettingsScreen extends React.Component {
         this.onDisconnect = MPDConnection.getEventEmitter().addListener(
             "OnDisconnect",
             () => {
-                console.log("settings disconnect");
                 this.setState({
                     replayGain: "off",
                     crossfade: 0,
@@ -572,12 +571,6 @@ export default class SettingsScreen extends React.Component {
                                 title='Random Playlist by type'/>
                     <SettingsList.Item
                         hasNavArrow={false}
-                                switchState={this.state.sortAlbumsByDate}
-                                hasSwitch={true}
-                                switchOnValueChange={(value) => this.onSortAlbumsByDateChange(value)}
-                                title='Sort Albums by date'/>
-                    <SettingsList.Item
-                        hasNavArrow={false}
                                 switchState={this.state.autoConnect}
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onAutoConnectChange(value)}
@@ -608,6 +601,12 @@ export default class SettingsScreen extends React.Component {
                                 switchOnValueChange={(value) => this.onUseNowPlayingControl(value)}
                                 title='Use Now Playing Control'/>
                     <SettingsList.Header headerStyle={styles.headerStyle} headerText="Sort Options"/>
+                    <SettingsList.Item
+                        hasNavArrow={false}
+                                switchState={this.state.sortAlbumsByDate}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onSortAlbumsByDateChange(value)}
+                                title='Sort Albums by date'/>
                     <SettingsList.Item
                         hasNavArrow={false}
                                 switchState={this.state.sortAlbumsByArtist}

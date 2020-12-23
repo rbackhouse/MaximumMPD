@@ -23,6 +23,7 @@
 		AE5BDB5CE1C442EBAC4FEE6C /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F767E9F878644B6296303F7F /* libRNVectorIcons.a */; };
 		D14189955F43512A551D93DB /* libPods-MaximumMPD-MaximumMPDTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4656A21DD718F9317F8902BA /* libPods-MaximumMPD-MaximumMPDTests.a */; };
 		F66D3B2323363B9600A9C9C8 /* VolumeControl.m in Sources */ = {isa = PBXBuildFile; fileRef = F66D3B2223363B9600A9C9C8 /* VolumeControl.m */; };
+		F6715FEE2579551700BBE0D7 /* UPnP.m in Sources */ = {isa = PBXBuildFile; fileRef = F6715FED2579551700BBE0D7 /* UPnP.m */; };
 		F6736300214BE4DA00CEFEEA /* SocketConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = F67362FD214BE4DA00CEFEEA /* SocketConnection.m */; };
 		F6736301214BE4DA00CEFEEA /* BonjourListener.m in Sources */ = {isa = PBXBuildFile; fileRef = F67362FF214BE4DA00CEFEEA /* BonjourListener.m */; };
 		F6D8CD332486AC17005CB50A /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D8CD322486AC17005CB50A /* File.swift */; };
@@ -77,6 +78,8 @@
 		F5FE5A8FE937D7104CA0099B /* libPods-MaximumMPD.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MaximumMPD.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F66D3AF923363B6B00A9C9C8 /* VolumeControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VolumeControl.h; path = MaximumMPD/VolumeControl.h; sourceTree = "<group>"; };
 		F66D3B2223363B9600A9C9C8 /* VolumeControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = VolumeControl.m; path = MaximumMPD/VolumeControl.m; sourceTree = "<group>"; };
+		F6715FED2579551700BBE0D7 /* UPnP.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UPnP.m; path = MaximumMPD/UPnP.m; sourceTree = "<group>"; };
+		F671600125795ADD00BBE0D7 /* UPnP.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UPnP.h; path = MaximumMPD/UPnP.h; sourceTree = "<group>"; };
 		F67362D6214BE4DA00CEFEEA /* SocketConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SocketConnection.h; path = MaximumMPD/SocketConnection.h; sourceTree = "<group>"; };
 		F67362FD214BE4DA00CEFEEA /* SocketConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SocketConnection.m; path = MaximumMPD/SocketConnection.m; sourceTree = "<group>"; };
 		F67362FE214BE4DA00CEFEEA /* BonjourListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BonjourListener.h; path = MaximumMPD/BonjourListener.h; sourceTree = "<group>"; };
@@ -169,6 +172,8 @@
 				F6D8CD2D2486A6E8005CB50A /* MaximumMPD-Bridging-Header.h */,
 				F6F2CE2F24A8B1EF00617B70 /* NowPlayingControl.m */,
 				F6F2CE3124A8B22800617B70 /* NowPlayingControl.h */,
+				F6715FED2579551700BBE0D7 /* UPnP.m */,
+				F671600125795ADD00BBE0D7 /* UPnP.h */,
 			);
 			name = MaximumMPD;
 			sourceTree = "<group>";
@@ -669,6 +674,7 @@
 				F6D8CD332486AC17005CB50A /* File.swift in Sources */,
 				F6F2CE3024A8B1EF00617B70 /* NowPlayingControl.m in Sources */,
 				F6736301214BE4DA00CEFEEA /* BonjourListener.m in Sources */,
+				F6715FEE2579551700BBE0D7 /* UPnP.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				F6736300214BE4DA00CEFEEA /* SocketConnection.m in Sources */,
 				F66D3B2323363B9600A9C9C8 /* VolumeControl.m in Sources */,
@@ -787,7 +793,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = MaximumMPD/MaximumMPD.entitlements;
-				CURRENT_PROJECT_VERSION = 4.8;
+				CURRENT_PROJECT_VERSION = 4.9;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = P9NAZG5MLK;
 				ENABLE_BITCODE = NO;
@@ -798,7 +804,7 @@
 				);
 				INFOPLIST_FILE = MaximumMPD/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 4.8;
+				MARKETING_VERSION = 4.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -823,7 +829,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = MaximumMPD/MaximumMPD.entitlements;
-				CURRENT_PROJECT_VERSION = 4.8;
+				CURRENT_PROJECT_VERSION = 4.9;
 				DEVELOPMENT_TEAM = P9NAZG5MLK;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -832,7 +838,7 @@
 				);
 				INFOPLIST_FILE = MaximumMPD/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 4.8;
+				MARKETING_VERSION = 4.9;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",

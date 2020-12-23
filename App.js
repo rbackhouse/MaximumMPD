@@ -40,6 +40,8 @@ import WelcomeScreen from './WelcomeScreen';
 import OutputsScreen from './OutputsScreen';
 import DebugScreen from './DebugScreen';
 import AlbumArtScreen from './AlbumArtScreen';
+import UPnPBrowseScreen from './UPnPBrowseScreen';
+import UPnPRenderersScreen from './UPnPRenderersScreen';
 import MPDConnection from './MPDConnection';
 
 class Header extends React.Component {
@@ -312,10 +314,99 @@ const MainPage = createBottomTabNavigator(
   }
 );
 
+const UPnPBrowseStack = createStackNavigator(
+    {
+        UPnPBrowse: { 
+            screen: UPnPBrowseScreen,
+            navigationOptions: ({ navigation }) => ({
+                headerRight: (
+                    <Header navigation={navigation}></Header>
+                ),
+                headerBackTitle: null,
+                headerStyle: StyleManager.getStyles("appStyles").headerStyle,
+                headerTitleStyle: StyleManager.getStyles("appStyles").headerTitleStyle
+            })    
+        }
+    }
+);
+
+const UPnPRenderersStack = createStackNavigator(
+    {
+        UPnPRenderers: { 
+            screen: UPnPRenderersScreen,
+            navigationOptions: ({ navigation }) => ({
+                headerRight: (
+                    <Header navigation={navigation}></Header>
+                ),
+                headerBackTitle: null,
+                headerStyle: StyleManager.getStyles("appStyles").headerStyle,
+                headerTitleStyle: StyleManager.getStyles("appStyles").headerTitleStyle
+            })    
+        }
+    }
+);
+
+const UPnPSettingsStack = createStackNavigator(
+    {
+        Connections: { 
+            screen: ConnectionsScreen 
+        }
+    },
+    {
+        defaultNavigationOptions: ({ navigation }) => ({
+            headerRight: (
+                <Header navigation={navigation}></Header>
+            ),
+            headerBackTitle: null,
+            headerStyle: StyleManager.getStyles("appStyles").headerStyle,
+            headerTitleStyle: StyleManager.getStyles("appStyles").headerTitleStyle
+        })
+    }
+);
+
+
+const UPnPPage = createBottomTabNavigator(
+    {
+      Browse: { screen: UPnPBrowseStack },
+      Render: { screen: UPnPRenderersStack },
+      Settings: { screen: UPnPSettingsStack }
+    },
+    {
+      defaultNavigationOptions: ({ navigation }) => ({
+          tabBarIcon: ({ focused, tintColor }) => {
+            const { routeName } = navigation.state;
+            let iconName;
+            if (routeName === 'Browse') {
+                iconName = `ios-list`;
+            } else if (routeName === 'Render') {
+                iconName = `ios-headset`;
+            } else if (routeName === 'Settings') {
+                iconName = `ios-settings`;
+            }
+  
+            return <Icon name={iconName} size={25} color={tintColor} />;
+          },
+          tabBarOnPress: ({navigation, defaultHandler}) => {
+                defaultHandler();
+          },
+          tabBarOptions: {
+              activeTintColor: 'red',
+              inactiveTintColor: 'gray',
+              style: StyleManager.getStyles("appStyles").tabBar
+          }
+      }),
+      tabBarPosition: 'bottom',
+      animationEnabled: true,
+      swipeEnabled: false
+    }
+);
+  
+
 const SwitchPage = createSwitchNavigator(
     {
         WelcomeScreen: { screen: WelcomeScreen },
-        MainPage: { screen: MainPage }
+        MainPage: { screen: MainPage },
+        UPnPPage: { screen: UPnPPage }
     },
     {
         initialRouteName: 'WelcomeScreen'

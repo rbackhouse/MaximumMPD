@@ -985,6 +985,40 @@ var albumArtStyles = {
     },
 };
 
+const upnpBrowseStylesMapping = {
+    bgColor: [
+        "container4",
+        "albumart"
+    ],
+    textColor: [
+        "file"
+    ],
+    separatorColor: [
+    ],
+    searchbarColor: [
+    ]
+};
+
+var upnpBrowseStyles = {
+    file: {
+        fontFamily: 'GillSans-Italic',
+        paddingLeft: 10,
+        paddingTop: 3,
+        paddingBottom: 3,
+        color: textColor
+    },
+    albumart: {
+        width: 55, 
+        height: 55, 
+        paddingLeft: 20, 
+        paddingRight: 20, 
+        resizeMode: 'contain',
+        backgroundColor: bgColor
+    },
+    container4: { flex: .9, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'stretch', padding: 5, backgroundColor: bgColor }
+};
+
+
 var rawstyles = {
     styles: {styles: styles, mappings: stylesMapping},
     albumsStyles: {styles: albumsStyles, mappings: albumsStylesMapping},
@@ -1003,7 +1037,8 @@ var rawstyles = {
     settingsStyles: {styles: settingsStyles, mappings: settingsStylesMapping},
     songsStyles: {styles: songsStyles, mappings: songsStylesMapping},
     welcomeStyles: {styles: welcomeStyles, mappings: welcomeStylesMapping},
-    albumArtStyles: {styles: albumArtStyles, mappings: albumArtStylesMapping}
+    albumArtStyles: {styles: albumArtStyles, mappings: albumArtStylesMapping},
+    upnpBrowseStyles: {styles: upnpBrowseStyles, mappings: upnpBrowseStylesMapping}
 };
 
 var stylesheets = {
@@ -1024,7 +1059,8 @@ var stylesheets = {
     settingsStyles: undefined,
     songsStyles: undefined,
     welcomeStyles: undefined,
-    albumArtStyles: undefined
+    albumArtStyles: undefined,
+    upnpBrowseStyles: undefined
 };
 
 function build() {

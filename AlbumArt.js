@@ -17,9 +17,9 @@
 
 import AsyncStorage from '@react-native-community/async-storage';
 
-import Base64 from './Base64';
 import MPDConnection from './MPDConnection';
 import EventEmitter from "react-native/Libraries/vendor/emitter/EventEmitter";
+import UPnPManager from './UPnPManager';
 
 const albumArtEventEmiiter = new EventEmitter();
 
@@ -29,10 +29,22 @@ const ERROR = 2;
 
 let albumArt = {};
 let artistArt = {};
-let stop = false;
-let queueSize = 0
+let loaders = {};
 
-async function getAlbumArt(album, options, queueSize) {
+function startLoader(options) {
+    for (let id in loaders) {
+        //console.log("stopping loader "+id);
+        loaders[id].stop = true;
+    }
+    setTimeout(() => {
+        loaders = {};
+        const loaderId = ""+Date.now();
+        loaders[loaderId] = {stop: false, queueSize: 0};            
+        loader(options, loaderId);
+    }, 200);
+}
+
+async function getAlbumArt(album, options, loaderId) {
     return new Promise(async (resolve, reject) => {
         const songs = await MPDConnection.current().getSongsForAlbum(album.name, album.artist);
         if (songs.length > 0) {
@@ -40,7 +52,24 @@ async function getAlbumArt(album, options, queueSize) {
             const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
             await albumArtStorage.updateState(key, STARTED);
             try {
-                if (options.useHTTP) {
+                if (options.useUPnP) {
+                    if (UPnPManager.connectServer(options.upnpServer.udn)) {
+                        const items = await UPnPManager.search(
+                            "0", 
+                            "upnp:class derivedfrom \"object.container.album.musicAlbum\" and upnp:artist = \""+album.artist+"\" and dc:title contains \""+album.name+"\"",
+                            "dc:title,upnp:albumArtURI"
+                        );
+                        if (loaders[loaderId].stop) {
+                            resolve(false);
+                            return;
+                        }
+                        if (items.length > 0 && items[0].albumArtURL.length > 0) {
+                            await MPDConnection.current().albumartFromUPnP(items[0].albumArtURL, album.artist, album.name);
+                        } else {
+                            throw Error("Empty URL ["+album.artist+"] ["+album.name+"]");
+                        }
+                    }
+                } else if (options.useHTTP) {
                     const host = options.host === "" ? undefined : options.host;
                     await MPDConnection.current().albumartFromURL(songs[0].file, options.port, album.artist, album.name, options.urlPrefix, options.fileName, host);
                 } else {
@@ -56,7 +85,7 @@ async function getAlbumArt(album, options, queueSize) {
                 }
                 albumArtEventEmiiter.emit('OnAlbumArtEnd', album);
                 await albumArtStorage.updateState(key, COMPLETE);
-                resolve(!stop);
+                resolve(!loaders[loaderId].stop);
             } catch (err) {
                 console.log(err);
                 albumArtEventEmiiter.emit('OnAlbumArtError', {album:album, err: err});
@@ -64,21 +93,22 @@ async function getAlbumArt(album, options, queueSize) {
                 if (err.message && err.message === "Album Art error") {
                     resolve(false);
                 } else {
-                    resolve(!stop);
+                    resolve(!loaders[loaderId].stop);
                 }
             }
         } else {
-            resolve(!stop);
+            resolve(!loaders[loaderId].stop);
         }
-        if (queueSize === 0) {
+        if (loaders[loaderId].queueSize === 0) {
             albumArtEventEmiiter.emit('OnAlbumArtComplete', {});
         }
     });
 }
 
-const loader = async (options) => {
-    const isAlbumArtSupported = options.useHTTP || MPDConnection.current().isAlbumArtSupported();
+const loader = async (options, loaderId) => {
+    const isAlbumArtSupported = options.useHTTP || options.useUPnP || MPDConnection.current().isAlbumArtSupported();
     if (options.enabled && MPDConnection.isConnected() && isAlbumArtSupported) {
+        //console.log("loader started");
         let albums = [];
         const state = await albumArtStorage.getState();
         const allAlbums = await MPDConnection.current().getAllAlbums();
@@ -111,13 +141,19 @@ const loader = async (options) => {
                 }
             }
         });
-        queueSize = albums.length;
-        if (queueSize > 0) {
-            albums.reduce((p, album) => {
+        loaders[loaderId].queueSize = albums.length;
+        if (loaders[loaderId].queueSize > 0) {
+            albums.reduce((p, album, index) => {
                 return p.then((continueOn) => {
-                    queueSize--;
+                    loaders[loaderId].queueSize--;
+                    if (loaders[loaderId].queueSize === 0) {
+                        //console.log("loader finished");
+                        albumArtEventEmiiter.emit('OnAlbumArtComplete', {});
+                        delete loaders[loaderId];
+                        return Promise.resolve(false);
+                    }
                     if (continueOn) {
-                        return getAlbumArt(album, options, queueSize);
+                        return getAlbumArt(album, options, loaderId);
                     } else {
                         return Promise.resolve(false);
                     }
@@ -166,16 +202,18 @@ const getMissing = async () => {
 
 const retryMissing = async () => {
     return new Promise(async (resolve, reject) => {
+        const loaderId = ""+Date.now();
+        loaders[loaderId] = {stop: false, queueSize: 0};        
         const options = await albumArtStorage.getOptions(); 
         const missing = await getMissing();
 
         if (missing.length > 0) {
-            queueSize = missing.length;
+            loaders[loaderId].queueSize = missing.length;
             missing.reduce((p, album) => {
                 return p.then((continueOn) => {
-                    queueSize--;
+                    loaders[loaderId].queueSize--;
                     if (continueOn) {
-                        return getAlbumArt(album, options, queueSize);
+                        return getAlbumArt(album, options, loaderId);
                     } else {
                         return Promise.resolve(false);
                     }
@@ -191,12 +229,11 @@ const onConnect = MPDConnection.getEventEmitter().addListener(
     () => {
         albumArtStorage.isEnabled().then((enabled) => {
             if (enabled === "true") {
-                stop = false;
                 migrate().then(() => {
                     setTimeout(() => {
                         albumArtStorage.getOptions()
                         .then((options) => {
-                            loader(options);
+                            startLoader(options);
                         });
                     }, 2000);
                 });
@@ -208,11 +245,12 @@ const onConnect = MPDConnection.getEventEmitter().addListener(
 const onPauseResume = MPDConnection.getEventEmitter().addListener(
     "OnPauseResume",
     (type) => {
-        console.log("OnPauseResume "+type.msg);
         albumArtStorage.isEnabled().then((enabled) => {
             if (enabled === "true") {
                 if (type.msg === "paused") {
-                    stop = true;
+                    for (let id in loaders) {
+                        loaders[id].stop = true;
+                    }            
                 }
             }
         });
@@ -222,19 +260,19 @@ const onPauseResume = MPDConnection.getEventEmitter().addListener(
 const onDisconnect = MPDConnection.getEventEmitter().addListener(
     "OnDisconnect",
     () => {
-        //console.log("Stopping albumart poller");
-        stop = true;
+        for (let id in loaders) {
+            loaders[id].stop = true;
+        }
     }
 );
 
 const onInternalConnect = MPDConnection.getEventEmitter().addListener(
     "OnInternalConnect", 
     () => {
-        stop = false;
-        setTimeout(() => {
+       setTimeout(() => {
             albumArtStorage.getOptions()
             .then((options) => {
-                loader(options);
+                startLoader(options);
             });
         }, 2000);
     }
@@ -292,7 +330,7 @@ class AlbumArtStorage {
         let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
         let options;
         if (optionsStr === null) {
-            options = {useHTTP: false, host: "", port: 8080, urlPrefix: "", fileName: ""};
+            options = {useHTTP: false, host: "", port: 8080, urlPrefix: "", fileName: "", useUPnP: false, upnpServer: {name:"", udn: ""}};
             await AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify(options));
         } else {
             options = JSON.parse(optionsStr);
@@ -316,6 +354,11 @@ class AlbumArtStorage {
             options.host = "";
             await AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify(options));
         }
+        if (!options.upnpServer) {
+            options.useUPnP = false;
+            options.upnpServer = {name:"", udn: ""};
+            await AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify(options));
+        }
         return options; 
     }
 
@@ -326,8 +369,10 @@ class AlbumArtStorage {
             useHTTP: options.useHTTP, 
             host: options.host, 
             port: port, 
-            urlPrefix: options.urlPrefix, 
-            fileName: options.fileName
+            urlPrefix: options.urlPrefix,
+            fileName: options.fileName,
+            useUPnP: options.useUPnP,
+            upnpServer: options.upnpServer
         }));
     }
 
@@ -339,7 +384,9 @@ class AlbumArtStorage {
             host: host, 
             port: options.port, 
             urlPrefix: options.urlPrefix, 
-            fileName: options.fileName
+            fileName: options.fileName,
+            useUPnP: options.useUPnP,
+            upnpServer: options.upnpServer
         }));
     }
 
@@ -351,7 +398,9 @@ class AlbumArtStorage {
             host: options.host, 
             port: options.port, 
             urlPrefix: options.urlPrefix, 
-            fileName: options.fileName
+            fileName: options.fileName,
+            useUPnP: options.useUPnP,
+            upnpServer: options.upnpServer
         }));
     }
 
@@ -363,7 +412,10 @@ class AlbumArtStorage {
             host: options.host,  
             port: options.port, 
             urlPrefix: urlPrefix, 
-            fileName: options.fileName}));
+            fileName: options.fileName,
+            useUPnP: options.useUPnP,
+            upnpServer: options.upnpServer
+        }));
     }
 
     async setFileName(fileName) {
@@ -374,7 +426,38 @@ class AlbumArtStorage {
             host: options.host, 
             port: options.port, 
             urlPrefix: options.urlPrefix, 
-            fileName: fileName
+            fileName: fileName,
+            useUPnP: options.useUPnP,
+            upnpServer: options.upnpServer
+        }));
+    }
+
+    async setUseUPnP(useUPnP) {
+        let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
+        let options = JSON.parse(optionsStr);
+
+        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({
+            useHTTP: options.useHTTP, 
+            host: options.host, 
+            port: options.port, 
+            urlPrefix: options.urlPrefix, 
+            fileName: options.fileName,
+            useUPnP: useUPnP,
+            upnpServer: options.upnpServer
+        }));
+    }
+
+    async setUPnPServer(upnpServer) {
+        let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
+        let options = JSON.parse(optionsStr);
+        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify({
+            useHTTP: options.useHTTP, 
+            host: options.host, 
+            port: options.port, 
+            urlPrefix: options.urlPrefix, 
+            fileName: options.fileName,
+            useUPnP: options.useUPnP,
+            upnpServer: upnpServer
         }));
     }
 }
@@ -405,14 +488,15 @@ export default {
         albumArtStorage.clearCache();
     },
     enable: () => {
-        stop = false;
         albumArtStorage.enable()
         .then((options) => {
-            loader(options);
+            startLoader(options);
         });
     },
     disable: () => {
-        stop = true;
+        for (let id in loaders) {
+            loaders[id].stop = true;
+        }
         albumArtStorage.disable();
     },
     isEnabled: () => {
@@ -436,6 +520,12 @@ export default {
     setFileName: (fileName) => {
         return albumArtStorage.setFileName(fileName);
     },
+    setUseUPnP: (useUPnP) => {
+        return albumArtStorage.setUseUPnP(useUPnP);
+    },
+    setUPnPServer: (upnpServer) => {
+        return albumArtStorage.setUPnPServer(upnpServer);
+    },
     getAlbumArtForArtists: () => {
         let promise = new Promise((resolve, reject) => {
             resolve(artistArt);
@@ -446,7 +536,9 @@ export default {
         return albumArtEventEmiiter;
     },
     getQueueSize: () => {
-        return queueSize;
+        for (let id in loaders) {
+            return loaders[id].queueSize;
+        }
     },
     getAlbumArtForAlbums: (albums) => {
         let promise = new Promise((resolve, reject) => {
@@ -480,7 +572,12 @@ export default {
                 if (state[key] && state[key] === COMPLETE) {
                     MPDConnection.current().deleteAlbumArt(filename);
                 }
-                getAlbumArt({name: album, artist: artist, path: path}, options, 0);
+                const loaderId = ""+Date.now();
+                loaders[loaderId] = {stop: false, queueSize: 0};
+                getAlbumArt({name: album, artist: artist, path: path}, options, loaderId)
+                .then(() => {
+                    delete loaders[loaderId];
+                });
                 resolve();
             });
         });

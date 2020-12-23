@@ -26,6 +26,7 @@ import {
     Appearance
 } from 'react-native';
 import MPDConnection from './MPDConnection';
+import UPnPManager from './UPnPManager';
 import IonIcon  from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements'
@@ -125,6 +126,7 @@ export default class ConnectionsScreen extends React.Component {
     state = {
         discovered: [],
         configured: [],
+        upnpServers: [],
         selected: (new Map(): Map<string, boolean>),
         modalVisible: false,
         loading: false
@@ -153,6 +155,20 @@ export default class ConnectionsScreen extends React.Component {
             }
         );
 
+        this.onUPnPServerDiscover = UPnPManager.addListener(
+            "OnServerDiscover",
+            (server) => {
+                this.state.upnpServers = this.state.upnpServers.filter((s) => {
+                    return !(s.udn === server.udn);
+                });
+                if (server.action === "find") {
+                    server.key = server.udn;
+                    this.state.upnpServers.push(server);
+                }
+                this.setState({upnpServers: this.state.upnpServers});
+            }
+        );
+
         const currentConnection = MPDConnection.current();
         if (currentConnection !== undefined && currentConnection.isConnected) {
             this.state.selected.set(currentConnection.name+currentConnection.host+currentConnection.port, true);
@@ -174,6 +190,7 @@ export default class ConnectionsScreen extends React.Component {
     componentWillUnmount() {
         this.onDisconnect.remove();
         this.onDiscover.remove();
+        this.onUPnPServerDiscover.remove();
         if (this.onApperance) {
             this.onApperance.remove();
         }
@@ -184,7 +201,12 @@ export default class ConnectionsScreen extends React.Component {
         discovered.forEach((d) => {
             d.key = d.name+d.ipAddress+d.port;
         });
-        this.setState({discovered: discovered});
+        let upnpServers = UPnPManager.getServers();
+        upnpServers.forEach((u) => {
+            u.key = u.udn;
+        });
+        
+        this.setState({discovered: discovered,upnpServers: upnpServers});        
         MPDConnection.getConnectionList()
         .then((connections) => {
             connections.forEach((c) => {
@@ -193,8 +215,6 @@ export default class ConnectionsScreen extends React.Component {
             this.setState({configured: connections});
         });
     }
-
-    keyExtractor = (item, index) => item.name+item.ipAddress+item.port;
 
     onPress(item) {
         this.setState((state) => {
@@ -261,8 +281,9 @@ export default class ConnectionsScreen extends React.Component {
     }
 
     onRescan() {
-        this.setState({discovered: []});
+        this.setState({discovered: [], upnpServers: []});
         MPDConnection.rescan();
+        UPnPManager.rescan();
     }
 
     addConnection = (name, host, port, password) => {
@@ -316,8 +337,13 @@ export default class ConnectionsScreen extends React.Component {
     connectRow(rowMap, item) {
         if (rowMap[item.name+item.ipAddress+item.port]) {
 			rowMap[item.name+item.ipAddress+item.port].closeRow();
-		}
-        this.onPress(item);
+        }
+        if (item.udn) {
+            UPnPManager.connectServer(item.udn);
+            this.props.navigation.navigate('UPnPPage');
+        } else {
+            this.onPress(item);
+        }
     }
 
     deleteRow(rowMap, item) {
@@ -368,9 +394,10 @@ export default class ConnectionsScreen extends React.Component {
 					sections={[
                         {title: 'Discovered', data: this.state.discovered},
                         {title: 'Configured', data: this.state.configured},
+                        {title: 'UPnP Servers', data: this.state.upnpServers}
                     ]}
                     renderItem={(data, map) => {
-                        const openVal = data.section.title === "Discovered" ? -75 : -150;
+                        const openVal = data.section.title === "Configured" ? -150 : -75;
                         const item = data.item;
                         const selected = this.state.selected.get(item.name+item.ipAddress+item.port) === true ? "flex" : "none";
                         let stats;
@@ -392,10 +419,14 @@ export default class ConnectionsScreen extends React.Component {
                             <View style={[common.container3, common.rowFront]}>
                                 <View style={common.container4}>
                                     <Text style={styles.item}>{item.name}</Text>
-                                    <Text style={styles.item}>{item.ipAddress}</Text>
-                                    <Text style={styles.item}>{item.port}</Text>
+                                    {item.ipAddress &&
+                                        <Text style={styles.item}>{item.ipAddress}</Text>
+                                    }
+                                    {item.port &&
+                                        <Text style={styles.item}>{item.port}</Text>
+                                    }
                                     {stats &&
-                                    <Text style={styles.item}>{stats}</Text>
+                                        <Text style={styles.item}>{stats}</Text>
                                     }
                                 </View>
                                 <Icon name="check" size={15} style={[{ display: selected }, common.icon]}/>

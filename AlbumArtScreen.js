@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { View, Text, Alert, ActivityIndicator, FlatList, ScrollView, Modal } from 'react-native';
+import { View, Text, Alert, ActivityIndicator, FlatList, ScrollView, Modal, TouchableOpacity, ActionSheetIOS} from 'react-native';
 import { SearchBar, Input, Button } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import SettingsList from 'react-native-settings-list';
@@ -26,6 +26,7 @@ import FAIcon from 'react-native-vector-icons/FontAwesome';
 import AlbumArt from './AlbumArt';
 import MPDConnection from './MPDConnection';
 import { StyleManager, bgColor } from './Styles';
+import UPnPManager from './UPnPManager';
 
 class MissingModal extends React.Component {
     state = {
@@ -151,6 +152,97 @@ class MissingModal extends React.Component {
     }
 }
 
+class SelectUPnPModal extends React.Component {
+    state = {
+        loading: false,
+        upnpServers: []
+    }
+
+    load() {
+        let upnpServers = UPnPManager.getServers();
+        upnpServers.forEach((u) => {
+            u.key = u.udn;
+        });
+        this.setState({upnpServers: upnpServers});
+    }
+
+    onCancel() {
+        this.props.onCancel();
+    }
+
+    onPress(item) {
+        this.props.onSelect(item);
+    }
+
+    renderSeparator = () => {
+        const common = StyleManager.getStyles("styles");
+
+        return (
+            <View
+                style={common.separator}
+            />
+        );
+    };
+
+    renderItem = ({item}) => {
+        const styles = StyleManager.getStyles("albumArtStyles");
+        const common = StyleManager.getStyles("styles");
+        return (
+            <TouchableOpacity onPress={this.onPress.bind(this, item)}>
+            <View style={common.container3}>
+                <Icon name="ios-link" size={20} style={common.icon}/>
+                <View style={common.container4}>
+                    <Text numberOfLines={1} style={styles.item}>{item.name}</Text>
+                </View>
+            </View>
+            </TouchableOpacity>
+        );
+    };
+
+    render() {
+        const styles = StyleManager.getStyles("albumArtStyles");
+        const common = StyleManager.getStyles("styles");
+        const visible = this.props.visible;
+        return (
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={visible}
+                onShow={() => {this.load();}}
+            >
+                <View style={styles.container3}>
+                    <View style={styles.flex1}>
+                        <View style={styles.container4}>
+                            <Text style={styles.title}>Select a UPnP Server</Text>
+                        </View>    
+                    </View>
+
+                    <View style={styles.flex2}>
+                        <View style={styles.container6}>
+                            <FlatList
+                                data={this.state.upnpServers}
+                                renderItem={this.renderItem}
+                                renderSectionHeader={({section}) => <Text style={common.sectionHeader}>{section.title}</Text>}
+                                ItemSeparatorComponent={this.renderSeparator}
+                            />
+                        </View>
+                    </View>
+
+                    <View style={styles.flex1}>
+                        <Button
+                            onPress={() => {this.onCancel();}}
+                            title="Cancel"
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: 'black'}}
+                            raised={true}
+                            type="outline"
+                        />
+                    </View>
+                </View>
+            </Modal>
+        );
+    }
+}
+
 export default class AlbumArtScreen extends React.Component {
     static navigationOptions = {
         title: 'Album Art'
@@ -160,10 +252,12 @@ export default class AlbumArtScreen extends React.Component {
         count: '',
         port: 8080,
         host: "",
-        useHTTP: false,
         urlPrefix: "",
         filename: "",
-        missingVisible: false
+        upnpServer: {name:"", udn: ""},
+        serverType: "MPD",
+        missingVisible: false,
+        upnpListVisible: false
     };
 
     componentDidMount() {
@@ -203,13 +297,20 @@ export default class AlbumArtScreen extends React.Component {
             if (options.host) {
                 host = options.host;
             }
+            let serverType = "MPD";
+            if (options.useHTTP) {
+                serverType = "HTTP";
+            } else if (options.useUPnP) {
+                serverType = "UPnP";
+            }
             this.setState({
                 albumart: options.enabled, 
-                useHTTP: options.useHTTP, 
                 port: options.port, 
                 urlPrefix: options.urlPrefix, 
                 filename: options.fileName,
-                host: host
+                host: host,
+                serverType: serverType,
+                upnpServer: options.upnpServer
             });
         });
     }
@@ -245,11 +346,6 @@ export default class AlbumArtScreen extends React.Component {
         }
     }
 
-    onUseHTTPSChange(value) {
-        this.setState({useHTTP: value});
-        AlbumArt.setUseHTTP(value);
-    }
-
     onPortChange(value) {
         let port = parseInt(value);
         if (!isNaN(port)) {
@@ -273,30 +369,47 @@ export default class AlbumArtScreen extends React.Component {
         AlbumArt.setHTTPHost(value);
     }
 
+    onChangeType() {
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: ['MPD', 'HTTP', 'UPnP', 'Cancel'],
+            title: "Download Type",
+            cancelButtonIndex: 3
+        }, (idx) => {
+            switch (idx) {
+                case 0:
+                    this.setState({serverType: "MPD"});
+                    AlbumArt.setUseUPnP(false)
+                    .then(() => {
+                        AlbumArt.setUseHTTP(false);
+                    });
+                    break;
+                case 1:
+                    this.setState({serverType: "HTTP"});
+                    AlbumArt.setUseHTTP(true)
+                    .then(() => {
+                        AlbumArt.setUseUPnP(false);
+                    });
+                    break;
+                case 2:
+                    this.setState({upnpListVisible: true})
+                    this.setState({serverType: "UPnP"});
+                    AlbumArt.setUseUPnP(true)
+                    .then(() => {
+                        AlbumArt.setUseHTTP(false);
+                    });
+                    break;
+            }
+        });
+    }
+
+    setUPnPServer(upnpServer) {
+        this.setState({upnpListVisible: false, upnpServer: upnpServer});
+        AlbumArt.setUPnPServer({name: upnpServer.name, udn: upnpServer.udn});
+    }
+
     retryMissing() {
         AlbumArt.retryMissing();
     }
-
-    renderSeparator = () => {
-        const common = StyleManager.getStyles("styles");
-
-        return (
-            <View
-                style={common.separator}
-            />
-        );
-    };
-
-    renderItem = ({item}) => {
-        const styles = StyleManager.getStyles("albumArtStyles");
-        const common = StyleManager.getStyles("styles");
-        return (
-            <View style={common.container4}>
-                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.artistalbum}</Text>
-                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.msg}</Text>
-            </View>
-        );
-    };
 
     render() {
         const styles = StyleManager.getStyles("albumArtStyles");
@@ -313,18 +426,20 @@ export default class AlbumArtScreen extends React.Component {
                         <SettingsList backgroundColor={bgColor} underlayColor={bgColor} borderColor='#c8c7cc' defaultTitleStyle={styles.settingsItem} defaultItemSize={50}>
                             <SettingsList.Item
                                 hasNavArrow={false}
-                                        switchState={this.state.albumart}
-                                        hasSwitch={true}
-                                        switchOnValueChange={(value) => this.onAlbumArtChange(value)}
-                                        title='Enable'/>
+                                switchState={this.state.albumart}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onAlbumArtChange(value)}
+                                title='Enable'/>
                             <SettingsList.Item
-                                hasNavArrow={false}
-                                        switchState={this.state.useHTTP}
-                                        hasSwitch={true}
-                                        switchOnValueChange={(value) => this.onUseHTTPSChange(value)}
-                                        title='Use HTTP'/>
+                                hasNavArrow={true}
+                                title='Server Type'
+                                titleInfo={this.state.serverType}
+                                titleInfoStyle={{fontFamily: 'GillSans-Italic'}}
+                                onPress={() => this.onChangeType()}
+                            />
                         </SettingsList>
                     </View>
+                    {this.state.serverType === "HTTP" &&
                     <View style={styles.container1}>
                         <Input placeholder="HTTP Host" 
                             label="HTTP Host"
@@ -333,11 +448,12 @@ export default class AlbumArtScreen extends React.Component {
                             onChangeText={(host) => {
                                 this.onHostChange(host)
                             }} 
-                            disabled={!this.state.useHTTP}
                             style={styles.entryField} 
                             inputStyle={styles.label} 
                             labelStyle={styles.label}/>
                     </View>
+                    }
+                    {this.state.serverType === "HTTP" &&
                     <View style={styles.container1}>
                         <Input placeholder="HTTP Port" 
                             label="HTTP Port"
@@ -346,38 +462,47 @@ export default class AlbumArtScreen extends React.Component {
                             onChangeText={(port) => {
                                 this.onPortChange(port)
                             }} 
-                            disabled={!this.state.useHTTP}
                             style={styles.entryField} 
                             inputStyle={styles.label} 
                             labelStyle={styles.label}/>
                     </View>
+                    }
+                    {this.state.serverType === "HTTP" &&
                     <View style={styles.container1}>
                         <Input placeholder="HTTP URL Prefix" 
                             label="HTTP URL Prefix" 
                             value={this.state.urlPrefix}
                             autoCapitalize="none"
                             onChangeText={(urlPrefix) => this.onURLPrefixChange(urlPrefix)}
-                            disabled={!this.state.useHTTP}
                             style={styles.entryField} 
                             inputStyle={styles.label} 
                             labelStyle={styles.label}/>
                     </View>
+                    }
+                    {this.state.serverType === "HTTP" &&                    
                     <View style={styles.container1}>
                         <Input placeholder="Album Art Filename" 
                             label="Album Art Filename" 
                             value={this.state.filename}
                             autoCapitalize="none"
                             onChangeText={(filename) => this.onFilenameChange(filename)}
-                            disabled={!this.state.useHTTP}
                             style={styles.entryField} 
                             inputStyle={styles.label} 
                             labelStyle={styles.label}/>
                     </View>
+                    }
+                    {this.state.serverType === "HTTP" &&
                     <View style={styles.container1}>
                         <ScrollView bounces={true} horizontal={true}> 
                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>URL Template:  {url}</Text>
                         </ScrollView>     
                     </View>
+                    }
+                    {this.state.serverType === "UPnP" &&
+                    <View style={styles.container1}>
+                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>UPnP Server: {this.state.upnpServer.name}</Text>
+                    </View>
+                    }
                     <View style={styles.container1}>
                         <Text numberOfLines={1} ellipsizeMode='tail' style={styles.status}>{queueText}</Text>
                     </View>
@@ -391,6 +516,7 @@ export default class AlbumArtScreen extends React.Component {
                         </View>
                     }
                 <MissingModal visible={this.state.missingVisible} onOk={() => this.setState({missingVisible: false})}></MissingModal>
+                <SelectUPnPModal visible={this.state.upnpListVisible} onCancel={() => this.setState({upnpListVisible: false})} onSelect={(upnpServer) => this.setUPnPServer(upnpServer)}></SelectUPnPModal>
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                     <ActionButton.Item buttonColor='#1abc9c' title="Clear" size={40} textStyle={common.actionButtonText} onPress={() => {this.clearAlbumArt();}}>
                         <FAIcon name="eraser" size={15} color="#e6e6e6" />
