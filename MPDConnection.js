@@ -1192,7 +1192,9 @@ class MPDConnection {
         if (autoplay) {
             let cmd = "command_list_begin\n";
             if (this.currentstatus.playlistlength && parseInt(this.currentstatus.playlistlength) > 0) {
-                cmd += "save __playlist_to_restore\n";
+                if (!this.autoplaysong) {
+                    cmd += "save __playlist_to_restore\n";
+                }
                 this.autoplaysong = this.toBase64(song);
                 AsyncStorage.setItem('@MPD:'+this.host+'_'+this.port+'_autoplaysong', this.autoplaysong);
             }
