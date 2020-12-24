@@ -26,6 +26,8 @@ public class MainApplication extends Application implements ReactApplication {
       packages.add(new SocketConnectionPackage());
       packages.add(new BonjourListenerPackage());
       packages.add(new VolumeControlPackage());
+      packages.add(new NowPlayingControlPackage());
+      packages.add(new UPnPPackage());
       return packages;
     }
 
