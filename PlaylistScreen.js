@@ -16,11 +16,12 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Modal, ActionSheetIOS, Dimensions } from 'react-native';
+import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Modal, ActionSheetIOS, Dimensions, Platform } from 'react-native';
 import {Picker} from '@react-native-community/picker';
 import { Input, Button } from 'react-native-elements'
 
 import ActionButton from 'react-native-action-button';
+import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
@@ -181,93 +182,104 @@ export default class PlaylistScreen extends React.Component {
     }
 
     onLongPress(item) {
-        ActionSheetIOS.showActionSheetWithOptions({
-            options: ['Delete', 'Goto Album', 'Move Up', 'Move Down', 'Move after Current Song', 'Cancel'],
-            title: item.title,
-            message: item.artist,
-            cancelButtonIndex: 5
-          }, (idx) => {
-              switch (idx) {
-                case 0:
-                    Alert.alert(
-                        "Remove Song from Queue",
-                        "Are you sure you want to remove ''"+item.title+"'' ?",
-                        [
-                            {text: 'OK', onPress: () => {
-                                this.setState({loading: true});
-                                MPDConnection.current().removeSong(item.id)
-                                .then(() => {
-                                    this.setState({loading: false});
-                                    this.load();
-                                })
-                                .catch((err) => {
-                                    this.setState({loading: false});
-                                    Alert.alert(
-                                        "MPD Error",
-                                        "Error : "+err
-                                    );
-                                });
-                            }},
-                            {text: 'Cancel'}
-                        ]
-                    );
-                    break;
-                case 1: 
-                    const { navigation } = this.props;
-                    if (item.artist && item.album) {
-                        navigation.navigate('Browse');
-                        navigation.navigate('Songs', {artist: item.artist, album: item.album});
-                    }
-                    break;
-                case 2:
-                    if (item.pos > 0) {
-                        MPDConnection.current().swap(item.id, this.state.playlist[item.pos-1].id)
-                        .then(() => {
-                            this.load();
-                        })
-                        .catch((err) => {
-                            Alert.alert(
-                                "MPD Error",
-                                "Error : "+err
-                            );
-                        });
-                    }
-                    break;
-                case 3:
-                    if (item.pos < (this.state.playlist.length-1)) {
-                        MPDConnection.current().swap(item.id, this.state.playlist[item.pos+1].id)
-                        .then(() => {
-                            this.load();
-                        })
-                        .catch((err) => {
-                            Alert.alert(
-                                "MPD Error",
-                                "Error : "+err
-                            );
-                        });                                        
-                    }
-                    break;
-                case 4:
-                    if (this.state.status && this.state.status.song) {
-                        let toIdx = -1;
-                        if (this.state.status.song == this.state.playlist.length-1) {
-                            toIdx = this.state.status.song;
-                        }
-                        MPDConnection.current().move(item.id, toIdx)
-                        .then(() => {
-                            this.load();
-                        })
-                        .catch((err) => {
-                            Alert.alert(
-                                "MPD Error",
-                                "Error : "+err
-                            );
-                        });
+        if (Platform.OS === 'ios') {
+            ActionSheetIOS.showActionSheetWithOptions({
+                options: ['Delete', 'Goto Album', 'Move Up', 'Move Down', 'Move after Current Song', 'Cancel'],
+                title: item.title,
+                message: item.artist,
+                cancelButtonIndex: 5
+            }, (idx) => {
+                this.doActionSheetAction(idx, item);
+            });
+        } else {
+            this.currentItem = item;
+            this.ActionSheet.show();
+        }            
+    }
 
+    doActionSheetAction(idx, i) {
+        const item = i || this.currentItem;
+        switch (idx) {
+            case 0:
+                Alert.alert(
+                    "Remove Song from Queue",
+                    "Are you sure you want to remove ''"+item.title+"'' ?",
+                    [
+                        {text: 'OK', onPress: () => {
+                            this.setState({loading: true});
+                            MPDConnection.current().removeSong(item.id)
+                            .then(() => {
+                                this.setState({loading: false});
+                                this.load();
+                            })
+                            .catch((err) => {
+                                this.setState({loading: false});
+                                Alert.alert(
+                                    "MPD Error",
+                                    "Error : "+err
+                                );
+                            });
+                        }},
+                        {text: 'Cancel'}
+                    ]
+                );
+                break;
+            case 1: 
+                const { navigation } = this.props;
+                if (item.artist && item.album) {
+                    navigation.navigate('Browse');
+                    navigation.navigate('Songs', {artist: item.artist, album: item.album});
+                }
+                break;
+            case 2:
+                if (item.pos > 0) {
+                    MPDConnection.current().swap(item.id, this.state.playlist[item.pos-1].id)
+                    .then(() => {
+                        this.load();
+                    })
+                    .catch((err) => {
+                        Alert.alert(
+                            "MPD Error",
+                            "Error : "+err
+                        );
+                    });
+                }
+                break;
+            case 3:
+                if (item.pos < (this.state.playlist.length-1)) {
+                    MPDConnection.current().swap(item.id, this.state.playlist[item.pos+1].id)
+                    .then(() => {
+                        this.load();
+                    })
+                    .catch((err) => {
+                        Alert.alert(
+                            "MPD Error",
+                            "Error : "+err
+                        );
+                    });                                        
+                }
+                break;
+            case 4:
+                if (this.state.status && this.state.status.song) {
+                    let toIdx = -1;
+                    if (this.state.status.song == this.state.playlist.length-1) {
+                        toIdx = this.state.status.song;
                     }
-                    break;   
-              }
-          });
+                    MPDConnection.current().move(item.id, toIdx)
+                    .then(() => {
+                        this.load();
+                    })
+                    .catch((err) => {
+                        Alert.alert(
+                            "MPD Error",
+                            "Error : "+err
+                        );
+                    });
+
+                }
+                break;   
+        }
+        this.currentItem = undefined;
     }
 
     onRandom(type, value) {
@@ -470,6 +482,16 @@ export default class PlaylistScreen extends React.Component {
                     <View style={common.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
+                }
+                {Platform.OS === 'android' &&
+                    <ActionSheet
+                        ref={o => this.ActionSheet = o}
+                        options={['Delete', 'Goto Album', 'Move Up', 'Move Down', 'Move after Current Song', 'Cancel']}
+                        cancelButtonIndex={5}
+                        onPress={(idx) => { 
+                            this.doActionSheetAction(idx);
+                        }}
+                    />
                 }
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                     <ActionButton.Item size={actionButtonSize} buttonColor='#3498db' title="Random Playlist" textStyle={common.actionButtonText} onPress={() => this.doRandom()}>

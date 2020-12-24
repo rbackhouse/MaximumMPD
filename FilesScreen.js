@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, TouchableOpacity, ActivityIndicator, Alert, Appearance, ActionSheetIOS } from 'react-native';
+import { Text, View, TouchableOpacity, ActivityIndicator, Alert, Appearance, ActionSheetIOS, Platform } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
@@ -24,6 +24,7 @@ import { HeaderBackButton } from 'react-navigation-stack';
 import { Button } from 'react-native-elements'
 import ActionButton from 'react-native-action-button';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
+import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
 import MPDConnection from './MPDConnection';
 import Base64 from './Base64';
@@ -185,20 +186,31 @@ export default class FilesScreen extends React.Component {
     }
 
     onLongPress(item) {
-        ActionSheetIOS.showActionSheetWithOptions({
-            options: ['Add to Queue', 'Add to Playlist', 'Cancel'],
-            title: item.dir,
-            cancelButtonIndex: 2
-        }, (idx) => {
-            switch (idx) {
-                case 0:
-                    this.addAll(false, item.b64dir);
-                    break;
-                case 1:
-                    this.addAll(true, item.b64dir);
-                    break;
-            }
-        });
+        if (Platform.OS === 'ios') {
+            ActionSheetIOS.showActionSheetWithOptions({
+                options: ['Add to Queue', 'Add to Playlist', 'Cancel'],
+                title: item.dir,
+                cancelButtonIndex: 2
+            }, (idx) => {
+                this.doActionSheetAction(idx, item);
+            });
+        } else {
+            this.currentItem = item;
+            this.ActionSheet.show();
+        }
+    }
+
+    doActionSheetAction(idx, i) {
+        const item = i || this.currentItem;
+        switch (idx) {
+            case 0:
+                this.addAll(false, item.b64dir);
+                break;
+            case 1:
+                this.addAll(true, item.b64dir);
+                break;
+        }
+        this.currentItem = undefined;
     }
 
     load(uri, pushDir) {
@@ -496,6 +508,16 @@ export default class FilesScreen extends React.Component {
                     </View>
                 }
                 <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
+                {Platform.OS === 'android' &&
+                    <ActionSheet
+                        ref={o => this.ActionSheet = o}
+                        options={['Add to Queue', 'Add to Playlist', 'Cancel']}
+                        cancelButtonIndex={2}
+                        onPress={(idx) => { 
+                            this.doActionSheetAction(idx);
+                        }}
+                    />
+                }
                 {showAddAll && <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                     <ActionButton.Item buttonColor='#1abc9c' title="Play Now" size={40} textStyle={common.actionButtonText} onPress={() => {this.autoPlay();}}>
                         <FAIcon name="play" size={15} color="#e6e6e6" />

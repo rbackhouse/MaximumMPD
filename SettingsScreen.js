@@ -16,10 +16,12 @@
 */
 
 import React from 'react';
-import { View, Modal, Text, Alert, Linking, Appearance, NativeModules, ActionSheetIOS, Dimensions } from 'react-native';
+import { View, Modal, Text, Alert, Linking, Appearance, NativeModules, ActionSheetIOS, Dimensions, Platform } from 'react-native';
 import {Picker} from '@react-native-community/picker';
 import SettingsList from 'react-native-settings-list';
 import { Input, Button } from 'react-native-elements'
+import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
+
 import MPDConnection from './MPDConnection';
 import Config from './Config';
 import { StyleManager, bgColor } from './Styles';
@@ -424,25 +426,33 @@ export default class SettingsScreen extends React.Component {
     }
 
     onGridViewColumns() {
-        const {height, width} = Dimensions.get('window');
-        let options = ['2', '3', '4', 'Cancel'];
-        let cancelButtonIndex = 3;
-        if (width > 767) {
-            options = ['2', '3', '4', '5', '6', 'Cancel'];
-            cancelButtonIndex = 5;
-        }
-
-        ActionSheetIOS.showActionSheetWithOptions({
-            options: options,
-            title: "Number of Grid View Columns",
-            cancelButtonIndex: cancelButtonIndex
-        }, (idx) => {
-            if (idx != cancelButtonIndex) {
-                const gridViewColumns = idx+2;
-                this.setState({gridViewColumns: gridViewColumns});
-                Config.setGridViewColumns(gridViewColumns);
+        if (Platform.OS === 'ios') {
+            const {height, width} = Dimensions.get('window');
+            let options = ['2', '3', '4', 'Cancel'];
+            let cancelButtonIndex = 3;
+            if (width > 767) {
+                options = ['2', '3', '4', '5', '6', 'Cancel'];
+                cancelButtonIndex = 5;
             }
-        });
+
+            ActionSheetIOS.showActionSheetWithOptions({
+                options: options,
+                title: "Number of Grid View Columns",
+                cancelButtonIndex: cancelButtonIndex
+            }, (idx) => {
+                this.doActionSheetAction(idx, cancelButtonIndex);
+            });
+        } else {
+            this.ActionSheet.show();
+        }
+    }
+
+    doActionSheetAction(idx, cancelButtonIndex) {
+        if (idx != cancelButtonIndex) {
+            const gridViewColumns = idx+2;
+            this.setState({gridViewColumns: gridViewColumns});
+            Config.setGridViewColumns(gridViewColumns);
+        }
     }
 
     onUseNowPlayingControl(value) {
@@ -494,6 +504,15 @@ export default class SettingsScreen extends React.Component {
         const replayGainValue = this.state.replayGain;
         const crossfadeValue = this.state.crossfade + " seconds";
         const maxListSize = ""+this.state.maxListSize;
+
+        const {height, width} = Dimensions.get('window');
+        let options = ['2', '3', '4', 'Cancel'];
+        let cancelButtonIndex = 3;
+        if (width > 767) {
+            options = ['2', '3', '4', '5', '6', 'Cancel'];
+            cancelButtonIndex = 5;
+        }
+
         return (
             <View style={styles.container7}>
                 <SettingsList backgroundColor={bgColor} underlayColor={bgColor} borderColor='#c8c7cc' defaultTitleStyle={styles.item} defaultItemSize={50}>
@@ -630,6 +649,16 @@ export default class SettingsScreen extends React.Component {
                 <CrossfadeModal value={this.state.crossfade} visible={this.state.crossfadeVisible} onSet={(value) => {this.setCrossfade(value)}} onCancel={() => this.setState({crossfadeVisible: false})}></CrossfadeModal>
                 <AboutModal visible={this.state.aboutVisible} onOk={() => this.setState({aboutVisible: false})}></AboutModal>
                 <MaxListSizeModal value={this.state.maxListSize} visible={this.state.maxListSizeVisible} onSet={(value) => {this.setMaxListSize(value)}} onCancel={() => this.setState({maxListSizeVisible: false})}></MaxListSizeModal>
+                {Platform.OS === 'android' &&
+                    <ActionSheet
+                        ref={o => this.ActionSheet = o}
+                        options={options}
+                        cancelButtonIndex={cancelButtonIndex}
+                        onPress={(idx) => { 
+                            this.doActionSheetAction(idx, cancelButtonIndex);
+                        }}
+                    />
+                }
             </View>
         );
     }

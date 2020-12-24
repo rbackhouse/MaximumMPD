@@ -16,12 +16,13 @@
 */
 
 import React from 'react';
-import { View, Text, Alert, ActivityIndicator, FlatList, ScrollView, Modal, TouchableOpacity, ActionSheetIOS} from 'react-native';
+import { View, Text, Alert, ActivityIndicator, FlatList, ScrollView, Modal, TouchableOpacity, ActionSheetIOS, Platform } from 'react-native';
 import { SearchBar, Input, Button } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import SettingsList from 'react-native-settings-list';
 import ActionButton from 'react-native-action-button';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
+import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet'
 
 import AlbumArt from './AlbumArt';
 import MPDConnection from './MPDConnection';
@@ -370,36 +371,44 @@ export default class AlbumArtScreen extends React.Component {
     }
 
     onChangeType() {
-        ActionSheetIOS.showActionSheetWithOptions({
-            options: ['MPD', 'HTTP', 'UPnP', 'Cancel'],
-            title: "Download Type",
-            cancelButtonIndex: 3
-        }, (idx) => {
-            switch (idx) {
-                case 0:
-                    this.setState({serverType: "MPD"});
-                    AlbumArt.setUseUPnP(false)
-                    .then(() => {
-                        AlbumArt.setUseHTTP(false);
-                    });
-                    break;
-                case 1:
-                    this.setState({serverType: "HTTP"});
-                    AlbumArt.setUseHTTP(true)
-                    .then(() => {
-                        AlbumArt.setUseUPnP(false);
-                    });
-                    break;
-                case 2:
-                    this.setState({upnpListVisible: true})
-                    this.setState({serverType: "UPnP"});
-                    AlbumArt.setUseUPnP(true)
-                    .then(() => {
-                        AlbumArt.setUseHTTP(false);
-                    });
-                    break;
-            }
-        });
+        if (Platform.OS === 'ios') {
+            ActionSheetIOS.showActionSheetWithOptions({
+                options: ['MPD', 'HTTP', 'UPnP', 'Cancel'],
+                title: "Server Type",
+                cancelButtonIndex: 3
+            }, (idx) => {
+                this.setServerType(idx);
+            });
+        } else {
+            this.ActionSheet.show();            
+        }
+    }
+
+    setServerType(idx) {
+        switch (idx) {
+            case 0:
+                this.setState({serverType: "MPD"});
+                AlbumArt.setUseUPnP(false)
+                .then(() => {
+                    AlbumArt.setUseHTTP(false);
+                });
+                break;
+            case 1:
+                this.setState({serverType: "HTTP"});
+                AlbumArt.setUseHTTP(true)
+                .then(() => {
+                    AlbumArt.setUseUPnP(false);
+                });
+                break;
+            case 2:
+                this.setState({upnpListVisible: true})
+                this.setState({serverType: "UPnP"});
+                AlbumArt.setUseUPnP(true)
+                .then(() => {
+                    AlbumArt.setUseHTTP(false);
+                });
+                break;
+        }
     }
 
     setUPnPServer(upnpServer) {
@@ -517,6 +526,17 @@ export default class AlbumArtScreen extends React.Component {
                     }
                 <MissingModal visible={this.state.missingVisible} onOk={() => this.setState({missingVisible: false})}></MissingModal>
                 <SelectUPnPModal visible={this.state.upnpListVisible} onCancel={() => this.setState({upnpListVisible: false})} onSelect={(upnpServer) => this.setUPnPServer(upnpServer)}></SelectUPnPModal>
+                {Platform.OS === 'android' &&
+                    <ActionSheet
+                        ref={o => this.ActionSheet = o}
+                        title={<Text style={{color: '#000', fontSize: 18}}>Server Type</Text>}
+                        options={['MPD', 'HTTP', 'UPnP', 'Cancel']}
+                        cancelButtonIndex={3}
+                        onPress={(idx) => { 
+                            this.setServerType(idx);
+                        }}
+                    />
+                }
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                     <ActionButton.Item buttonColor='#1abc9c' title="Clear" size={40} textStyle={common.actionButtonText} onPress={() => {this.clearAlbumArt();}}>
                         <FAIcon name="eraser" size={15} color="#e6e6e6" />

@@ -16,13 +16,14 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions, Appearance, ActionSheetIOS } from 'react-native';
+import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions, Appearance, ActionSheetIOS, Platform } from 'react-native';
 import { SearchBar, ButtonGroup } from "react-native-elements";
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import ActionButton from 'react-native-action-button';
+import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
 import MPDConnection from './MPDConnection';
 import AlbumArt from './AlbumArt';
@@ -332,39 +333,50 @@ export default class ArtistsScreen extends React.Component {
     }
 
     onLongPress(item) {
-        ActionSheetIOS.showActionSheetWithOptions({
-            options: ['Add to Queue', 'Add to Playlist', 'Reload Album Art', 'Cancel'],
-            title: item.artist,
-            message: item.name,
-            cancelButtonIndex: 3
-        }, (idx) => {
-            switch (idx) {
-                case 0:
-                    this.setState({loading: true});
-                    MPDConnection.current().addAlbumToPlayList(item.name, item.artist)
-                    .then(() => {
-                        this.setState({loading: false});
-                    })
-                    .catch((err) => {
-                        this.setState({loading: false});
-                        Alert.alert(
-                            "MPD Error",
-                            "Error : "+err
-                        );
-                    });
-                    break;
-                case 1:
-                    this.setState({modalVisible: true, selectedItem: {artist: item.artist, album: item.name}});
-                    break;
-                case 2:
-                    this.setState({loading: true});
-                    AlbumArt.reloadAlbumArt(item.name, item.artist)
-                    .then(()=> {
-                        this.setState({loading: false});
-                    });
-                    break;
-            }
-        });
+        if (Platform.OS === 'ios') {
+            ActionSheetIOS.showActionSheetWithOptions({
+                options: ['Add to Queue', 'Add to Playlist', 'Reload Album Art', 'Cancel'],
+                title: item.artist,
+                message: item.name,
+                cancelButtonIndex: 3
+            }, (idx) => {
+                this.doActionSheetAction(idx, item);
+            });
+        } else {
+            this.currentItem = item;
+            this.ActionSheet.show();            
+        }    
+    }
+
+    doActionSheetAction(idx, i) {
+        const item = i || this.currentItem;
+        switch (idx) {
+            case 0:
+                this.setState({loading: true});
+                MPDConnection.current().addAlbumToPlayList(item.name, item.artist)
+                .then(() => {
+                    this.setState({loading: false});
+                })
+                .catch((err) => {
+                    this.setState({loading: false});
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
+                });
+                break;
+            case 1:
+                this.setState({modalVisible: true, selectedItem: {artist: item.artist, album: item.name}});
+                break;
+            case 2:
+                this.setState({loading: true});
+                AlbumArt.reloadAlbumArt(item.name, item.artist)
+                .then(()=> {
+                    this.setState({loading: false});
+                });
+                break;
+        }
+        this.currentItem = undefined;
     }
 
     finishAdd(name, selectedItem) {
@@ -699,6 +711,16 @@ export default class ArtistsScreen extends React.Component {
                         }
                     </View>
                     <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
+                    {Platform.OS === 'android' &&
+                        <ActionSheet
+                            ref={o => this.ActionSheet = o}
+                            options={['Add to Queue', 'Add to Playlist', 'Reload Album Art', 'Cancel']}
+                            cancelButtonIndex={3}
+                            onPress={(idx) => { 
+                                this.doActionSheetAction(idx);
+                            }}
+                        />
+                    }
                     <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                         <ActionButton.Item buttonColor='#3498db' title="List View" size={40} textStyle={common.actionButtonText} onPress={() => {this.setState({grid: false, numColumns: 1});}}>
                             <Icon name="ios-list" size={20} color="white"/>

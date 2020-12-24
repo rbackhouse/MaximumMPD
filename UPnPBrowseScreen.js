@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, TouchableOpacity, ActivityIndicator, Alert, Image, ActionSheetIOS } from 'react-native';
+import { Text, View, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
@@ -74,18 +74,6 @@ export default class UPnPBrowseScreen extends React.Component {
     }
 
     onLongPress(item) {
-        ActionSheetIOS.showActionSheetWithOptions({
-            options: ['Add to Queue', 'Add to Playlist', 'Cancel'],
-            title: item.title,
-            cancelButtonIndex: 2
-        }, (idx) => {
-            switch (idx) {
-                case 0:
-                    break;
-                case 1:
-                    break;
-            }
-        });
     }
 
     load(id) {

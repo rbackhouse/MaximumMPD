@@ -16,11 +16,12 @@
 */
 
 import React from 'react';
-import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Appearance, ActionSheetIOS } from 'react-native';
+import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Appearance, ActionSheetIOS, Platform } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
+import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
 import MPDConnection from './MPDConnection';
 import { StyleManager } from './Styles';
@@ -102,47 +103,58 @@ export default class PlaylistDetails extends React.Component {
     }
 
     onLongPress(item, index) {
-        ActionSheetIOS.showActionSheetWithOptions({
-            options: ['Delete Playlist Entry', 'Goto Album', 'Cancel'],
-            title: item.title,
-            message: item.artist,
-            cancelButtonIndex: 2
-          }, (idx) => {
-                switch (idx) {
-                    case 0:
-                        Alert.alert(
-                            "Delete Playlist Entry",
-                            "Are you sure you want to delete ''"+item.title+"'' ?",
-                            [
-                                {text: 'OK', onPress: () => {
-                                    this.setState({loading: true});
-                                    MPDConnection.current().deletePlayListItem(this.playlistName, index)
-                                    .then(() => {
-                                        this.setState({loading: false});
-                                        this.load();
-                                    })
-                                    .catch((err) => {
-                                        this.setState({loading: false});
-                                        Alert.alert(
-                                            "MPD Error",
-                                            "Error : "+err
-                                        );
-                                    });
-                                }},
-                                {text: 'Cancel'}
-                            ]
-                        );        
-                        break;
-                    case 1:
-                        const { navigation } = this.props;
-                        if (item.artist && item.album) {
-                            navigation.navigate('Browse');
-                            navigation.navigate('Songs', {artist: item.artist, album: item.album});
-                        }
-                        break;
-            
+        if (Platform.OS === 'ios') {
+            ActionSheetIOS.showActionSheetWithOptions({
+                options: ['Delete Playlist Entry', 'Goto Album', 'Cancel'],
+                title: item.title,
+                message: item.artist,
+                cancelButtonIndex: 2
+            }, (idx) => {
+                this.doActionSheetAction(idx, item);
+            });
+        } else {
+            this.currentItem = item;
+            this.ActionSheet.show();
+        }            
+    }
+
+    doActionSheetAction(idx, i) {
+        const item = i || this.currentItem;
+        switch (idx) {
+            case 0:
+                Alert.alert(
+                    "Delete Playlist Entry",
+                    "Are you sure you want to delete ''"+item.title+"'' ?",
+                    [
+                        {text: 'OK', onPress: () => {
+                            this.setState({loading: true});
+                            MPDConnection.current().deletePlayListItem(this.playlistName, index)
+                            .then(() => {
+                                this.setState({loading: false});
+                                this.load();
+                            })
+                            .catch((err) => {
+                                this.setState({loading: false});
+                                Alert.alert(
+                                    "MPD Error",
+                                    "Error : "+err
+                                );
+                            });
+                        }},
+                        {text: 'Cancel'}
+                    ]
+                );        
+                break;
+            case 1:
+                const { navigation } = this.props;
+                if (item.artist && item.album) {
+                    navigation.navigate('Browse');
+                    navigation.navigate('Songs', {artist: item.artist, album: item.album});
                 }
-          });
+                break;
+    
+        }
+        this.currentItem = undefined;
     }
 
     onDelete() {
@@ -262,6 +274,16 @@ export default class PlaylistDetails extends React.Component {
                     <View style={common.loading}>
                         <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
+                }
+                {Platform.OS === 'android' &&
+                    <ActionSheet
+                        ref={o => this.ActionSheet = o}
+                        options={['Delete Playlist Entry', 'Goto Album', 'Cancel']}
+                        cancelButtonIndex={2}
+                        onPress={(idx) => { 
+                            this.doActionSheetAction(idx);
+                        }}
+                    />
                 }
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
                     <ActionButton.Item buttonColor='#1abc9c' title="Play Now" size={40} textStyle={common.actionButtonText} onPress={() => {this.onLoad(true);}}>

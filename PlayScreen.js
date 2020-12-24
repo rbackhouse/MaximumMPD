@@ -21,6 +21,7 @@ import { Slider, ButtonGroup } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import HeaderButtons from 'react-navigation-header-buttons';
+import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
 import { NativeEventEmitter, NativeModules, Dimensions } from 'react-native';
 
@@ -365,25 +366,33 @@ export default class PlayScreen extends React.Component {
     }
 
     onMore = () => {
-        ActionSheetIOS.showActionSheetWithOptions({
-            options: ['Add to Playlist', 'Random Playlist', 'Clear Queue', 'Goto Album', 'Cancel'],
-            cancelButtonIndex: 4
-          }, (idx) => {
-              switch (idx) {
-                case 0:
-                    this.addToPlaylist();
-                    break;
-                case 1: 
-                    this.onRandom();
-                    break;
-                case 2:
-                    this.onClear();
-                    break;
-                case 3:
-                    this.onGoTo();
-                    break;
-              }
-          });
+        if (Platform.OS === 'ios') {        
+            ActionSheetIOS.showActionSheetWithOptions({
+                options: ['Add to Playlist', 'Random Playlist', 'Clear Queue', 'Goto Album', 'Cancel'],
+                cancelButtonIndex: 4
+            }, (idx) => {
+                this.doActionSheetAction(idx);
+            });
+        } else {
+            this.ActionSheet.show();
+        }
+    }
+
+    doActionSheetAction(idx) {
+        switch (idx) {
+            case 0:
+                this.addToPlaylist();
+                break;
+            case 1: 
+                this.onRandom();
+                break;
+            case 2:
+                this.onClear();
+                break;
+            case 3:
+                this.onGoTo();
+                break;
+        }
     }
 
     render() {
@@ -547,6 +556,16 @@ export default class PlayScreen extends React.Component {
                         </View>
                   </View>
                   <NewPlaylistModal visible={this.state.modalVisible} selectedItem={this.state.selectedItem} onSet={(name, selectedItem) => {this.finishAdd(name, selectedItem);}} onCancel={() => this.setState({modalVisible: false})}></NewPlaylistModal>
+                  {Platform.OS === 'android' &&
+                        <ActionSheet
+                            ref={o => this.ActionSheet = o}
+                            options={['Add to Playlist', 'Random Playlist', 'Clear Queue', 'Goto Album', 'Cancel']}
+                            cancelButtonIndex={4}
+                            onPress={(idx) => { 
+                                this.doActionSheetAction(idx);
+                            }}
+                        />
+                    }
                   {this.state.loading &&
                       <View style={common.loading}>
                           <ActivityIndicator size="large" color="#0000ff"/>
