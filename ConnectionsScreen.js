@@ -393,8 +393,8 @@ export default class ConnectionsScreen extends React.Component {
 					useSectionList
 					sections={[
                         {title: 'Discovered', data: this.state.discovered},
-                        {title: 'Configured', data: this.state.configured},
-                        {title: 'UPnP Servers', data: this.state.upnpServers}
+                        {title: 'Configured', data: this.state.configured}
+                        //{title: 'UPnP Servers', data: this.state.upnpServers}
                     ]}
                     renderItem={(data, map) => {
                         const openVal = data.section.title === "Configured" ? -150 : -75;

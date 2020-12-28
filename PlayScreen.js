@@ -125,7 +125,6 @@ export default class PlayScreen extends React.Component {
                     }
 
                     if (!this.state.searchedForAlbumArt && this.state.imagePath.length < 1) {
-                        console.log("searching for album art");
                         AlbumArt.getAlbumArt(status.currentsong.artist, status.currentsong.album)
                         .then((path) => {
                             if (path) {

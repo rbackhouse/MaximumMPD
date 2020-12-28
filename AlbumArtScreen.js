@@ -283,6 +283,12 @@ export default class AlbumArtScreen extends React.Component {
         this.onAlbumArtError = AlbumArt.getEventEmitter().addListener(
             "OnAlbumArtError",
             (details) => {
+                if (details.showAlert) {
+                    Alert.alert(
+                        "Album Art Failed",
+                        "Error : "+details.err.message
+                    );    
+                }
                 this.setState({count: ""+AlbumArt.getQueueSize(), status:"Failed downloading "+details.album.name+" : "+details.err});
             }
         );

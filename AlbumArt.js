@@ -88,13 +88,16 @@ async function getAlbumArt(album, options, loaderId) {
                 resolve(!loaders[loaderId].stop);
             } catch (err) {
                 console.log(err);
-                albumArtEventEmiiter.emit('OnAlbumArtError', {album:album, err: err});
                 await albumArtStorage.updateState(key, ERROR);
-                if (err.message && err.message === "Album Art error") {
+                let showAlert = false;
+                const errorMessage = err.message || "";
+                if (errorMessage === "Album Art error" || errorMessage.indexOf("No UPnP Server found for") === 0) {
                     resolve(false);
+                    showAlert = true;
                 } else {
                     resolve(!loaders[loaderId].stop);
                 }
+                albumArtEventEmiiter.emit('OnAlbumArtError', {album:album, err: err, showAlert: showAlert});
             }
         } else {
             resolve(!loaders[loaderId].stop);

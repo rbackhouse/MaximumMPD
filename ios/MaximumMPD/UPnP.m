@@ -44,7 +44,9 @@ RCT_EXPORT_METHOD(stopListening) {
 RCT_EXPORT_METHOD(browse:(NSString *)udn objectid:(NSString *)objectId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
   UPPMediaServerDevice* server = [self.servers valueForKey:udn];
   if (server == nil) {
-      return;
+    NSString *description = [NSString stringWithFormat:@"No UPnP Server found for %@", udn];
+    reject(@"browse_failure", description, nil);
+    return;
   }
 
   UPPResponseBlock block = ^(NSDictionary *response, NSError *error) {
@@ -117,7 +119,9 @@ RCT_EXPORT_METHOD(browse:(NSString *)udn objectid:(NSString *)objectId resolver:
 RCT_EXPORT_METHOD(search:(NSString *)udn containerId:(NSString *)containerId searchCriteria:(NSString *)searchCriteria filter:(NSString *)filter resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
   UPPMediaServerDevice* server = [self.servers valueForKey:udn];
   if (server == nil) {
-      return;
+    NSString *description = [NSString stringWithFormat:@"No UPnP Server found for %@", udn];
+    reject(@"search_failure", description, nil);
+    return;
   }
 
   UPPResponseBlock block = ^(NSDictionary *response, NSError *error) {

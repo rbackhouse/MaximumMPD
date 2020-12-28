@@ -33,7 +33,6 @@ class Discoverer {
         this.subscription = emitter.addListener(
             "OnUPnPDiscover",
             (discovered) => {
-                console.log(discovered);
                 if (discovered.type === "mediaserver") {
                     if (discovered.action === "find") {
                         this.mediaservers[discovered.udn] = discovered;
