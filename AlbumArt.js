@@ -68,6 +68,9 @@ async function getAlbumArt(album, options, loaderId) {
                         } else {
                             throw Error("Empty URL ["+album.artist+"] ["+album.name+"]");
                         }
+                    } else {
+                        throw Error("No UPnP Server found for "+options.upnpServer.udn);
+
                     }
                 } else if (options.useHTTP) {
                     const host = options.host === "" ? undefined : options.host;
