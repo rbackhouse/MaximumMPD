@@ -24,8 +24,6 @@
   self.servers = [[NSMutableDictionary alloc] init];
   self.renderers = [[NSMutableDictionary alloc] init];
 
-  [[UPPDiscovery sharedInstance] addBrowserObserver:self];
-
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onPause) name:UIApplicationDidEnterBackgroundNotification object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onResume) name:UIApplicationWillEnterForegroundNotification object:nil];
   return self;
@@ -34,11 +32,19 @@
 RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(startListening) {
-  [[UPPDiscovery sharedInstance] startBrowsingForServices:@"ssdp:all"];
+  [[UPPDiscovery sharedInstance] addBrowserObserver:self];
+  [[UPPDiscovery sharedInstance] startBrowsingForServices:@"urn:schemas-upnp-org:device:MediaServer:1"];
+  for (UPPBasicDevice *device in [UPPDiscovery sharedInstance].availableDevices) {
+    if ([device isKindOfClass:[UPPMediaServerDevice class]]) {
+      NSLog(@"Available Device: %@", device);
+      [self sendEventWithName:@"OnUPnPDiscover" body:@{@"action": @"find", @"name": device.friendlyName, @"udn": device.udn, @"type": @"mediaserver"}];
+    }
+  }
 }
 
 RCT_EXPORT_METHOD(stopListening) {
   [[UPPDiscovery sharedInstance] stopBrowsingForServices];
+  [[UPPDiscovery sharedInstance] removeBrowserObserver:self];
 }
 
 RCT_EXPORT_METHOD(browse:(NSString *)udn objectid:(NSString *)objectId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
@@ -214,7 +220,7 @@ RCT_EXPORT_METHOD(search:(NSString *)udn containerId:(NSString *)containerId sea
     if ([self.servers valueForKey:device.udn] != nil) {
       return;
     }
-    NSLog(@"server: %@", device);
+    NSLog(@"server: %@", device.deviceType);
     [self.servers setObject:server forKey:server.udn];
     [self sendEventWithName:@"OnUPnPDiscover" body:@{@"action": @"find", @"name": device.friendlyName, @"udn": device.udn, @"type": @"mediaserver"}];
   }

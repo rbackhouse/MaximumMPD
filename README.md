@@ -1,7 +1,7 @@
 Maximum MPD
 ===========
 
-### React Native based MPD Client for iOS.
+### React Native based MPD Client for iOS and Android
 
 MaximumMPD is a MPD (Music Player Daemon) client providing remote control over all your MPD based songs
 
@@ -17,7 +17,7 @@ MaximumMPD is a MPD (Music Player Daemon) client providing remote control over a
 * Quickly search for artists, albums and songs
 * Output Selection
 * Quickly create and edit playlists
-* AlbumArt support if MPD version >= 0.21
+* AlbumArt downloading via MPD (if version >= 0.21), HTTP and UPnP
 
 ### Requirements :
 

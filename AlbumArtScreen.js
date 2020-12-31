@@ -159,6 +159,26 @@ class SelectUPnPModal extends React.Component {
         upnpServers: []
     }
 
+    componentDidMount() {
+        this.onUPnPServerDiscover = UPnPManager.addListener(
+            "OnServerDiscover",
+            (server) => {
+                this.state.upnpServers = this.state.upnpServers.filter((s) => {
+                    return !(s.udn === server.udn);
+                });
+                if (server.action === "find") {
+                    server.key = server.udn;
+                    this.state.upnpServers.push(server);
+                }
+                this.setState({upnpServers: this.state.upnpServers});
+            }
+        );
+    }
+
+    componentWillUnmount() {
+        this.onUPnPServerDiscover.remove();
+    }
+
     load() {
         let upnpServers = UPnPManager.getServers();
         upnpServers.forEach((u) => {
@@ -174,6 +194,14 @@ class SelectUPnPModal extends React.Component {
     onPress(item) {
         this.props.onSelect(item);
     }
+
+    onRescan() {
+        this.setState({upnpServers: [], loading: true});
+        UPnPManager.rescan();
+        this.setState({upnpServers: [], loading: false});
+        this.load();
+    }
+
 
     renderSeparator = () => {
         const common = StyleManager.getStyles("styles");
@@ -231,6 +259,13 @@ class SelectUPnPModal extends React.Component {
 
                     <View style={styles.flex1}>
                         <Button
+                            onPress={() => {this.onRescan();}}
+                            title="Rescan"
+                            icon={{name: 'ios-refresh',  size: 20, type: 'ionicon', color: 'black'}}
+                            raised={true}
+                            type="outline"
+                        />
+                        <Button
                             onPress={() => {this.onCancel();}}
                             title="Cancel"
                             icon={{name: 'times-circle',  size: 15, type: 'font-awesome', color: 'black'}}
@@ -238,6 +273,11 @@ class SelectUPnPModal extends React.Component {
                             type="outline"
                         />
                     </View>
+                    {this.state.loading &&
+                        <View style={common.loading}>
+                            <ActivityIndicator size="large" color="#0000ff"/>
+                        </View>
+                    }
                 </View>
             </Modal>
         );

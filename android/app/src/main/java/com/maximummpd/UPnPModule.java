@@ -73,7 +73,7 @@ public class UPnPModule extends ReactContextBaseJavaModule implements ControlPoi
         cp.addDiscoveryListener(this);
         cp.initialize();
         cp.start();
-        cp.search("ssdp:all");
+        cp.search("urn:schemas-upnp-org:device:MediaServer:1");
     }
 
     @ReactMethod
