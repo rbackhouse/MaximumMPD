@@ -950,6 +950,26 @@ class MPDConnection {
                     song.duration = undefined;
                 }
             });
+            songs.sort((a,b) => {
+                let comp1 = a.file;
+                let comp2 = b.file;
+                if (a.track && b.track) {
+                    try {
+                        comp1 = parseInt(a.track);
+                        comp2 = parseInt(b.track);
+                    } catch (err) {
+                        comp1 = a.title;
+                        comp2 = b.title;
+                    }
+                }
+                if (comp1 < comp2) {
+                    return -1;
+                } else if (comp1 > comp2) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
 			return songs;
         };
         const cmd = "find \"((Artist == \\\""+artist.replace(/"/g, "\\\"")+ "\\\") AND (album == \\\"\\\"))\"";
@@ -1953,6 +1973,26 @@ class MPDConnection {
                 if (song.duration) {
                     song.time = song.duration;
                     song.duration = undefined;
+                }
+            });
+            songs.sort((a,b) => {
+                let comp1 = a.file;
+                let comp2 = b.file;
+                if (a.track && b.track) {
+                    try {
+                        comp1 = parseInt(a.track);
+                        comp2 = parseInt(b.track);
+                    } catch (err) {
+                        comp1 = a.title;
+                        comp2 = b.title;
+                    }
+                }
+                if (comp1 < comp2) {
+                    return -1;
+                } else if (comp1 > comp2) {
+                    return 1;
+                } else {
+                    return 0;
                 }
             });
 			return songs;
