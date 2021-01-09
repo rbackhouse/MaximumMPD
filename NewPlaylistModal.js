@@ -127,7 +127,7 @@ export default class NewPlaylistModal extends React.Component {
                         <View style={styles.container5}>
                             <Text style={styles.text1}>Select or Create New Playlist</Text>
                         </View>
-                        <View style={styles.container6}>
+                        <View style={styles.container5}>
                             <Text style={styles.text2}>Provide name below OR Select from List</Text>
                         </View>
                     </View>

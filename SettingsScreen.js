@@ -250,6 +250,7 @@ export default class SettingsScreen extends React.Component {
         stopAftetSongPlayed: false,
         removeSongAfterPlay: false,
         randomPlaylistByType: false,
+        randomPlaylistSize: 50,
         aboutVisible: false,
         sortAlbumsByDate: false,
         autoConnect: false,
@@ -290,6 +291,10 @@ export default class SettingsScreen extends React.Component {
         Config.isUseNowPlayingControl()
         .then((value) => {
             this.setState({useNowPlayingControl: value});
+        });
+        Config.getRandomPlaylistSize()
+        .then((value) => {
+            this.setState({randomPlaylistSize: value});
         });
         this.onConnect = MPDConnection.getEventEmitter().addListener(
             "OnConnect",
@@ -455,6 +460,28 @@ export default class SettingsScreen extends React.Component {
         }
     }
 
+    onRandomPlaylistSize() {
+        if (Platform.OS === 'ios') {
+            ActionSheetIOS.showActionSheetWithOptions({
+                options: ['50', '100', '150', '200', '250', '300', 'Cancel'],
+                title: "Random Playlist Size",
+                cancelButtonIndex: 6
+            }, (idx) => {
+                this.doRandomPlaylistSizeAction(idx, 6);
+            });
+        } else {
+            this.RandomPlaylistSizeActionSheet.show();
+        }
+    }
+
+    doRandomPlaylistSizeAction(idx, cancelButtonIndex) {
+        if (idx != cancelButtonIndex) {
+            const randomPlaylistSize = 50*(idx+1);
+            this.setState({randomPlaylistSize: randomPlaylistSize});
+            Config.setRandomPlaylistSize(randomPlaylistSize);
+        }
+    }
+
     onUseNowPlayingControl(value) {
         this.setState({useNowPlayingControl: value});
         Config.setUseNowPlayingControl(value);
@@ -589,6 +616,13 @@ export default class SettingsScreen extends React.Component {
                                 switchOnValueChange={(value) => this.onRandomPlaylistByTypeChange(value)}
                                 title='Random Playlist by type'/>
                     <SettingsList.Item
+                        hasNavArrow={true}
+                        title='Random Playlist size'
+                        titleInfo={""+this.state.randomPlaylistSize}
+                        titleInfoStyle={{fontFamily: 'GillSans-Italic'}}
+                        onPress={() => this.onRandomPlaylistSize()}
+                    />
+                    <SettingsList.Item
                         hasNavArrow={false}
                                 switchState={this.state.autoConnect}
                                 hasSwitch={true}
@@ -656,6 +690,16 @@ export default class SettingsScreen extends React.Component {
                         cancelButtonIndex={cancelButtonIndex}
                         onPress={(idx) => { 
                             this.doActionSheetAction(idx, cancelButtonIndex);
+                        }}
+                    />
+                }
+                {Platform.OS === 'android' &&
+                    <ActionSheet
+                        ref={o => this.RandomPlaylistSizeActionSheet = o}
+                        options={['50', '100', '150', '200', '250', '300', 'Cancel']}
+                        cancelButtonIndex={6}
+                        onPress={(idx) => { 
+                            this.doRandomPlaylistSizeAction(idx, 6);
                         }}
                     />
                 }

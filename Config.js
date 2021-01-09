@@ -300,5 +300,35 @@ export default {
             });
         });
         return promise;
+    },
+    getRandomPlaylistSize: () => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                if (config.randomPlaylistSize !== undefined) {
+                    resolve(config.randomPlaylistSize);
+                } else {
+                    config.randomPlaylistSize = 50;
+                    configStorage.setConfig(config)
+                    .then(() => {
+                        resolve(config.randomPlaylistSize);
+                    });
+                }
+            });
+        });
+        return promise;
+    },
+    setRandomPlaylistSize: (randomPlaylistSize) => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                config.randomPlaylistSize = randomPlaylistSize;
+                configStorage.setConfig(config)
+                .then(() => {
+                    resolve();
+                })
+            });
+        });
+        return promise;
     }
 }

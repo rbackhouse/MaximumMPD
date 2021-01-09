@@ -59,6 +59,9 @@ class RandomPlaylistTypeModal extends React.Component {
                     <View style={styles.dialog2}>
                         <Text style={styles.dialogtext}>Random Playlist Type</Text>
                     </View>
+                    <View style={styles.dialog2}>
+                        <Text style={styles.dialogtext}>Use '+' to separate mulitple values</Text>
+                    </View>
                     <Picker
                         itemStyle={common.picker}                        
                         selectedValue={this.state.type}
@@ -68,6 +71,7 @@ class RandomPlaylistTypeModal extends React.Component {
                         <Picker.Item label="By Album" value="album" />
                         <Picker.Item label="By Title" value="title" />
                         <Picker.Item label="By Genre" value="genre" />
+                        <Picker.Item label="By Date" value="date" />
                     </Picker>
                     <Input label="Value" autoCapitalize="none" value={this.state.value} onChangeText={(value) => this.setState({value})} style={styles.entryField} inputStyle={styles.label} labelStyle={styles.label}></Input>
                     <View style={styles.dialog3}>
@@ -285,17 +289,20 @@ export default class PlaylistScreen extends React.Component {
     onRandom(type, value) {
         this.setState({loading: true, modalVisible: false});
         MPDConnection.current().clearPlayList();
-        MPDConnection.current().randomPlayList(type, value)
-        .then(() => {
-            this.setState({loading: false});
-            this.load();
-        })
-        .catch((err) => {
-            this.setState({loading: false});
-            Alert.alert(
-                "MPD Error",
-                "Error : "+err
-            );
+        Config.getRandomPlaylistSize()
+        .then((size) => {
+            MPDConnection.current().randomPlayList(size, type, value)
+            .then(() => {
+                this.setState({loading: false});
+                this.load();
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         });
     }
 
