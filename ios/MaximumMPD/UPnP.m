@@ -220,7 +220,7 @@ RCT_EXPORT_METHOD(search:(NSString *)udn containerId:(NSString *)containerId sea
     if ([self.servers valueForKey:device.udn] != nil) {
       return;
     }
-    NSLog(@"server: %@", device.deviceType);
+    NSLog(@"server: %@", device);
     [self.servers setObject:server forKey:server.udn];
     [self sendEventWithName:@"OnUPnPDiscover" body:@{@"action": @"find", @"name": device.friendlyName, @"udn": device.udn, @"type": @"mediaserver"}];
   }
