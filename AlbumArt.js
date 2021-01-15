@@ -54,23 +54,44 @@ async function getAlbumArt(album, options, loaderId) {
             try {
                 if (options.useUPnP) {
                     if (UPnPManager.connectServer(options.upnpServer.udn)) {
-                        const items = await UPnPManager.search(
-                            "0", 
-                            "upnp:class derivedfrom \"object.container.album.musicAlbum\" and upnp:artist = \""+album.artist+"\" and dc:title contains \""+album.name+"\"",
-                            "dc:title,upnp:albumArtURI"
-                        );
+                        let url;
+                        let items = [];
+                        try {
+                            items = await UPnPManager.search(
+                                "0", 
+                                "upnp:class derivedfrom \"object.container.album.musicAlbum\" and upnp:artist = \""+album.artist+"\" and dc:title contains \""+album.name+"\"",
+                                "dc:title,upnp:albumArtURI"
+                            );
+                        } catch (err) {                            
+                            console.log("Error searching for album ["+album.artist+"] ["+album.name+"] "+err.message);
+                        }
                         if (loaders[loaderId].stop) {
                             resolve(false);
                             return;
                         }
                         if (items.length > 0 && items[0].albumArtURL.length > 0) {
-                            await MPDConnection.current().albumartFromUPnP(items[0].albumArtURL, album.artist, album.name);
+                            url = items[0].albumArtURL;
                         } else {
-                            throw Error("Empty URL ["+album.artist+"] ["+album.name+"]");
+                            const song = await UPnPManager.search(
+                                "0", 
+                                "upnp:class derivedfrom \"object.item.audioItem.musicTrack\" and dc:title = \""+songs[0].title+"\" and upnp:artist = \""+songs[0].artist+"\"",
+                                "dc:title,upnp:albumArtURI"
+                            );
+                            if (loaders[loaderId].stop) {
+                                resolve(false);
+                                return;
+                            }    
+                            if (song.length > 0 && song[0].albumArtURL.length > 0) {
+                                url = song[0].albumArtURL;
+                            }
+                        }
+                        if (url) {                            
+                            await MPDConnection.current().albumartFromUPnP(url, album.artist, album.name);
+                        } else {
+                            throw Error("No URL for ["+album.artist+"] ["+album.name+"]");
                         }
                     } else {
                         throw Error("No UPnP Server found for "+options.upnpServer.udn);
-
                     }
                 } else if (options.useHTTP) {
                     const host = options.host === "" ? undefined : options.host;
@@ -151,13 +172,13 @@ const loader = async (options, loaderId) => {
         if (loaders[loaderId].queueSize > 0) {
             albums.reduce((p, album, index) => {
                 return p.then((continueOn) => {
-                    loaders[loaderId].queueSize--;
                     if (loaders[loaderId].queueSize === 0) {
                         //console.log("loader finished");
                         albumArtEventEmiiter.emit('OnAlbumArtComplete', {});
                         delete loaders[loaderId];
                         return Promise.resolve(false);
                     }
+                    loaders[loaderId].queueSize--;
                     if (continueOn) {
                         return getAlbumArt(album, options, loaderId);
                     } else {
