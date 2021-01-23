@@ -321,7 +321,9 @@ export default class PlaylistScreen extends React.Component {
 
             let totalTime = 0;
             playlist.forEach((entry) => {
-                totalTime += Math.floor(parseInt(entry.rawTime));
+                if (entry.rawTime) {
+                    totalTime += Math.floor(parseInt(entry.rawTime));
+                }
             });
             if (totalTime > 0) {
                 const hours = Math.floor(totalTime / 3600)
