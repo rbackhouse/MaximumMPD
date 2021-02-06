@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.8.1",
+    "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/picker": "^1.6.1",
     "react": "16.11.0",
     "react-native": "0.62.2",
@@ -19,15 +20,16 @@
     "react-native-elements": "^1.2.7",
     "react-native-gesture-handler": "^1.6.0",
     "react-native-reanimated": "^1.7.0",
+    "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "^2.2.0",
     "react-native-settings-list": "^1.8.0",
     "react-native-swipe-list-view": "^2.3.0",
     "react-native-vector-icons": "^6.6.0",
-    "react-navigation": "^4.3.9",
-    "react-navigation-drawer": "^1.4.0",
+    "react-navigation": "^4.4.3",
+    "react-navigation-drawer": "^2.6.0",
     "react-navigation-header-buttons": "^3.0.5",
-    "react-navigation-stack": "^1.7.3",
-    "react-navigation-tabs": "^1.2.0"
+    "react-navigation-stack": "^2.10.1",
+    "react-navigation-tabs": "^2.10.1"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",

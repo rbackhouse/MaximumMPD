@@ -229,6 +229,7 @@ var albumsStyles = {
 
 const appStylesMapping = {
     bgColor: [
+        "container",
         "headerStyle",
         "tabBar"
     ],
@@ -242,6 +243,10 @@ const appStylesMapping = {
 };
 
 var appStyles = {
+    container: {
+        flex: 1,
+        backgroundColor: bgColor
+    },
     connectiing: {
         left: 0,
         right: 0,

@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { ActivityIndicator, View, TouchableOpacity, Appearance, useColorScheme } from 'react-native';
+import { ActivityIndicator, View, TouchableOpacity, Appearance, useColorScheme, SafeAreaView } from 'react-native';
 import Icon  from 'react-native-vector-icons/Ionicons';
 import FAIcon  from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/dist/MaterialIcons';
@@ -145,7 +145,7 @@ const PlayStack = createStackNavigator(
     },
     {
         defaultNavigationOptions: ({ navigation }) => ({
-            headerRight: (
+            headerRight: () => (
                 <Header navigation={navigation}></Header>
             ),
             headerBackTitle: null,
@@ -163,7 +163,7 @@ const BrowseStack = createStackNavigator(
         Albums: { 
             screen: AlbumsScreen,
             navigationOptions: ({ navigation }) => ({
-                headerRight: (
+                headerRight: () => (
                     <Header navigation={navigation}></Header>
                 ),
                 headerBackTitle: null,
@@ -177,7 +177,7 @@ const BrowseStack = createStackNavigator(
     },
     {
         defaultNavigationOptions: ({ navigation }) => ({
-            headerRight: (
+            headerRight: () => (
                 <SortHeader navigation={navigation}></SortHeader>
             ),
             headerBackTitle: null,
@@ -198,7 +198,7 @@ const SearchStack = createStackNavigator(
         Songs: { 
             screen: SongsScreen,
             navigationOptions: ({ navigation }) => ({
-                headerRight: (
+                headerRight: () => (
                     <SortHeader navigation={navigation}></SortHeader>
                 ),
                 headerBackTitle: null,
@@ -209,7 +209,7 @@ const SearchStack = createStackNavigator(
     },
     {
         defaultNavigationOptions: ({ navigation }) => ({
-            headerRight: (
+            headerRight: () => (
                 <Header navigation={navigation}></Header>
             ),
             headerBackTitle: null,
@@ -224,7 +224,7 @@ const FilesStack = createStackNavigator(
         Files: { 
             screen: FilesScreen,
             navigationOptions: ({ navigation }) => ({
-                headerRight: (
+                headerRight: () => (
                     <SortHeader navigation={navigation}></SortHeader>
                 ),
                 headerBackTitle: null,
@@ -255,7 +255,7 @@ const SettingsStack = createStackNavigator(
     },
     {
         defaultNavigationOptions: ({ navigation }) => ({
-            headerRight: (
+            headerRight: () => (
                 <Header navigation={navigation}></Header>
             ),
             headerBackTitle: null,
@@ -319,7 +319,7 @@ const UPnPBrowseStack = createStackNavigator(
         UPnPBrowse: { 
             screen: UPnPBrowseScreen,
             navigationOptions: ({ navigation }) => ({
-                headerRight: (
+                headerRight: () => (
                     <Header navigation={navigation}></Header>
                 ),
                 headerBackTitle: null,
@@ -335,7 +335,7 @@ const UPnPRenderersStack = createStackNavigator(
         UPnPRenderers: { 
             screen: UPnPRenderersScreen,
             navigationOptions: ({ navigation }) => ({
-                headerRight: (
+                headerRight: () => (
                     <Header navigation={navigation}></Header>
                 ),
                 headerBackTitle: null,
@@ -354,7 +354,7 @@ const UPnPSettingsStack = createStackNavigator(
     },
     {
         defaultNavigationOptions: ({ navigation }) => ({
-            headerRight: (
+            headerRight: () => (
                 <Header navigation={navigation}></Header>
             ),
             headerBackTitle: null,
@@ -417,7 +417,10 @@ let App = createAppContainer(SwitchPage);
 
 export default () => {
     let theme = useColorScheme();
+    const styles = StyleManager.getStyles("appStyles");
     return (
-        <App theme={theme}/>
+        <SafeAreaView style={styles.container}>
+            <App theme={theme}/>
+        </SafeAreaView>
     )
 }
