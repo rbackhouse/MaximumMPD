@@ -31,6 +31,166 @@ import Config from './Config';
 import { StyleManager } from './Styles';
 import NewPlaylistModal from './NewPlaylistModal';
 
+class AlbumListItem extends React.PureComponent {
+    constructor(props) {
+        super(props);
+    }
+
+    onAlbumPress(item) {
+        this.props.onAlbumPress(item);
+    }
+
+    onLongPress(item) {
+        this.props.onLongPress(item);
+    }
+
+    render() {
+        const styles = StyleManager.getStyles("artistsStyles");
+        const common = StyleManager.getStyles("styles");
+        const item = this.props.albumItem;
+        return (
+            <TouchableOpacity onPress={this.onAlbumPress.bind(this, item)} onLongPress={this.onLongPress.bind(this, item)}>
+                <View onLayout={(event) => {
+                    const {x, y, width, height} = event.nativeEvent.layout;
+                    this.props.setAlbumRowHeight(height+1);
+                }} style={styles.itemContainer}>
+                    <View style={styles.paddingLeft}/>
+                    {item.imagePath === undefined &&
+                        <FontAwesome5 name="compact-disc" size={20} style={common.icon}/>
+                    }
+                    {item.imagePath !== undefined &&
+                        <Image style={styles.iconAlbumArt} source={{uri: item.imagePath}}/>
+                    }
+                    <View style={styles.itemTextContainer}>
+                        <Text style={styles.albumItem}>{item.name}</Text>
+                        <Text style={styles.albumItem}>{item.artist}</Text>
+                    </View>
+                    <Icon name="ios-more" size={20} style={common.icon}/>
+                </View>
+            </TouchableOpacity>    
+        );
+    }
+}
+
+class GridAlbumListItem extends React.PureComponent {
+    constructor(props) {
+        super(props);
+    }
+
+    onAlbumPress(item) {
+        this.props.onAlbumPress(item);
+    }
+
+    onLongPress(item) {
+        this.props.onLongPress(item);
+    }
+
+    render() {
+        const styles = StyleManager.getStyles("artistsStyles");
+        const item = this.props.albumItem;
+        const size = Dimensions.get('window').width/this.props.numColumns;
+        const gridStyles = StyleSheet.create({
+          itemContainer: {
+            width: size,
+            height: size,
+            alignItems: 'center'
+          }
+        });
+
+        return (
+            <TouchableOpacity onPress={this.onAlbumPress.bind(this, item)} onLongPress={this.onLongPress.bind(this, item)}>
+                <View style={gridStyles.itemContainer}>
+                    {item.imagePath === undefined &&
+                        <Image style={{width: size-30, height: size-30, paddingLeft: 5, paddingRight: 5, resizeMode: 'contain'}} source={require('./images/cd-large.png')}/>
+                    }
+                    {item.imagePath !== undefined &&
+                        <Image style={{width: size-30, height: size-30, paddingLeft: 5, paddingRight: 5, resizeMode: 'contain'}} source={{uri: item.imagePath}}/>
+                    }
+                    <View style={styles.gridItem}>
+                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.albumGridItem}>{item.name}</Text>
+                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.albumGridItem}>{item.artist}</Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+}
+
+class ArtistListItem extends React.PureComponent {
+    constructor(props) {
+        super(props);
+    }
+
+    onPress(item) {
+        this.props.onPress(item);
+    }
+
+    render() {
+        const styles = StyleManager.getStyles("artistsStyles");
+        const common = StyleManager.getStyles("styles");
+        const item = this.props.artistItem;
+        return (
+            <TouchableOpacity onPress={this.onPress.bind(this, item)}>
+                <View onLayout={(event) => {
+                    const {x, y, width, height} = event.nativeEvent.layout;
+                    this.props.setArtistRowHeight(height+1);
+                }} style={styles.itemContainer}>
+                    <View style={styles.paddingLeft}/>
+                    {item.imagePath === undefined &&
+                        <MaterialCommunityIcon name="artist" size={20} style={common.icon}/>
+                    }
+                    {item.imagePath !== undefined &&
+                        <Image style={styles.iconAlbumArt} source={{uri: item.imagePath}}/>
+                    }
+                    <View style={styles.itemTextContainer}>
+                        <Text style={styles.item}>{item.name}</Text>
+                    </View>
+                    <Icon name="ios-more" size={20} style={common.icon}/>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+}
+
+class GenreListItem extends React.PureComponent {
+    constructor(props) {
+        super(props);
+    }
+
+    genreAlbums() {
+        this.props.genreAlbums(this.props.genreMap, this.props.genreItem);
+    }
+
+    genreSongs(item) {
+        this.props.genreSongs(this.props.genreMap, this.props.genreItem);
+    }
+
+    render() {
+        const styles = StyleManager.getStyles("artistsStyles");
+        const common = StyleManager.getStyles("styles");
+        const item = this.props.genreItem;
+        return (
+            <SwipeRow rightOpenValue={-150}>
+                <View style={common.rowBack}>
+                    <TouchableOpacity style={[common.backRightBtn, common.backRightBtnLeft]} onPress={ _ => this.genreAlbums() }>
+                        <Text style={common.backTextWhite}>Albums</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[common.backRightBtn, common.backRightBtnRight]} onPress={ _ => this.genreSongs() }>
+                        <Text style={common.backTextWhite}>Songs</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={[styles.genreContainer, common.rowFront]}>
+                    <MaterialCommunityIcon name="guitar-acoustic" size={20} style={common.icon}/>
+                    <View style={styles.itemTextContainer}>
+                        <Text style={styles.item}>{item.name}</Text>
+                    </View>
+                    <Icon name="ios-swap" size={20} style={common.icon}/>
+                </View>
+            </SwipeRow>
+        );
+    }
+}
+
 export default class ArtistsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
         return {
@@ -115,8 +275,17 @@ export default class ArtistsScreen extends React.Component {
         );
         this.onAlbumArtError = AlbumArt.getEventEmitter().addListener(
             "OnAlbumArtError",
-            () => {
-                this.updateAlbumArt();
+            (details) => {
+                let idx = this.state.fullset.findIndex((a) => {return a.name === details.album.artist});
+                if (idx !== -1 && this.state.fullset[idx].imagePath === undefined) {
+                    this.state.fullset[idx].imagePath = undefined;
+                    this.setState({artists: this.state.artists, fullset: this.state.fullset});
+                }
+                idx = this.state.albumsFullset.findIndex((a) => {return a.name === details.album.name && a.artist === details.album.artist});
+                if (idx !== -1) {
+                    this.state.albumsFullset[idx].imagePath = undefined;
+                    this.setState({albums: this.subset(this.state.albumsFullset), albumsFullset: this.state.albumsFullset});
+                }
             }
         );
         this.onAlbumArtComplete = AlbumArt.getEventEmitter().addListener(
@@ -373,6 +542,9 @@ export default class ArtistsScreen extends React.Component {
                 AlbumArt.reloadAlbumArt(item.name, item.artist)
                 .then(()=> {
                     this.setState({loading: false});
+                })
+                .catch((err) => {
+                    this.setState({loading: false});
                 });
                 break;
         }
@@ -516,7 +688,8 @@ export default class ArtistsScreen extends React.Component {
             </SwipeRow>
         );
     }
-
+ 
+/*
     renderAlbumItem = ({item}) => {
         const styles = StyleManager.getStyles("artistsStyles");
         const common = StyleManager.getStyles("styles");
@@ -542,7 +715,18 @@ export default class ArtistsScreen extends React.Component {
             </TouchableOpacity>
         );
     }
+*/
+    renderAlbumItem = ({item}) => {
+        return (
+            <AlbumListItem 
+                albumItem={item} 
+                onAlbumPress={(item) => {this.onAlbumPress(item);}} 
+                onLongPress={(item) => {this.onLongPress(item);}} 
+                setAlbumRowHeight={(height) => {this.albumRowHeight = height;}}/>
+        );
+    }
 
+/*
     renderGridAlbumItem = ({item}) => {
         const styles = StyleManager.getStyles("artistsStyles");
         const common = StyleManager.getStyles("styles");
@@ -573,7 +757,39 @@ export default class ArtistsScreen extends React.Component {
             </TouchableOpacity>
         );
     }
+*/    
 
+    renderGridAlbumItem = ({item}) => {
+        return (
+            <GridAlbumListItem 
+                numColumns={this.state.numColumns} 
+                albumItem={item} 
+                onAlbumPress={(item) => {this.onAlbumPress(item);}} 
+                onLongPress={(item) => {this.onLongPress(item);}}/>
+        );
+    }
+
+/*
+    renderItem = ({item}) => {
+        return (
+            <ArtistListItem 
+                artistItem={item} 
+                onPress={(item) => {this.onPress(item);}} 
+                setArtistRowHeight={(height) => {this.artistRowHeight = height;}}/>
+        );
+    };
+
+    renderGenreItem = (data, map) => {
+        const item = data.item;
+        return (
+            <GenreListItem
+                genreItem={item}
+                genreMap={map} 
+                genreAlbums={(map, item) => {this.genreAlbums(map, item);}} 
+                genreSongs={(map, item) => {this.genreSongs(map, item);}}/>
+        );
+    }
+*/
     getArtistItemLayout = (item, index) => {
         return {offset: this.artistRowHeight * index, length: this.artistRowHeight, index: index};
     }
