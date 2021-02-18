@@ -123,10 +123,27 @@ export default class AlbumsScreen extends React.Component {
                 }
             }
         );
+        this.onAlbumArtError = AlbumArt.getEventEmitter().addListener(
+            "OnAlbumArtError",
+            (details) => {
+                idx = this.state.fullset.findIndex((a) => {return a.name === details.album.name && a.artist === details.album.artist});
+                if (idx !== -1) {
+                    this.state.fullset[idx].imagePath = undefined;
+                    this.setState({albums: this.state.albums, fullset: this.state.fullset});
+                }
+            }
+        );
+        this.onAlbumArtComplete = AlbumArt.getEventEmitter().addListener(
+            "OnAlbumArtComplete",
+            () => {
+            }
+        );
     }
 
     componentWillUnmount() {
         this.onAlbumArtEnd.remove();
+        this.onAlbumArtError.remove();
+        this.onAlbumArtComplete.remove();
         this.onDisconnect.remove();
         if (this.onApperance) {
             this.onApperance.remove();
@@ -248,6 +265,9 @@ export default class AlbumsScreen extends React.Component {
                 this.setState({loading: true});
                 AlbumArt.reloadAlbumArt(item.name, item.artist)
                 .then(()=> {
+                    this.setState({loading: false});
+                })
+                .catch((err) => {
                     this.setState({loading: false});
                 });
                 break;

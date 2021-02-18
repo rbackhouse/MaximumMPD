@@ -63,6 +63,26 @@ class MissingModal extends React.Component {
         }
     }
 
+    onPress(item) {
+        this.setState({loading: true});
+        AlbumArt.reloadAlbumArt(item.name, item.artist)
+        .then(()=> {
+            Alert.alert(
+                "Album Art reload succeded",
+                item.name+" "+item.artist
+            );    
+
+            this.setState({loading: false});
+            this.load();
+        })
+        .catch((err) => {
+            Alert.alert(
+                "Album Art reload Failed",
+                "Error : "+err
+            );    
+        });
+    }
+
     renderSeparator = () => {
         const common = StyleManager.getStyles("styles");
 
@@ -77,13 +97,16 @@ class MissingModal extends React.Component {
         const styles = StyleManager.getStyles("albumArtStyles");
         const common = StyleManager.getStyles("styles");
         return (
+            <TouchableOpacity onPress={this.onPress.bind(this, item)}>
             <View style={common.container3}>
                 <Icon name="ios-alert" size={20} style={common.icon}/>
                 <View style={common.container4}>
                     <Text numberOfLines={1} style={styles.item}>{item.artist}</Text>
                     <Text numberOfLines={1} style={styles.item}>{item.name}</Text>
                 </View>
+                <Icon name="ios-refresh" size={20} style={common.icon}/>
             </View>
+            </TouchableOpacity>
         );
     };
 
@@ -298,7 +321,8 @@ export default class AlbumArtScreen extends React.Component {
         upnpServer: {name:"", udn: ""},
         serverType: "MPD",
         missingVisible: false,
-        upnpListVisible: false
+        upnpListVisible: false,
+        binarylimit: '8k'
     };
 
     componentDidMount() {
@@ -341,23 +365,45 @@ export default class AlbumArtScreen extends React.Component {
         AlbumArt.getOptions()
         .then((options) => {
             let host = MPDConnection.current().host;
-            if (options.host) {
-                host = options.host;
+            if (options.http && options.http.host !== "") {
+                host = options.http.host;
             }
-            let serverType = "MPD";
-            if (options.useHTTP) {
-                serverType = "HTTP";
-            } else if (options.useUPnP) {
-                serverType = "UPnP";
+            let limit = '8k';
+            if (options.mpd) {
+                switch (options.mpd.binarylimit) {
+                    case 8192:
+                        limit = '8k';
+                        break;
+                    case 16384:
+                        limit = '16k';
+                        break;
+                    case 32768:
+                        limit = '32k';
+                        break;
+                    case 65536:
+                        limit = '64k';
+                        break;
+                    case 131072:
+                        limit = '128k';
+                        break;
+                    case 262144:
+                        limit = '256k';
+                        break;
+                    case 524288:
+                        limit = '512k';
+                        break;
+                }
             }
+
             this.setState({
                 albumart: options.enabled, 
-                port: options.port, 
-                urlPrefix: options.urlPrefix, 
-                filename: options.fileName,
+                port: options.http.port, 
+                urlPrefix: options.http.urlPrefix, 
+                filename: options.http.fileName,
                 host: host,
-                serverType: serverType,
-                upnpServer: options.upnpServer
+                serverType: options.type,
+                upnpServer: options.upnp,
+                binarylimit: limit
             });
         });
     }
@@ -397,7 +443,7 @@ export default class AlbumArtScreen extends React.Component {
         let port = parseInt(value);
         if (!isNaN(port)) {
             this.setState({port: port});
-            AlbumArt.setHTTPSPort(port);
+            AlbumArt.setHTTPPort(port);
         }
     }
 
@@ -418,10 +464,17 @@ export default class AlbumArtScreen extends React.Component {
 
     onChangeType() {
         if (Platform.OS === 'ios') {
+            let serverTypes = ['MPD', 'HTTP', 'UPnP', 'Cancel'];
+            let serverTypesCancelIdx = 3;
+            if (MPDConnection.current().version > 21) {
+                serverTypes = ['MPD', 'HTTP', 'UPnP', 'MPD Embedded', 'Cancel'];
+                serverTypesCancelIdx = 4;
+            }
+    
             ActionSheetIOS.showActionSheetWithOptions({
-                options: ['MPD', 'HTTP', 'UPnP', 'Cancel'],
+                options: serverTypes,
                 title: "Server Type",
-                cancelButtonIndex: 3
+                cancelButtonIndex: serverTypesCancelIdx
             }, (idx) => {
                 this.setServerType(idx);
             });
@@ -430,36 +483,85 @@ export default class AlbumArtScreen extends React.Component {
         }
     }
 
+    onChangeBinaryLimit() {
+        if (Platform.OS === 'ios') {
+            ActionSheetIOS.showActionSheetWithOptions({
+                options: ['8k', '16k', '32k', '64k', '128k', '256k', '512k', 'Cancel'],
+                title: "Binary Limit",
+                cancelButtonIndex: 7
+            }, (idx) => {
+                this.setBinaryLimit(idx);
+            });
+        } else {
+            this.LimitActionSheet.show();            
+        }
+    }
+
     setServerType(idx) {
+        let type = this.state.serverType;
         switch (idx) {
             case 0:
-                this.setState({serverType: "MPD"});
-                AlbumArt.setUseUPnP(false)
-                .then(() => {
-                    AlbumArt.setUseHTTP(false);
-                });
+                type = "MPD";
                 break;
             case 1:
-                this.setState({serverType: "HTTP"});
-                AlbumArt.setUseHTTP(true)
-                .then(() => {
-                    AlbumArt.setUseUPnP(false);
-                });
+                type = "HTTP";
                 break;
             case 2:
                 this.setState({upnpListVisible: true})
-                this.setState({serverType: "UPnP"});
-                AlbumArt.setUseUPnP(true)
-                .then(() => {
-                    AlbumArt.setUseHTTP(false);
-                });
+                type = "UPnP";
+                break;
+            case 3:
+                if (MPDConnection.current().version > 21) {
+                    type = "MPD Embedded";
+                }
                 break;
         }
-    }
+        this.setState({serverType: type});
+        AlbumArt.setType(type)
+}
 
     setUPnPServer(upnpServer) {
         this.setState({upnpListVisible: false, upnpServer: upnpServer});
         AlbumArt.setUPnPServer({name: upnpServer.name, udn: upnpServer.udn});
+    }
+
+    setBinaryLimit(idx) {
+        let limit = 8192;
+        let label = "8k";
+        switch (idx) {
+            case 0:
+                limit = 8192;
+                label = '8k';
+                break;
+            case 1:
+                limit = 16384;
+                label = '16k';
+                break;
+            case 2:
+                limit = 32768;
+                label = '32k';
+                break;
+            case 3:
+                limit = 65536;
+                label = '64k';
+                break;
+            case 4:
+                limit = 131072;
+                label = '128k';
+                break;
+            case 5:
+                limit = 262144;
+                label = '256k';
+                break;
+            case 6:
+                limit = 524288;
+                label = '512k';
+                break;
+        }
+        if (idx !== 7) {
+            this.setState({binarylimit: label});
+            AlbumArt.setBinaryLimit(limit);
+        }
     }
 
     retryMissing() {
@@ -474,6 +576,14 @@ export default class AlbumArtScreen extends React.Component {
         const statusText = "Status : "+this.state.status;
         const filename = this.state.filename === "" ? "cover.png" : this.state.filename;
         const url = "http://"+this.state.host+":"+port+this.state.urlPrefix+"/[artist]/[album]/"+filename;
+        let showBinaryLimit = false;
+        let serverTypes = ['MPD', 'HTTP', 'UPnP', 'Cancel'];
+        let serverTypesCancelIdx = 3;
+        if (MPDConnection.current().version > 21) {
+            serverTypes = ['MPD', 'HTTP', 'UPnP', 'MPD Embedded', 'Cancel'];
+            serverTypesCancelIdx = 4;
+            showBinaryLimit = this.state.serverType === "MPD" || this.state.serverType === "MPD Embedded";
+        }
         return (
             <View style={styles.container}>
                 <ScrollView style={styles.scrollview}>
@@ -492,6 +602,15 @@ export default class AlbumArtScreen extends React.Component {
                                 titleInfoStyle={{fontFamily: 'GillSans-Italic'}}
                                 onPress={() => this.onChangeType()}
                             />
+                            {showBinaryLimit &&                            
+                            <SettingsList.Item
+                                hasNavArrow={true}
+                                title='Binary Limit'
+                                titleInfo={this.state.binarylimit}
+                                titleInfoStyle={{fontFamily: 'GillSans-Italic'}}
+                                onPress={() => this.onChangeBinaryLimit()}
+                            />
+                            }
                         </SettingsList>
                     </View>
                     {this.state.serverType === "HTTP" &&
@@ -576,10 +695,21 @@ export default class AlbumArtScreen extends React.Component {
                     <ActionSheet
                         ref={o => this.ActionSheet = o}
                         title={<Text style={{color: '#000', fontSize: 18}}>Server Type</Text>}
-                        options={['MPD', 'HTTP', 'UPnP', 'Cancel']}
-                        cancelButtonIndex={3}
+                        options={serverTypes}
+                        cancelButtonIndex={serverTypesCancelIdx}
                         onPress={(idx) => { 
                             this.setServerType(idx);
+                        }}
+                    />
+                }
+                {Platform.OS === 'android' &&
+                    <ActionSheet
+                        ref={o => this.LimitActionSheet = o}
+                        title={<Text style={{color: '#000', fontSize: 18}}>Server Type</Text>}
+                        options={['8k', '16k', '32k', '64k', '128k', '256k', '512k', 'Cancel']}
+                        cancelButtonIndex={7}
+                        onPress={(idx) => { 
+                            this.setBinaryLimit(idx);
                         }}
                     />
                 }

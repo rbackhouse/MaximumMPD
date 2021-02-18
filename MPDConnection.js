@@ -179,7 +179,7 @@ class MPDConnection {
                     AsyncStorage.getItem('@MPD:'+this.host+'_'+this.port+'_autoplaysong')
                     .then((autoplaysong) => {
                         if (autoplaysong !== null) {
-                            this.autoplaysong = autoplaysong;
+                            this.autoplaysong = JSON.parse(autoplaysong);
                         }
                     });
     			} else if (state == "internalConnected") {
@@ -386,14 +386,16 @@ class MPDConnection {
         this.intervalId = setInterval(() => {
             if (this.isConnected) {
                 this.getStatus((status) => {
-                    if (this.autoplaysong && this.autoplaysong !== status.currentsong.b64file) {
-                        this.autoplaysong = undefined;
-                        AsyncStorage.removeItem('@MPD:'+this.host+'_'+this.port+'_autoplaysong');
+                    this.repeatValue = status.repeat;
+                    this.consumeValue = status.consume;
+                    if (this.autoplaysong && this.autoplaysong.song !== status.currentsong.b64file) {
                         status.reloadqueue = true;
                         let restorecmd = "command_list_begin\n";
                         restorecmd += "clear\n";
-                        restorecmd += "load __playlist_to_restore\n";
-                        restorecmd += "rm __playlist_to_restore\n";
+                        if (this.autoplaysong.saved) {
+                            restorecmd += "load __playlist_to_restore\n";
+                            restorecmd += "rm __playlist_to_restore\n";
+                        }
                         restorecmd += "command_list_end";
                         this.createPromise(restorecmd)
                         .then(() => {
@@ -402,6 +404,9 @@ class MPDConnection {
                         .catch((err) => {
                             mpdEventEmiiter.emit('OnStatus', status);
                         });
+                        Promise.all([this.repeat((this.autoplaysong.repeat === '1') ? true : false), this.consume((this.autoplaysong.consume === '1') ? true : false)]);
+                        this.autoplaysong = undefined;
+                        AsyncStorage.removeItem('@MPD:'+this.host+'_'+this.port+'_autoplaysong');
                     } else {
                         mpdEventEmiiter.emit('OnStatus', status);
                     }
@@ -1120,6 +1125,10 @@ class MPDConnection {
     }
 
 	addAlbumToPlayList(albumName, artistName, autoplay) {
+        if (autoplay && this.autoplaysong) {
+            return Promise.reject("There is already a 'Play Now' song playing");
+        }
+
         const promise = new Promise((resolve, reject) => {
             this.getSongsForAlbum(albumName, artistName)
             .then((songs) => {
@@ -1198,6 +1207,10 @@ class MPDConnection {
     }
 
     addGenreSongsToPlayList(genre, autoplay) {
+        if (autoplay && this.autoplaysong) {
+            return Promise.reject("There is already a 'Play Now' song playing");
+        }
+
         const promise = new Promise((resolve, reject) => {
             this.getSongsForGenre(genre)
             .then((songs) => {
@@ -1230,14 +1243,22 @@ class MPDConnection {
 
 	addSongToPlayList(song, autoplay) {
         if (autoplay) {
+            if (this.autoplaysong) {
+                return Promise.reject("There is already a 'Play Now' song playing");
+            } else {
+                this.autoplaysong = {
+                    song: this.toBase64(song),
+                    repeat: this.repeatValue,
+                    consume: this.consumeValue
+                };
+            }
+            Promise.all([this.repeat(false), this.consume(false)]);
             let cmd = "command_list_begin\n";
             if (this.currentstatus.playlistlength && parseInt(this.currentstatus.playlistlength) > 0) {
-                if (!this.autoplaysong) {
-                    cmd += "save __playlist_to_restore\n";
-                }
-                this.autoplaysong = this.toBase64(song);
-                AsyncStorage.setItem('@MPD:'+this.host+'_'+this.port+'_autoplaysong', this.autoplaysong);
+                cmd += "save __playlist_to_restore\n";
+                this.autoplaysong.saved = true;
             }
+            AsyncStorage.setItem('@MPD:'+this.host+'_'+this.port+'_autoplaysong', JSON.stringify(this.autoplaysong));
             cmd += "clear\n";
             cmd += "add \""+song+"\"\n";
             cmd += "play\n";
@@ -1253,6 +1274,9 @@ class MPDConnection {
 	}
 
 	addSongsToPlayList(songs, autoplay) {
+        if (this.autoplaysong) {
+            return Promise.reject("There is already a 'Play Now' song playing");
+        }
         let cmd = "command_list_begin\n";
         if (autoplay) {
             cmd += "clear\n";
@@ -1303,6 +1327,10 @@ class MPDConnection {
 	}
 
 	addDirectoryToPlayList(dir, autoplay) {
+        if (autoplay && this.autoplaysong) {
+            return Promise.reject("There is already a 'Play Now' song playing");
+        }
+
         const promise = new Promise((resolve, reject) => {
     		this.listFiles(dir)
             .then((filelist) => {
@@ -1629,7 +1657,24 @@ class MPDConnection {
         return this.createPromise(cmd, processor);
 	}
 
-	albumart(uri, artist, album, statusHandler) {
+    readpicture(uri, artist, album, statusHandler) {
+        if (this.version > 21) {
+            return this.albumart(uri, artist, album, statusHandler, "readpicture");
+        } else {
+            return Promise.reject("readpicture is not supported");
+        }
+    }
+
+    binarylimit(limit) {
+        if (this.version > 21) {
+            return this.createPromise("binarylimit "+limit);
+        } else {
+            return Promise.resolve();
+        }
+    }
+
+	albumart(uri, artist, album, statusHandler, type) {
+        const basecmd = type || "albumart";
         const filename = 'albumart_'+this.toAlbumArtFilename(artist, album)+".png";
         const promise = new Promise((resolve, reject) => {
             if (this.version < 21) {
@@ -1651,18 +1696,22 @@ class MPDConnection {
             };
 
             const addTask = () => {
-                let cmd = "albumart";
+                let cmd = basecmd;
                 if (uri && uri !== "") {
                     cmd += " \""+uri+"\" "+offset;
                 }
                 this.createPromise(cmd, processor, filename)
                 .then((meta) => {
+                    if (!meta.size) {
+                        reject("No embedded album art for "+artist+" "+album);
+                        return;
+                    }
                     offset += meta.binary;
                     if (offset < meta.size) {
                         statusHandler(offset, meta.size);
                         addTask();
                     } else {
-                        resolve({artist: artist, album: album, song: uri, path: meta.filename});
+                        resolve({artist: artist, album: album, song: uri, path: meta.filename, size: meta.size});
                     }
                 })
                 .catch((err) => {
@@ -1785,6 +1834,9 @@ class MPDConnection {
 	loadPlayList(name, autoplay) {
         let cmd;
         if (autoplay) {
+            if (this.autoplaysong) {
+                return Promise.reject("There is already a 'Play Now' song playing");
+            }
             cmd = "command_list_begin\n";
             cmd += "clear\n";
             cmd += "load \""+name+"\"\n";
