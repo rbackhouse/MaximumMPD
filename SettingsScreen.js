@@ -156,7 +156,7 @@ class AboutModal extends React.Component {
                     <View style={styles.flex3}>
                         <Text style={styles.text2}>About Maximum MPD</Text>
                     </View>
-                    <Text style={[styles.text1, {padding: 15}]}>Version: 4.6</Text>
+                    <Text style={[styles.text1, {padding: 15}]}>Version: 4.7</Text>
                     <Text style={[styles.text1, {padding: 15}]}>Author: Richard Backhouse</Text>
                     <Text style={[styles.text1, {padding: 15}]}>Various Images provided by Icons8 (https://icons8.com)</Text>
                     <View style={styles.flex1}>
@@ -321,11 +321,18 @@ export default class SettingsScreen extends React.Component {
         if (MPDConnection.isConnected()) {
             this.getStatus();
         }
+        this.didFocusSubscription = this.props.navigation.addListener(
+            'didFocus',
+            payload => {
+                this.getStatus();
+            }
+        );
     }
 
     componentWillUnmount() {
         this.onConnect.remove();
         this.onDisconnect.remove();
+        this.didFocusSubscription.remove();
         if (this.onApperance) {
             this.onApperance.remove();
         }
