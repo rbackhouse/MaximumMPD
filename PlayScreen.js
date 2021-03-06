@@ -336,16 +336,19 @@ export default class PlayScreen extends React.Component {
     onRandom = () => {
         MPDConnection.current().clearPlayList();
         this.setState({loading: true});
-        MPDConnection.current().randomPlayList()
-        .then(() => {
-            this.setState({loading: false});
-        })
-        .catch((err) => {
-            this.setState({loading: false});
-            Alert.alert(
-                "MPD Error",
-                "Error : "+err
-            );
+        Config.getRandomPlaylistSize()
+        .then((size) => {
+            MPDConnection.current().randomPlayList(size)
+            .then(() => {
+                this.setState({loading: false});
+            })
+            .catch((err) => {
+                this.setState({loading: false});
+                Alert.alert(
+                    "MPD Error",
+                    "Error : "+err
+                );
+            });
         });
     }
 
