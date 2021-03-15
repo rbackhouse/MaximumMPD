@@ -27,6 +27,7 @@ import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import { StyleManager } from './Styles';
 import Config from './Config';
 import UPnPManager from './UPnPManager';
+import AudioStreamManager from './AudioStreamManager';
 
 export default class UPnPBrowseScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -35,7 +36,7 @@ export default class UPnPBrowseScreen extends React.Component {
             title: 'UPnP Browse'
         }
         if (showBackbutton) {
-            ret.headerLeft = <HeaderBackButton onPress={navigation.getParam('backlinkHandler')}/>;
+            ret.headerLeft = () => ( <HeaderBackButton onPress={navigation.getParam('backlinkHandler')}/> )
         }
         return ret;
     };
@@ -70,6 +71,8 @@ export default class UPnPBrowseScreen extends React.Component {
         if (item.isContainer === "TRUE") {
             this.parentIDs.push(item.parentID);
             this.load(item.objectID);
+        } else if (item.resources[0] && item.resources[0].resourceURLString) {            
+            AudioStreamManager.addSong(item);
         }
     }
 

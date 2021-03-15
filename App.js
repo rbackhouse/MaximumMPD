@@ -42,6 +42,7 @@ import DebugScreen from './DebugScreen';
 import AlbumArtScreen from './AlbumArtScreen';
 import UPnPBrowseScreen from './UPnPBrowseScreen';
 import UPnPRenderersScreen from './UPnPRenderersScreen';
+import StreamPlayScreen from './StreamPlayScreen';
 import MPDConnection from './MPDConnection';
 
 class Header extends React.Component {
@@ -364,9 +365,28 @@ const UPnPSettingsStack = createStackNavigator(
     }
 );
 
+const StreamPlayStack = createStackNavigator(
+    {
+        Play: { 
+            screen: StreamPlayScreen 
+        }
+    },
+    {
+        defaultNavigationOptions: ({ navigation }) => ({
+            headerRight: () => (
+                <Header navigation={navigation}></Header>
+            ),
+            headerBackTitle: null,
+            headerStyle: StyleManager.getStyles("appStyles").headerStyle,
+            headerTitleStyle: StyleManager.getStyles("appStyles").headerTitleStyle
+        })
+    }
+);
+
 
 const UPnPPage = createBottomTabNavigator(
     {
+      Play: { screen: StreamPlayStack },
       Browse: { screen: UPnPBrowseStack },
       Render: { screen: UPnPRenderersStack },
       Settings: { screen: UPnPSettingsStack }
@@ -376,7 +396,9 @@ const UPnPPage = createBottomTabNavigator(
           tabBarIcon: ({ focused, tintColor }) => {
             const { routeName } = navigation.state;
             let iconName;
-            if (routeName === 'Browse') {
+            if (routeName === 'Play') {
+                iconName = `ios-musical-notes`;
+            } else if (routeName === 'Browse') {
                 iconName = `ios-list`;
             } else if (routeName === 'Render') {
                 iconName = `ios-headset`;

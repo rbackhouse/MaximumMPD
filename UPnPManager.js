@@ -110,7 +110,7 @@ export default {
     getRenderers: () => {
         return discoverer.getRendererList();
     },
-    rescan: function() {
+    rescan: () => {
         discoverer.stopListening();
         discoverer.startListening();
     }

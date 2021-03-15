@@ -22,6 +22,7 @@
 		A0281BD3F5C1E45B19D1477E /* libPods-MaximumMPD-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1210B59BC07FF89C62014030 /* libPods-MaximumMPD-tvOSTests.a */; };
 		AE5BDB5CE1C442EBAC4FEE6C /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F767E9F878644B6296303F7F /* libRNVectorIcons.a */; };
 		D14189955F43512A551D93DB /* libPods-MaximumMPD-MaximumMPDTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4656A21DD718F9317F8902BA /* libPods-MaximumMPD-MaximumMPDTests.a */; };
+		F61F663C25F5826F00DEA3C7 /* AudioStreamer.m in Sources */ = {isa = PBXBuildFile; fileRef = F61F663B25F5826F00DEA3C7 /* AudioStreamer.m */; };
 		F66D3B2323363B9600A9C9C8 /* VolumeControl.m in Sources */ = {isa = PBXBuildFile; fileRef = F66D3B2223363B9600A9C9C8 /* VolumeControl.m */; };
 		F6715FEE2579551700BBE0D7 /* UPnP.m in Sources */ = {isa = PBXBuildFile; fileRef = F6715FED2579551700BBE0D7 /* UPnP.m */; };
 		F6736300214BE4DA00CEFEEA /* SocketConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = F67362FD214BE4DA00CEFEEA /* SocketConnection.m */; };
@@ -76,6 +77,8 @@
 		B48CC41228BC0718976FA9D5 /* Pods-MaximumMPD-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaximumMPD-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-MaximumMPD-tvOS/Pods-MaximumMPD-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		EBD77982E66BB6A505AFE3B7 /* Pods-MaximumMPD.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaximumMPD.release.xcconfig"; path = "Target Support Files/Pods-MaximumMPD/Pods-MaximumMPD.release.xcconfig"; sourceTree = "<group>"; };
 		F5FE5A8FE937D7104CA0099B /* libPods-MaximumMPD.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MaximumMPD.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F61F663A25F5826F00DEA3C7 /* AudioStreamer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioStreamer.h; path = MaximumMPD/AudioStreamer.h; sourceTree = "<group>"; };
+		F61F663B25F5826F00DEA3C7 /* AudioStreamer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AudioStreamer.m; path = MaximumMPD/AudioStreamer.m; sourceTree = "<group>"; };
 		F66D3AF923363B6B00A9C9C8 /* VolumeControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VolumeControl.h; path = MaximumMPD/VolumeControl.h; sourceTree = "<group>"; };
 		F66D3B2223363B9600A9C9C8 /* VolumeControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = VolumeControl.m; path = MaximumMPD/VolumeControl.m; sourceTree = "<group>"; };
 		F6715FED2579551700BBE0D7 /* UPnP.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UPnP.m; path = MaximumMPD/UPnP.m; sourceTree = "<group>"; };
@@ -153,6 +156,8 @@
 		13B07FAE1A68108700A75B9A /* MaximumMPD */ = {
 			isa = PBXGroup;
 			children = (
+				F61F663A25F5826F00DEA3C7 /* AudioStreamer.h */,
+				F61F663B25F5826F00DEA3C7 /* AudioStreamer.m */,
 				F6F2CE3224A8B6B700617B70 /* Silent.wav */,
 				F6930E0022EDAB9100918027 /* MaximumMPD.entitlements */,
 				F67362FE214BE4DA00CEFEEA /* BonjourListener.h */,
@@ -675,6 +680,7 @@
 				F6F2CE3024A8B1EF00617B70 /* NowPlayingControl.m in Sources */,
 				F6736301214BE4DA00CEFEEA /* BonjourListener.m in Sources */,
 				F6715FEE2579551700BBE0D7 /* UPnP.m in Sources */,
+				F61F663C25F5826F00DEA3C7 /* AudioStreamer.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				F6736300214BE4DA00CEFEEA /* SocketConnection.m in Sources */,
 				F66D3B2323363B9600A9C9C8 /* VolumeControl.m in Sources */,
