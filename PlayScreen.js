@@ -447,7 +447,7 @@ export default class PlayScreen extends React.Component {
           isMedium = true;
           bg = .13;
       }
-      albumArtSize = Math.round((height/10) * 4) - padding;
+      const albumArtSize = Math.round((height/10) * 4) - padding;
       const title = currentsong.name !== undefined ? currentsong.name : currentsong.title
 
       if (this.state.selectedTab === 0) {
