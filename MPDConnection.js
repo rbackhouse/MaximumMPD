@@ -58,6 +58,9 @@ const DATE_PREFIX = "Date: ";
 const NAME_PREFIX = "Name: ";
 const DURATION_PREFIX = "duration: ";
 const SONGS_PREFIX = "songs: ";
+const COMMENT_PREFIX = "comment: ";
+const PERFORMER_PREFIX = "performer: ";
+const COMPOSER_PREFIX = "composer: ";
 
 const INITIAL = 0;
 const WRITTEN = 1;
@@ -815,6 +818,14 @@ class MPDConnection {
 					song.duration = MPDConnection._convertTime(line.substring(DURATION_PREFIX.length));
 				} else if (line.indexOf(ARTIST_PREFIX) === 0) {
 					song.artist = line.substring(ARTIST_PREFIX.length);
+				} else if (line.indexOf(ALBUMARTIST_PREFIX) === 0) {
+					song.albumartist = line.substring(ALBUMARTIST_PREFIX.length);
+				} else if (line.indexOf(COMMENT_PREFIX) === 0) {
+					song.comment = line.substring(COMMENT_PREFIX.length);
+				} else if (line.indexOf(PERFORMER_PREFIX) === 0) {
+					song.performer = line.substring(PERFORMER_PREFIX.length);
+				} else if (line.indexOf(COMPOSER_PREFIX) === 0) {
+					song.composer = line.substring(COMPOSER_PREFIX.length);
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
 					song = {};
 					songs.push(song);
@@ -941,6 +952,14 @@ class MPDConnection {
 					song.duration = MPDConnection._convertTime(line.substring(DURATION_PREFIX.length));
 				} else if (line.indexOf(ARTIST_PREFIX) === 0) {
 					song.artist = line.substring(ARTIST_PREFIX.length);
+				} else if (line.indexOf(ALBUMARTIST_PREFIX) === 0) {
+					song.albumartist = line.substring(ALBUMARTIST_PREFIX.length);
+				} else if (line.indexOf(COMMENT_PREFIX) === 0) {
+					song.comment = line.substring(COMMENT_PREFIX.length);
+				} else if (line.indexOf(PERFORMER_PREFIX) === 0) {
+					song.performer = line.substring(PERFORMER_PREFIX.length);
+				} else if (line.indexOf(COMPOSER_PREFIX) === 0) {
+					song.composer = line.substring(COMPOSER_PREFIX.length);
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
 					song = {};
 					songs.push(song);
