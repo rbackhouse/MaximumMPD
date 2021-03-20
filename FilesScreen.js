@@ -39,7 +39,7 @@ export default class FilesScreen extends React.Component {
             title: 'Files'
         }
         if (showBackbutton) {
-            ret.headerLeft = <HeaderBackButton onPress={navigation.getParam('backlinkHandler')}/>;
+            ret.headerLeft = () => (<HeaderBackButton onPress={navigation.getParam('backlinkHandler')}/> )
         }
         return ret;
     };
