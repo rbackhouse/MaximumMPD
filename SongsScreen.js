@@ -468,10 +468,22 @@ export default class SongsScreen extends React.Component {
                                     {item.artist !== undefined &&
                                         <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.artist}</Text>
                                     }
+                                    {item.albumartist !== undefined &&
+                                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.albumartist}</Text>
+                                    }
                                     {item.album !== undefined &&
                                         <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.album}</Text>
                                     }
                                     <Text style={styles.item}>Track: {item.track} Time: {item.time}</Text>
+                                    {item.performer !== undefined &&
+                                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>Performer: {item.performer}</Text>
+                                    }
+                                    {item.composer !== undefined &&
+                                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>Composer: {item.composer}</Text>
+                                    }
+                                    {item.comment !== undefined &&
+                                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>Comment: {item.comment}</Text>
+                                    }
                                 </View>
                                 <Icon name="ios-swap" size={20} style={common.icon}/>
                             </View>
