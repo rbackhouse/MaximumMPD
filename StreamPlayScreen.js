@@ -16,7 +16,7 @@
 */
 
 import React from 'react';
-import { Text, View, TouchableOpacity, Image, ActivityIndicator, Dimensions, FlatList } from 'react-native';
+import { Text, View, TouchableOpacity, Image, ActivityIndicator, Dimensions, FlatList, Alert } from 'react-native';
 import { Slider, ButtonGroup } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -50,20 +50,30 @@ export default class StreamPlayScreen extends React.Component {
         this.subscription = AudioStreamManager.addListener(
             "OnItemStatus",
             (status) => {
-                //console.log("Item Status : "+JSON.stringify(status));
                 switch (status.type) {
                     case "finishedPlaying":
+                        console.log("FinishedPlaying : "+status.url);
                         this.load();
+                        this.setState({isPlaying: false});
                         break;
                     case "failedToPlay":
+                        console.log("FinishedPlaying : "+status.url);
+                        Alert.alert(
+                            "Streaming Error",
+                            "Error : "+status.error
+                        );
                         this.load();
                         break;
                     case "timeStatus":
                         this.setState({elapsed: Math.floor(status.timeElapsed)});
                         break;
                     case "isPlaying":
+                        console.log("Is Playing : "+status.isPlaying);
                         this.load();
                         this.setState({isPlaying: status.isPlaying});
+                        break;
+                    case "readyToPlay":
+                        console.log("readyToPlay : "+status.url);
                         break;
                 }
             }
@@ -81,6 +91,7 @@ export default class StreamPlayScreen extends React.Component {
 
     componentWillUnmount() {
         this.subscription.remove();
+        this.didFocusSubscription.remove();
     }
 
     load() {
@@ -99,12 +110,14 @@ export default class StreamPlayScreen extends React.Component {
         this.state.isPlaying ? AudioStreamManager.pause() : AudioStreamManager.play();
     }
 
-    onNext() {
+    onNext = () =>  {
         AudioStreamManager.next();
+        this.load();
     }
 
-    onClear= () => {
+    onClear = () => {
         AudioStreamManager.clearQueue();
+        this.load();
     }
 
     onMute() {

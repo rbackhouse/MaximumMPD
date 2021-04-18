@@ -37,6 +37,14 @@ static void * const PlayerItemContext = (void*)&PlayerItemContext;
     }
   }];
   
+  AVAudioSession *session = [AVAudioSession sharedInstance];
+  NSError *error = nil;
+  [session setCategory:AVAudioSessionCategoryPlayback
+                  mode:AVAudioSessionModeDefault
+               options:AVAudioSessionCategoryOptionDefaultToSpeaker|AVAudioSessionCategoryOptionDuckOthers
+                 error:&error];
+  if (nil == error) {
+  }
   return self;
 }
 
@@ -45,9 +53,9 @@ RCT_EXPORT_MODULE();
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(addSong:(NSString *)strUrl) {
   NSLog(@"addSong : %@", strUrl);
 
-  NSURL *soundFileURL = [NSURL fileURLWithPath:strUrl];
+  AVAsset *asset = [AVAsset assetWithURL:[NSURL URLWithString:strUrl]];
+  AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:asset];
   
-  AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:soundFileURL];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:playerItem];
   
   NSKeyValueObservingOptions options = NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew;
@@ -72,8 +80,12 @@ RCT_EXPORT_METHOD(removeSong:(NSString *)strUrl) {
 
 RCT_EXPORT_METHOD(play) {
   NSLog(@"play");
-  [self.player play];
-  [self sendEventWithName:@"OnItemStatus" body:@{@"type": @"isPlaying", @"isPlaying": [NSNumber numberWithBool:1]}];
+  if ([self.player items].count > 0) {
+    [self.player play];
+    [self sendEventWithName:@"OnItemStatus" body:@{@"type": @"isPlaying", @"isPlaying": [NSNumber numberWithBool:1]}];
+  } else {
+    [self sendEventWithName:@"OnItemStatus" body:@{@"type": @"isPlaying", @"isPlaying": [NSNumber numberWithBool:0]}];
+  }
 }
 
 RCT_EXPORT_METHOD(pause) {
@@ -137,8 +149,8 @@ RCT_EXPORT_METHOD(clearQueue) {
               [self sendEventWithName:@"OnItemStatus" body:@{@"type": @"readyToPlay", @"url": [asset.URL absoluteString]}];
               break;
             case AVPlayerItemStatusFailed:
-            NSLog(@"failedToPlay : %@", asset.URL);
-              [self sendEventWithName:@"OnItemStatus" body:@{@"type": @"failedToPlay", @"url": [asset.URL absoluteString]}];
+              NSLog(@"failedToPlay : %@ %@", asset.URL, playerItem.error.localizedDescription);
+              [self sendEventWithName:@"OnItemStatus" body:@{@"type": @"failedToPlay", @"url": [asset.URL absoluteString], @"error": playerItem.error.localizedDescription}];
               break;
             case AVPlayerItemStatusUnknown:
               break;

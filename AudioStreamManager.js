@@ -61,7 +61,6 @@ export default {
                         queue.push(currentQueue[url]);
                     }
                 });
-                console.log(queue);
                 resolve(queue);
             });
         });

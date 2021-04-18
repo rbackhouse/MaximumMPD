@@ -85,14 +85,23 @@ let currentRenderer;
 
 export default {
     browse: (objectId) => {
-        return UPnP.browse(currentServer.udn, objectId);
+        if (currentServer && currentServer.udn) {
+            return UPnP.browse(currentServer.udn, objectId);
+        } else {
+            return Promise.resolve([]);
+        }
     },
     search: (containerId, searchCriteria, filter) => {
-        return UPnP.search(currentServer.udn, containerId, searchCriteria, filter);
+        if (currentServer && currentServer.udn) {
+            return UPnP.search(currentServer.udn, containerId, searchCriteria, filter);
+        } else {
+            return Promise.resolve([]);
+        }
     },
     connectServer: (udn) => {
         if (discoverer.mediaservers[udn]) {
             currentServer = discoverer.mediaservers[udn];
+            console.log("currentServer set to "+currentServer.name);
         }
         return currentServer;
     },
@@ -113,5 +122,8 @@ export default {
     rescan: () => {
         discoverer.stopListening();
         discoverer.startListening();
+    },
+    getCurrentServer: () => {
+        return currentServer;
     }
 }

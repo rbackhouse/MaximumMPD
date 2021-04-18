@@ -55,9 +55,18 @@ export default class UPnPBrowseScreen extends React.Component {
     componentDidMount() {
         this.props.navigation.setParams({ backlinkHandler: this.backlinkHandler });
         this.load("0");
+        this.didFocusSubscription = this.props.navigation.addListener(
+            'didFocus',
+            payload => {
+                if (this.state.currentServer && this.state.currentServer !== UPnPManager.getCurrentServer().udn) {
+                    this.load("0");
+                }
+            }
+        );
     }
 
     componentWillUnmount() {
+        this.didFocusSubscription.remove();
     }
 
     backlinkHandler = () => {
@@ -68,19 +77,36 @@ export default class UPnPBrowseScreen extends React.Component {
     }
 
     onPress(item) {
-        if (item.isContainer === "TRUE") {
-            this.parentIDs.push(item.parentID);
-            this.load(item.objectID);
-        } else if (item.resources[0] && item.resources[0].resourceURLString) {            
-            AudioStreamManager.addSong(item);
-        }
+        this.parentIDs.push(item.parentID);
+        this.load(item.objectID);
     }
 
     onLongPress(item) {
     }
 
+    play(rowMap, item) {
+        if (rowMap[item.objectID]) {
+			rowMap[item.objectID].closeRow();
+		}
+        AudioStreamManager.addSong(item);
+        this.props.navigation.navigate('Play');
+    }
+
+    queue(rowMap, item) {
+        if (rowMap[item.objectID]) {
+			rowMap[item.objectID].closeRow();
+		}
+        AudioStreamManager.addSong(item);
+    }
+
+    addAll() {
+        this.state.items.forEach((item) => {
+            AudioStreamManager.addSong(item);
+        });
+    }
+
     load(id) {
-        this.setState({loading: true});
+        this.setState({loading: true, currentServer: UPnPManager.getCurrentServer().udn});
 
         UPnPManager.browse(id)
         .then((items) => {
@@ -159,31 +185,67 @@ export default class UPnPBrowseScreen extends React.Component {
                         if (item.childCount != 0) {
                             title += " ("+item.childCount+")";
                         }
-                        return (
-                            <TouchableOpacity onPress={this.onPress.bind(this, item)} onLongPress={this.onLongPress.bind(this, item)}>
-                                <View style={common.container3}>
-                                    {item.albumArtURL.length < 1 &&
-                                        <Icon name="ios-folder" size={20} style={common.icon}/>
-                                    }
-                                    {item.albumArtURL.length > 0 &&
-                                        <Image style={styles.albumart} source={{uri: item.albumArtURL}}/>
-                                    }
-                                    <View style={common.container4}>
-                                        <Text numberOfLines={1} ellipsizeMode='middle' style={styles.file}>{title}</Text>
-                                        {item.artist !== '' &&
-                                            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>{item.artist}</Text>
+                        if (item.isContainer === "TRUE") {
+                            return (
+                                <TouchableOpacity onPress={this.onPress.bind(this, item)} onLongPress={this.onLongPress.bind(this, item)}>
+                                    <View style={common.container3}>
+                                        {item.albumArtURL.length < 1 &&
+                                            <Icon name="ios-folder" size={20} style={common.icon}/>
                                         }
-                                        {item.albumTitle !== '' &&
-                                            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>{item.albumTitle}</Text>
+                                        {item.albumArtURL.length > 0 &&
+                                            <Image style={styles.albumart} source={{uri: item.albumArtURL}}/>
                                         }
-                                        {item.trackNumber !== '0' &&
-                                            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>Track: {item.trackNumber}</Text>
-                                        }
+                                        <View style={common.container4}>
+                                            <Text numberOfLines={1} ellipsizeMode='middle' style={styles.file}>{title}</Text>
+                                            {item.artist !== '' &&
+                                                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>{item.artist}</Text>
+                                            }
+                                            {item.albumTitle !== '' &&
+                                                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>{item.albumTitle}</Text>
+                                            }
+                                            {item.trackNumber !== '0' &&
+                                                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>Track: {item.trackNumber}</Text>
+                                            }
+                                        </View>
+                                        <Icon name="ios-more" size={20} style={common.icon}/>
                                     </View>
-                                    <Icon name="ios-more" size={20} style={common.icon}/>
-                                </View>
-                            </TouchableOpacity>
-                        );
+                                </TouchableOpacity>
+                            );
+                        } else {
+                            return (
+                                <SwipeRow rightOpenValue={-150}>
+                                    <View style={[common.rowBack, {paddingTop: 3, paddingBottom: 3}]}>
+                                        <TouchableOpacity style={[common.backRightBtn, common.backRightBtnLeft]} onPress={ _ => this.queue(map, item) }>
+                                            <Text style={common.backTextWhite}>Queue</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={[common.backRightBtn, common.backRightBtnRight]} onPress={ _ => this.play(map, item) }>
+                                            <Text style={common.backTextWhite}>Play</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={common.container3}>
+                                        {item.albumArtURL.length < 1 &&
+                                            <Icon name="ios-folder" size={20} style={common.icon}/>
+                                        }
+                                        {item.albumArtURL.length > 0 &&
+                                            <Image style={styles.albumart} source={{uri: item.albumArtURL}}/>
+                                        }
+                                        <View style={common.container4}>
+                                            <Text numberOfLines={1} ellipsizeMode='middle' style={styles.file}>{title}</Text>
+                                            {item.artist !== '' &&
+                                                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>{item.artist}</Text>
+                                            }
+                                            {item.albumTitle !== '' &&
+                                                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>{item.albumTitle}</Text>
+                                            }
+                                            {item.trackNumber !== '0' &&
+                                                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>Track: {item.trackNumber}</Text>
+                                            }
+                                        </View>
+                                        <Icon name="ios-swap" size={20} style={common.icon}/>
+                                    </View>
+                                </SwipeRow>
+                            );
+                        }
                     }}
                     renderSectionHeader={({section}) => <Text style={common.sectionHeader}>{section.title}</Text>}
                     ItemSeparatorComponent={this.renderSeparator}
@@ -195,7 +257,7 @@ export default class UPnPBrowseScreen extends React.Component {
                     </View>
                 }
                 <ActionButton buttonColor="rgba(231,76,60,1)" hideShadow={true}>
-                    <ActionButton.Item buttonColor='#9b59b6' title="Add to Playlist" size={40} textStyle={common.actionButtonText} onPress={() => {this.addAll(true);}}>
+                    <ActionButton.Item buttonColor='#9b59b6' title="Add to Queue" size={40} textStyle={common.actionButtonText} onPress={() => {this.addAll();}}>
                         <FAIcon name="plus-square" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>

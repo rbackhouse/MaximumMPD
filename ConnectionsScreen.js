@@ -338,8 +338,25 @@ export default class ConnectionsScreen extends React.Component {
         if (rowMap[item.name+item.ipAddress+item.port]) {
 			rowMap[item.name+item.ipAddress+item.port].closeRow();
         }
+        if (rowMap[item.udn]) {
+			rowMap[item.udn].closeRow();
+        }
         if (item.udn) {
+            MPDConnection.disconnect();
+            this.setState((state) => {
+                const selected = new Map(state.selected);
+                for (let key of selected.keys()) {
+                    selected.set(key, false);
+                }
+                return {selected};
+            });
             UPnPManager.connectServer(item.udn);
+            this.setState((state) => {
+                const selected = new Map(state.selected);
+                selected.set(item.udn, true);
+                return {selected};
+            });
+
             this.props.navigation.navigate('UPnPPage');
         } else {
             this.onPress(item);
@@ -393,13 +410,19 @@ export default class ConnectionsScreen extends React.Component {
 					useSectionList
 					sections={[
                         {title: 'Discovered', data: this.state.discovered},
-                        {title: 'Configured', data: this.state.configured}
+                        {title: 'Configured', data: this.state.configured},
                         //{title: 'UPnP Servers', data: this.state.upnpServers}
                     ]}
                     renderItem={(data, map) => {
                         const openVal = data.section.title === "Configured" ? -150 : -75;
                         const item = data.item;
-                        const selected = this.state.selected.get(item.name+item.ipAddress+item.port) === true ? "flex" : "none";
+
+                        let selected;
+                        if (item.udn) {
+                            selected = this.state.selected.get(item.udn) === true ? "flex" : "none";
+                        } else {
+                            selected = this.state.selected.get(item.name+item.ipAddress+item.port) === true ? "flex" : "none";
+                        }
                         let stats;
                         if (item.stats) {
                             stats = "Artists: "+item.stats.numberOfArtists+" Albums: "+item.stats.numberOfAlbums+" Songs: "+item.stats.numberOfSongs;
