@@ -2223,7 +2223,10 @@ class ConnectionsStorage {
             return this.getConnectionList().then((connectionList) => {
                 let add = true;
                 connectionList.forEach((connection) => {
-                    if (connection.name === name && connection.ipAddress === host && connection.port === port) {
+                    if (connection.name === name) {
+                        add = false;
+                    } 
+                    if (connection.ipAddress === host && connection.port === port) {
                         add = false;
                     }
                 });
