@@ -28,6 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
       packages.add(new VolumeControlPackage());
       packages.add(new NowPlayingControlPackage());
       packages.add(new UPnPPackage());
+      packages.add(new AudioStreamerPackage());
       return packages;
     }
 
