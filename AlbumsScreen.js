@@ -86,6 +86,9 @@ export default class AlbumsScreen extends React.Component {
                     if (noAlbumCount > 0) {
                         albums.push({name: "No Album", artist: artist, hasNoAlbum: true});
                     }
+                    albums.forEach((album, id)=> {
+                        album.id = id.toString();
+                    })
                     AlbumArt.getAlbumArtForAlbums(albums).then((albums) => {
                         this.setState({albums: albums, fullset: albums});
                     });
@@ -456,7 +459,7 @@ export default class AlbumsScreen extends React.Component {
                         data={this.state.albums}
                         renderItem={this.renderItem}
                         renderSectionHeader={({section}) => <Text style={common.sectionHeader}>{section.title}</Text>}
-                        keyExtractor={item => item.name}
+                        keyExtractor={item => item.id}
                         ItemSeparatorComponent={this.renderSeparator}
                         key={this.state.numColumns}
                         ref={(ref) => { this.listRef = ref; }}
@@ -469,7 +472,7 @@ export default class AlbumsScreen extends React.Component {
                     <FlatList
                         data={this.state.albums}
                         renderItem={this.renderGridAlbumItem}
-                        keyExtractor={item => item.name}
+                        keyExtractor={item => item.id}
                         numColumns={this.state.numColumns}
                         columnWrapperStyle={common.row}
                         key={this.state.numColumns}
