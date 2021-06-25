@@ -7,12 +7,14 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.8.1",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/picker": "^1.6.1",
+    "patch-package": "^6.4.7",
     "react": "16.11.0",
     "react-native": "0.62.3",
     "react-native-action-button": "^2.8.5",

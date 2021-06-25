@@ -1,0 +1,7 @@
+Patches applied
+
+https://github.com/mastermoo/react-native-action-button/pull/340/files
+
+https://github.com/facebook/react-native/commit/123423c2a9258c9af25ca9bffe1f10c42a176bf3#diff-4cb374ac84cbae493f1b0aba42abb676641833d77dcdd921a648098e510e3053
+
+Apply in xcode and build
