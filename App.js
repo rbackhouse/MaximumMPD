@@ -142,6 +142,9 @@ const PlayStack = createStackNavigator(
         },
         PlaylistDetails: { 
             screen: PlaylistDetails 
+        },
+        Connections: { 
+            screen: ConnectionsScreen 
         }
     },
     {

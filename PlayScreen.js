@@ -367,11 +367,16 @@ export default class PlayScreen extends React.Component {
         }
     }
 
+    onConnections = () => {
+        const { navigation } = this.props;
+        navigation.navigate('Connections');
+    }
+
     onMore = () => {
         if (Platform.OS === 'ios') {        
             ActionSheetIOS.showActionSheetWithOptions({
-                options: ['Add to Playlist', 'Random Playlist', 'Clear Queue', 'Goto Album', 'Cancel'],
-                cancelButtonIndex: 4
+                options: ['Add to Playlist', 'Random Playlist', 'Clear Queue', 'Goto Album', 'Connections', 'Cancel'],
+                cancelButtonIndex: 5
             }, (idx) => {
                 this.doActionSheetAction(idx);
             });
@@ -393,6 +398,9 @@ export default class PlayScreen extends React.Component {
                 break;
             case 3:
                 this.onGoTo();
+                break;
+            case 4:
+                this.onConnections();
                 break;
         }
     }
@@ -561,8 +569,8 @@ export default class PlayScreen extends React.Component {
                   {Platform.OS === 'android' &&
                         <ActionSheet
                             ref={o => this.ActionSheet = o}
-                            options={['Add to Playlist', 'Random Playlist', 'Clear Queue', 'Goto Album', 'Cancel']}
-                            cancelButtonIndex={4}
+                            options={['Add to Playlist', 'Random Playlist', 'Clear Queue', 'Goto Album', 'Connections', 'Cancel']}
+                            cancelButtonIndex={5}
                             onPress={(idx) => { 
                                 this.doActionSheetAction(idx);
                             }}
