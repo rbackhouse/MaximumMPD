@@ -102,7 +102,7 @@ export default class PlaylistDetails extends React.Component {
         }
     }
 
-    onLongPress(item, index) {
+    onPress(item, index) {
         if (Platform.OS === 'ios') {
             ActionSheetIOS.showActionSheetWithOptions({
                 options: ['Delete Playlist Entry', 'Goto Album', 'Cancel'],
@@ -110,16 +110,18 @@ export default class PlaylistDetails extends React.Component {
                 message: item.artist,
                 cancelButtonIndex: 2
             }, (idx) => {
-                this.doActionSheetAction(idx, item);
+                this.doActionSheetAction(idx, item, index);
             });
         } else {
             this.currentItem = item;
+            this.currentIndex = index;
             this.ActionSheet.show();
         }            
     }
 
-    doActionSheetAction(idx, i) {
+    doActionSheetAction(idx, i, itemIndex) {
         const item = i || this.currentItem;
+        const index = itemIndex === undefined ? this.currentIndex : itemIndex;
         switch (idx) {
             case 0:
                 Alert.alert(
@@ -155,6 +157,7 @@ export default class PlaylistDetails extends React.Component {
     
         }
         this.currentItem = undefined;
+        this.currentIndex = undefined;
     }
 
     onDelete() {
@@ -212,9 +215,9 @@ export default class PlaylistDetails extends React.Component {
         const styles = StyleManager.getStyles("playlistDetailsStyles");
         const common = StyleManager.getStyles("styles");
 
-        const pressModeIcon = "ios-trash";
+        const pressModeIcon = "ios-more";
         return (
-            <TouchableOpacity onLongPress={this.onLongPress.bind(this, item, index)}>
+            <TouchableOpacity onPress={this.onPress.bind(this, item, index)}>
                 <View style={common.container3}>
                     <Icon name="ios-musical-notes" size={20} style={common.icon}/>
                     <View style={common.container4}>
