@@ -1920,6 +1920,10 @@ class MPDConnection {
         return this.createPromise("playlistdelete \""+name+"\" "+pos);
     }
 
+    movePlayListItem(name, from, to) {
+        return this.createPromise("playlistmove \""+name+"\" "+from+" "+to);
+    }
+
     isPlaylistFile(file) {
         isPlaylist = false;
         for (let suffix of this.playlistSuffixes) {

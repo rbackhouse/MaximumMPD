@@ -105,10 +105,10 @@ export default class PlaylistDetails extends React.Component {
     onPress(item, index) {
         if (Platform.OS === 'ios') {
             ActionSheetIOS.showActionSheetWithOptions({
-                options: ['Delete Playlist Entry', 'Goto Album', 'Cancel'],
+                options: ['Delete Playlist Entry', 'Goto Album', 'Move Up', 'Move Down', 'Move to Top', 'Move to Bottom', 'Cancel'],
                 title: item.title,
                 message: item.artist,
-                cancelButtonIndex: 2
+                cancelButtonIndex: 6
             }, (idx) => {
                 this.doActionSheetAction(idx, item, index);
             });
@@ -154,10 +154,45 @@ export default class PlaylistDetails extends React.Component {
                     navigation.navigate('Songs', {artist: item.artist, album: item.album});
                 }
                 break;
-    
-        }
+            case 2:
+                if (index-1 > -1) {
+                    this.movePlayListItem(index, index-1);
+                }
+                break;    
+            case 3:
+                if (index+1 < this.state.fullset.length) {
+                    this.movePlayListItem(index, index+1);
+                }
+                break;
+            case 4:
+                if (index != 0) {
+                    this.movePlayListItem(index, 0);
+                }
+                break
+            case 5:
+                if (index != this.state.fullset.length-1) {
+                    this.movePlayListItem(index, this.state.fullset.length-1);
+                }
+                break
+            }
         this.currentItem = undefined;
         this.currentIndex = undefined;
+    }
+
+    movePlayListItem(from, to) {
+        this.setState({loading: true});
+        MPDConnection.current().movePlayListItem(this.playlistName, from, to)
+        .then(() => {
+            this.setState({loading: false});
+            this.load();
+        })
+        .catch((err) => {
+            this.setState({loading: false});
+            Alert.alert(
+                "MPD Error",
+                "Error : "+err
+            );
+        });
     }
 
     onDelete() {
@@ -281,8 +316,8 @@ export default class PlaylistDetails extends React.Component {
                 {Platform.OS === 'android' &&
                     <ActionSheet
                         ref={o => this.ActionSheet = o}
-                        options={['Delete Playlist Entry', 'Goto Album', 'Cancel']}
-                        cancelButtonIndex={2}
+                        options={['Delete Playlist Entry', 'Goto Album', 'Move Up', 'Move Down', 'Move to Top', 'Move to Bottom', 'Cancel']}
+                        cancelButtonIndex={6}
                         onPress={(idx) => { 
                             this.doActionSheetAction(idx);
                         }}
