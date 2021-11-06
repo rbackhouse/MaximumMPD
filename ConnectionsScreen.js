@@ -44,11 +44,23 @@ class AddConnectionModal extends React.Component {
     };
 
     onCancel(visible) {
+        this.setState({
+            name: "",
+            host: "",
+            port: 6600,
+            password: ""
+        });
         this.props.onCancel();
     }
 
     addConnection() {
         this.props.addConnection(this.state.name, this.state.host, this.state.port, this.state.password);
+        this.setState({
+            name: "",
+            host: "",
+            port: 6600,
+            password: ""
+        });
     }
 
     render() {
