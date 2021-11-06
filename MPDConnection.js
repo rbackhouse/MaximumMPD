@@ -61,6 +61,7 @@ const SONGS_PREFIX = "songs: ";
 const COMMENT_PREFIX = "comment: ";
 const PERFORMER_PREFIX = "performer: ";
 const COMPOSER_PREFIX = "composer: ";
+const PLUGIN_PREFIX = "plugin: ";
 
 const INITIAL = 0;
 const WRITTEN = 1;
@@ -1949,7 +1950,9 @@ class MPDConnection {
 					output.name = line.substring(OUTPUTNAME_PREFIX.length);
 				} else if (line.indexOf(OUTPUTENABLED_PREFIX) === 0) {
 					output.enabled = line.substring(OUTPUTENABLED_PREFIX.length) === "1" ? true : false;
-				}
+				} else if (line.indexOf(PLUGIN_PREFIX)=== 0) {
+                    output.plugin = line.substring(PLUGIN_PREFIX.length);
+                }
 			});
 			return outputs;
 		};
