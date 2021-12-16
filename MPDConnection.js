@@ -62,6 +62,9 @@ const COMMENT_PREFIX = "comment: ";
 const PERFORMER_PREFIX = "performer: ";
 const COMPOSER_PREFIX = "composer: ";
 const PLUGIN_PREFIX = "plugin: ";
+const REPEAT_PREFIX = "repeat: ";
+const CONSUME_PREFIX = "consume: ";
+const STATE_PREFIX = "state: ";
 
 const INITIAL = 0;
 const WRITTEN = 1;
@@ -390,17 +393,17 @@ class MPDConnection {
         this.intervalId = setInterval(() => {
             if (this.isConnected) {
                 this.getStatus((status) => {
-                    this.repeatValue = status.repeat;
-                    this.consumeValue = status.consume;
                     let currentSongId = -1;
                     if (status.songid) {
                         currentSongId = parseInt(status.songid);
                     }
                     if (this.autoplaysong && this.autoplaysong.songid !== currentSongId) {
+                        AsyncStorage.removeItem('@MPD:'+this.name+'_'+this.port+'_autoplaysong');
                         status.reloadqueue = true;
-                        Promise.all([this.repeat((this.autoplaysong.repeat === '1') ? true : false), this.consume((this.autoplaysong.consume === '1') ? true : false)]);
                         const autoplaysongid = this.autoplaysong.songid;
                         let cmd = "command_list_begin\n";
+                        cmd += "repeat "+this.autoplaysong.repeat+"\n";
+                        cmd += "consume "+this.autoplaysong.consume+"\n";
                         if (this.autoplaysong.state !== "play") {
                             cmd += "stop\n";
                         }
@@ -408,13 +411,13 @@ class MPDConnection {
                         cmd += "command_list_end";                
                         this.createPromise(cmd)
                         .then(() => {
+                            this.autoplaysong = undefined;
                             console.log("delete songid "+ autoplaysongid);
                         })
                         .catch((err) => {
+                            this.autoplaysong = undefined;
                             console.log("failed to delete songid "+ autoplaysongid+" "+err);
                         });
-                        this.autoplaysong = undefined;
-                        AsyncStorage.removeItem('@MPD:'+this.name+'_'+this.port+'_autoplaysong');
                     }
                     mpdEventEmiiter.emit('OnStatus', status);
                 });
@@ -1271,37 +1274,62 @@ class MPDConnection {
         if (autoplay) {
             const processor = (data) => {
                 const lines = MPDConnection._lineSplit(data);
-                return parseInt(lines[0].substring(ID_PREFIX.length));
+                let result = {};
+                lines.forEach((line) => {
+                    if (line.indexOf(ID_PREFIX) === 0) {
+                        result.songid = parseInt(line.substring(ID_PREFIX.length));
+                    } else if (line.indexOf(REPEAT_PREFIX) === 0) {
+                        result.repeat = line.substring(REPEAT_PREFIX.length);
+                    } else if (line.indexOf(CONSUME_PREFIX) === 0) {
+                        result.consume = line.substring(CONSUME_PREFIX.length);
+                    } else if (line.indexOf(STATE_PREFIX) === 0) {
+                        result.state = line.substring(STATE_PREFIX.length);
+                    }
+                })
+                return result;
             };
+            let cmd = "command_list_begin\n";
+            let repeat;
+            let consume;
             if (this.autoplaysong) {
-                return Promise.reject("There is already a 'Play Now' song playing");
-            }
-            Promise.all([this.repeat(false), this.consume(false)]);
-            const promise = new Promise((resolve, reject) => {
-                let position = "";
-                if (this.currentstatus.playlistlength && parseInt(this.currentstatus.playlistlength) > 0 && this.currentstatus.song) {
-                    position = " "+this.currentstatus.song;
+                if (this.autoplaysong.state !== "play") {
+                    cmd += "stop\n";
                 }
-                const cmd = "addid \""+song+"\""+position;
-                console.log(cmd);
+                cmd += "deleteid "+this.autoplaysong.songid+"\n";
+                repeat = this.autoplaysong.repeat;
+                consume = this.autoplaysong.consume;
+            }
+            cmd += "status\n";
+            cmd += "repeat 0\n";
+            cmd += "consume 0\n";
+            let position = "";
+            if (this.currentstatus.playlistlength && parseInt(this.currentstatus.playlistlength) > 0 && this.currentstatus.song) {
+                position = " "+this.currentstatus.song;
+            }
+            cmd += "addid \""+song+"\""+position+"\n";
+            cmd += "command_list_end";
+
+            const promise = new Promise((resolve, reject) => {
                 this.createPromise(cmd, processor)
-                .then((songid) => {
+                .then((result) => {
+                    console.log(result);
                     this.autoplaysong = {
-                        songid: songid,
-                        state: this.currentstatus.state,
-                        repeat: this.repeatValue,
-                        consume: this.consumeValue
+                        songid: result.songid,
+                        state: result.state,
+                        repeat: repeat || result.repeat,
+                        consume: consume ||result.consume
                     };
-                    AsyncStorage.setItem('@MPD:'+this.name+'_'+this.port+'_autoplaysong', JSON.stringify(this.autoplaysong));
-                    const cmd = "playid "+songid;
-                    console.log(cmd);
-                    this.createPromise(cmd)
+                    const p1 = AsyncStorage.setItem('@MPD:'+this.name+'_'+this.port+'_autoplaysong', JSON.stringify(this.autoplaysong));
+                    const cmd = "playid "+result.songid;
+                    const p2 = this.createPromise(cmd);
+                    Promise.all([p1, p2])
                     .then(() => {
                         resolve();
                     });
                 })
                 .catch((err) => {
                     console.log(err);
+                    reject(err);
                 })
             });
             return promise;
