@@ -384,7 +384,9 @@ export default class ConnectionsScreen extends React.Component {
             "Are you sure you want to delete "+item.name+" ?",
             [
                 {text: 'OK', onPress: () => {
-                    MPDConnection.disconnect();
+                    if (MPDConnection.isConnected() && item.ipAddress === MPDConnection.current().host && item.port === MPDConnection.current().port) {
+                        MPDConnection.disconnect();
+                    }
                     MPDConnection.removeConnection(item)
                     .then(() => {
                         MPDConnection.getConnectionList()
