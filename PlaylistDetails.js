@@ -20,6 +20,7 @@ import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Appea
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
 import ActionButton from 'react-native-action-button';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
@@ -250,7 +251,7 @@ export default class PlaylistDetails extends React.Component {
         const styles = StyleManager.getStyles("playlistDetailsStyles");
         const common = StyleManager.getStyles("styles");
 
-        const pressModeIcon = "ios-more";
+        const pressModeIcon = "dots-three-horizontal";
         return (
             <TouchableOpacity onPress={this.onPress.bind(this, item, index)}>
                 <View style={common.container3}>
@@ -266,7 +267,7 @@ export default class PlaylistDetails extends React.Component {
                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>Time: {item.time}</Text>
                         }
                     </View>
-                    <Icon name={pressModeIcon} size={28} style={common.icon}/>
+                    <EntypoIcon name={pressModeIcon} size={28} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );

@@ -19,7 +19,8 @@ import React from 'react';
 import { View, Text, ActivityIndicator, TouchableOpacity, Alert, Image, Appearance } from 'react-native';
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
+
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 
@@ -277,7 +278,7 @@ export default class SearchScreen extends React.Component {
                                             {item.album && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.album}</Text>}
                                             {item.time && <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{item.time}</Text>}
                                         </View>
-                                        <Icon name="ios-swap" size={20} style={common.icon}/>
+                                        <Icon name="swap-horizontal" size={20} style={common.icon}/>
                                     </View>
                                 </SwipeRow>
                             );
@@ -296,7 +297,7 @@ export default class SearchScreen extends React.Component {
                                             {item.artist && <Text style={styles.item}>{item.artist}</Text>}
                                             {item.album && <Text style={styles.item}>{item.album}</Text>}
                                         </View>
-                                        <Icon name="ios-more" size={20} style={common.icon}/>
+                                        <EntypoIcon name="dots-three-horizontal" size={20} style={common.icon}/>                    
                                     </View>
                                 </TouchableOpacity>
                             );

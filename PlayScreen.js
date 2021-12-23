@@ -19,7 +19,7 @@ import React from 'react';
 import { Text, View, TouchableOpacity, Image, Alert, Platform, Linking, ActivityIndicator, Appearance, ActionSheetIOS } from 'react-native';
 import { Slider, ButtonGroup } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
-import IonIcon from 'react-native-vector-icons/Ionicons';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
 import HeaderButtons from 'react-navigation-header-buttons';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
@@ -560,7 +560,7 @@ export default class PlayScreen extends React.Component {
                             <TouchableOpacity
                              onPress={this.onMore}>
                                     <View style={[styles.button, styles.smallButton]}>
-                                        <IonIcon name="ios-more" size={20} color="#e6e6e6" style={styles.iconMore}/>
+                                        <EntypoIcon name="dots-three-horizontal" size={20} color="#e6e6e6" style={styles.iconMore}/>
                                     </View>
                             </TouchableOpacity>
                         </View>

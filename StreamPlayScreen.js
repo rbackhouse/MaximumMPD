@@ -20,6 +20,8 @@ import { Text, View, TouchableOpacity, Image, ActivityIndicator, Dimensions, Fla
 import { Slider, ButtonGroup } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
+
 import { StyleManager } from './Styles';
 import ActionButton from 'react-native-action-button';
 
@@ -354,7 +356,7 @@ export default class StreamPlayScreen extends React.Component {
                             <TouchableOpacity
                             onPress={this.onMore}>
                                     <View style={[styles.button, styles.smallButton]}>
-                                        <IonIcon name="ios-more" size={20} color="#e6e6e6" style={styles.iconMore}/>
+                                        <EntypoIcon name="dots-three-horizontal" size={20} color="#e6e6e6" style={styles.iconMore}/>
                                     </View>
                             </TouchableOpacity>
                         </View>

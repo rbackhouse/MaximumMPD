@@ -20,6 +20,7 @@ import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, 
 import { SearchBar, ButtonGroup } from "react-native-elements";
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import ActionButton from 'react-native-action-button';
@@ -65,7 +66,7 @@ class AlbumListItem extends React.PureComponent {
                         <Text style={styles.albumItem}>{item.name}</Text>
                         <Text style={styles.albumItem}>{item.artist}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} style={common.icon}/>
+                    <EntypoIcon name="dots-three-horizontal" size={20} style={common.icon}/>
                 </View>
             </TouchableOpacity>    
         );
@@ -137,7 +138,7 @@ class ArtistListItem extends React.PureComponent {
                 }} style={styles.itemContainer}>
                     <View style={styles.paddingLeft}/>
                     {item.imagePath === undefined &&
-                        <MaterialCommunityIcon name="artist" size={20} style={common.icon}/>
+                        <MaterialCommunityIcon name="account-music" size={20} style={common.icon}/>
                     }
                     {item.imagePath !== undefined &&
                         <Image style={styles.iconAlbumArt} source={{uri: item.imagePath}}/>
@@ -145,7 +146,7 @@ class ArtistListItem extends React.PureComponent {
                     <View style={styles.itemTextContainer}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} style={common.icon}/>
+                    <EntypoIcon name="dots-three-horizontal" size={20} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -184,7 +185,7 @@ class GenreListItem extends React.PureComponent {
                     <View style={styles.itemTextContainer}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
-                    <Icon name="ios-swap" size={20} style={common.icon}/>
+                    <Icon name="swap-horizontal" size={20} style={common.icon}/>
                 </View>
             </SwipeRow>
         );
@@ -650,7 +651,7 @@ export default class ArtistsScreen extends React.Component {
                 }} style={styles.itemContainer}>
                     <View style={styles.paddingLeft}/>
                     {item.imagePath === undefined &&
-                        <MaterialCommunityIcon name="artist" size={20} style={common.icon}/>
+                        <MaterialCommunityIcon name="account-music" size={20} style={common.icon}/>
                     }
                     {item.imagePath !== undefined &&
                         <Image style={styles.iconAlbumArt} source={{uri: item.imagePath}}/>
@@ -658,7 +659,7 @@ export default class ArtistsScreen extends React.Component {
                     <View style={styles.itemTextContainer}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} style={common.icon}/>
+                    <EntypoIcon name="dots-three-horizontal" size={20} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );
@@ -683,7 +684,7 @@ export default class ArtistsScreen extends React.Component {
                     <View style={styles.itemTextContainer}>
                         <Text style={styles.item}>{item.name}</Text>
                     </View>
-                    <Icon name="ios-swap" size={20} style={common.icon}/>
+                    <Icon name="swap-horizontal" size={20} style={common.icon}/>
                 </View>
             </SwipeRow>
         );
@@ -710,7 +711,7 @@ export default class ArtistsScreen extends React.Component {
                         <Text style={styles.albumItem}>{item.name}</Text>
                         <Text style={styles.albumItem}>{item.artist}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} style={common.icon}/>
+                    <EntypoIcon name="dots-three-horizontal" size={20} style={common.icon}/>                    
                 </View>
             </TouchableOpacity>
         );

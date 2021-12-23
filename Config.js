@@ -15,7 +15,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class ConfigStorage {
     async getConfig() {

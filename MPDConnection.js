@@ -19,7 +19,7 @@ import Base64 from './Base64';
 import EventEmitter from "react-native/Libraries/vendor/emitter/EventEmitter";
 
 import { NativeEventEmitter, NativeModules } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from './Config';
 
 const { SocketConnection } = NativeModules;

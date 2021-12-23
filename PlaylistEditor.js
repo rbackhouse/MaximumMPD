@@ -20,6 +20,7 @@ import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Image
 import { SearchBar, Input, Button } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
 import ActionButton from 'react-native-action-button';
 
 import MPDConnection from './MPDConnection';
@@ -238,7 +239,7 @@ export default class PlaylistEditor extends React.Component {
                     <View style={common.container4}>
                         <Text style={styles.item}>{item}</Text>
                     </View>
-                    <Icon name="ios-more" size={20} style={common.icon}/>
+                    <EntypoIcon name="dots-three-horizontal" size={20} style={common.icon}/>                    
                 </View>
             </TouchableOpacity>
         );

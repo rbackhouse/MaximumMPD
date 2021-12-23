@@ -20,6 +20,7 @@ import { Text, View, TouchableOpacity, ActivityIndicator, Alert, Appearance, Act
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
 import { HeaderBackButton } from 'react-navigation-stack';
 import { Button } from 'react-native-elements'
 import ActionButton from 'react-native-action-button';
@@ -476,7 +477,7 @@ export default class FilesScreen extends React.Component {
                                             }
                                             <Text numberOfLines={1} ellipsizeMode='middle' style={styles.file}>{file}</Text>
                                         </View>
-                                        <Icon name="ios-swap" size={20} style={common.icon}/>
+                                        <Icon name="swap-horizontal" size={20} style={common.icon}/>
                                     </View>
                                 </SwipeRow>
                             );
@@ -492,7 +493,7 @@ export default class FilesScreen extends React.Component {
                                         <View style={common.container4}>
                                             <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>{dir}</Text>
                                         </View>
-                                        <Icon name="ios-more" size={20} style={common.icon}/>
+                                        <EntypoIcon name="dots-three-horizontal" size={20} style={common.icon}/>
                                     </View>
                                 </TouchableOpacity>
                             );

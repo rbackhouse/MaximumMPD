@@ -15,7 +15,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import MPDConnection from './MPDConnection';
 import EventEmitter from "react-native/Libraries/vendor/emitter/EventEmitter";

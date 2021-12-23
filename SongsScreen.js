@@ -485,7 +485,7 @@ export default class SongsScreen extends React.Component {
                                         <Text numberOfLines={1} ellipsizeMode='tail' style={styles.item}>Comment: {item.comment}</Text>
                                     }
                                 </View>
-                                <Icon name="ios-swap" size={20} style={common.icon}/>
+                                <Icon name="swap-horizontal" size={20} style={common.icon}/>
                             </View>
                         </SwipeRow>
                     );}}

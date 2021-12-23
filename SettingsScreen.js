@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { View, Modal, Text, Alert, Linking, Appearance, NativeModules, ActionSheetIOS, Dimensions, Platform } from 'react-native';
-import {Picker} from '@react-native-community/picker';
+import {Picker} from '@react-native-picker/picker';
 import SettingsList from 'react-native-settings-list';
 import { Input, Button } from 'react-native-elements'
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';

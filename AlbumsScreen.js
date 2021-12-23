@@ -21,6 +21,7 @@ import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
 import ActionButton from 'react-native-action-button';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
@@ -378,7 +379,7 @@ export default class AlbumsScreen extends React.Component {
                     {item.date !== undefined &&
                         <Text style={styles.item}>({item.date})</Text>
                     }
-                    <Icon name="ios-more" size={20} style={common.icon}/>
+                    <EntypoIcon name="dots-three-horizontal" size={20} style={common.icon}/>
                 </View>
             </TouchableOpacity>
         );

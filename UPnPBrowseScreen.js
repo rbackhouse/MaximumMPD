@@ -20,6 +20,7 @@ import { Text, View, TouchableOpacity, ActivityIndicator, Alert, Image } from 'r
 import { SearchBar } from "react-native-elements";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
 import { HeaderBackButton } from 'react-navigation-stack';
 import ActionButton from 'react-native-action-button';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
@@ -207,7 +208,7 @@ export default class UPnPBrowseScreen extends React.Component {
                                                 <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>Track: {item.trackNumber}</Text>
                                             }
                                         </View>
-                                        <Icon name="ios-more" size={20} style={common.icon}/>
+                                        <EntypoIcon name="dots-three-horizontal" size={20} style={common.icon}/>                    
                                     </View>
                                 </TouchableOpacity>
                             );
@@ -241,7 +242,7 @@ export default class UPnPBrowseScreen extends React.Component {
                                                 <Text numberOfLines={1} ellipsizeMode='tail' style={styles.file}>Track: {item.trackNumber}</Text>
                                             }
                                         </View>
-                                        <Icon name="ios-swap" size={20} style={common.icon}/>
+                                        <Icon name="swap-horizontal" size={20} style={common.icon}/>
                                     </View>
                                 </SwipeRow>
                             );
