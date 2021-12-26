@@ -439,7 +439,7 @@ export default class PlaylistScreen extends React.Component {
                             <Text style={styles.item}>{audio}</Text>
                         }
                     </View>
-                    <Icon name="ios-checkmark" size={30} style={[{ display: selected}, common.icon]}/>
+                    <Icon name="ios-checkmark" size={20} style={[{ display: selected}, common.icon]}/>
                 </View>
             </TouchableOpacity>
         );
