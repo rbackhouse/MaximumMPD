@@ -1810,6 +1810,60 @@ class MPDConnection {
         return SocketConnection.writeAlbumArtFromURL(filename, url);
     }
 
+    albumartFromURLWithSearch(uri, port, artist, album, prefix, host) {
+        const filename = 'albumart_'+this.toAlbumArtFilename(artist, album)+".png";
+        let path = uri.substring(0, uri.lastIndexOf('/'))+"/";
+        const hostStr = host === undefined ? this.host : host;
+        let url = "http://"+hostStr+":"+port;
+        if (prefix && prefix !== "") {
+            url += prefix;
+        }
+        url += "/";
+
+        const promise = new Promise((resolve, reject) => {
+            const processor = (data) => {
+                const lines = MPDConnection._lineSplit(data);
+                let files = [];
+                lines.forEach((line) => {
+                    if (line.indexOf(FILE_PREFIX) === 0) {
+                        const file = line.substring(FILE_PREFIX.length).toLowerCase();
+                        files.push(file);
+                    }
+                });
+                return files;
+            };
+            this.createPromise("listfiles \""+this.decode(path)+"\"", processor)
+            .then((files) => {
+                let imageFile;
+                files.forEach((file) => {
+                    if (file === "cover.jpg" || file === "cover.png" || file === "folder.jpg" || file === "folder.png") {
+                        imageFile = file;
+                    }
+                });
+                if (imageFile) {
+                    url += encodeURI(path);
+                    url += imageFile;
+                    SocketConnection.writeAlbumArtFromURL(filename, url)
+                    .then(() => {
+                        resolve();
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        reject(err);        
+                    });
+                } else {
+                    console.log("No album art file found for ["+path+"]");
+                    reject("No album art file found for ["+path+"]");
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                reject(err);        
+            });
+        });
+        return promise;
+    }
+
     albumartFromUPnP(url, artist, album) {
         const filename = 'albumart_'+this.toAlbumArtFilename(artist, album)+".png";
         return SocketConnection.writeAlbumArtFromURL(filename, url);

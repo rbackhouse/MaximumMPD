@@ -322,7 +322,8 @@ export default class AlbumArtScreen extends React.Component {
         serverType: "MPD",
         missingVisible: false,
         upnpListVisible: false,
-        binarylimit: '8k'
+        binarylimit: '8k',
+        searchForImageFile: false
     };
 
     componentDidMount() {
@@ -403,7 +404,8 @@ export default class AlbumArtScreen extends React.Component {
                 host: host,
                 serverType: options.type,
                 upnpServer: options.upnp,
-                binarylimit: limit
+                binarylimit: limit,
+                searchForImageFile: options.http.searchForImageFile
             });
         });
     }
@@ -497,6 +499,11 @@ export default class AlbumArtScreen extends React.Component {
         }
     }
 
+    onSearchForImageFileChange(value) {
+        this.setState({searchForImageFile: value});
+        AlbumArt.setHTTPSearchForImageFile(value);
+    }
+
     setServerType(idx) {
         let type = this.state.serverType;
         switch (idx) {
@@ -575,7 +582,12 @@ export default class AlbumArtScreen extends React.Component {
         const queueText = "Queue : "+this.state.count;
         const statusText = "Status : "+this.state.status;
         const filename = this.state.filename === "" ? "cover.png" : this.state.filename;
-        const url = "http://"+this.state.host+":"+port+this.state.urlPrefix+"/[artist]/[album]/"+filename;
+        let url = "http://"+this.state.host+":"+port+this.state.urlPrefix+"/[MPD Album Path]/";
+        if (this.state.searchForImageFile) {
+            url += "[search result]";
+        } else {
+            url += filename;
+        }
         let showBinaryLimit = false;
         let serverTypes = ['MPD', 'HTTP', 'UPnP', 'Cancel'];
         let serverTypesCancelIdx = 3;
@@ -584,6 +596,7 @@ export default class AlbumArtScreen extends React.Component {
             serverTypesCancelIdx = 4;
             showBinaryLimit = this.state.serverType === "MPD" || this.state.serverType === "MPD Embedded";
         }
+        const showFilenamePrompt = !this.state.searchForImageFile;
         return (
             <View style={styles.container}>
                 <ScrollView style={styles.scrollview}>
@@ -654,6 +667,18 @@ export default class AlbumArtScreen extends React.Component {
                     </View>
                     }
                     {this.state.serverType === "HTTP" &&                    
+                    <View style={styles.container2}>
+                        <SettingsList backgroundColor={bgColor} underlayColor={bgColor} borderColor='#ffffff' defaultTitleStyle={styles.settingsItem} defaultItemSize={50}>
+                            <SettingsList.Item
+                                hasNavArrow={false}
+                                switchState={this.state.searchForImageFile}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onSearchForImageFileChange(value)}
+                                title='Search for Image File'/>
+                        </SettingsList>                        
+                    </View>
+                    }
+                    {showFilenamePrompt &&                    
                     <View style={styles.container1}>
                         <Input placeholder="Album Art Filename" 
                             label="Album Art Filename" 

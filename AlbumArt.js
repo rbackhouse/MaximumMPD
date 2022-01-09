@@ -95,7 +95,11 @@ async function getAlbumArt(album, options, loaderId) {
                     }
                 } else if (options.type === 'HTTP') {
                     const host = options.http.host === "" ? undefined : options.http.host;
-                    await MPDConnection.current().albumartFromURL(songs[0].file, options.http.port, album.artist, album.name, options.http.urlPrefix, options.http.fileName, host);
+                    if (options.http.searchForImageFile) {
+                        await MPDConnection.current().albumartFromURLWithSearch(songs[0].file, options.http.port, album.artist, album.name, options.http.urlPrefix, host);
+                    } else {
+                        await MPDConnection.current().albumartFromURL(songs[0].file, options.http.port, album.artist, album.name, options.http.urlPrefix, options.http.fileName, host);
+                    }
                 } else if (options.type === 'MPD Embedded') {
                     await MPDConnection.current().binarylimit(options.mpd.binarylimit);
                     await MPDConnection.current().readpicture(songs[0].file, album.artist, album.name, (offset, size) => {
@@ -377,7 +381,8 @@ class AlbumArtStorage {
                     host: "", 
                     port: 8080, 
                     urlPrefix: "", 
-                    fileName: ""
+                    fileName: "",
+                    searchForImageFile: false
                 },                 
                 upnp: {
                     name:"", 
@@ -397,7 +402,8 @@ class AlbumArtStorage {
                         host: options.host || "", 
                         port: options.port || 8080, 
                         urlPrefix: options.urlPrefix || "", 
-                        fileName: options.fileName || ""
+                        fileName: options.fileName || "",
+                        searchForImageFile: false
                     },                 
                     upnp: {
                         name: "", 
@@ -474,6 +480,13 @@ class AlbumArtStorage {
         let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
         let options = JSON.parse(optionsStr);
         options.mpd.binarylimit = binarylimit;
+        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify(options));
+    }
+
+    async setHTTPSearchForImageFile(value) {
+        let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
+        let options = JSON.parse(optionsStr);
+        options.http.searchForImageFile = value;
         AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify(options));
     }
 }
@@ -625,5 +638,8 @@ export default {
     },
     setBinaryLimit: (limit) => {
         albumArtStorage.setBinaryLimit(limit);
+    },
+    setHTTPSearchForImageFile: (value) => {
+        albumArtStorage.setHTTPSearchForImageFile(value);
     }
 }
