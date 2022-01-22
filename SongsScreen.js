@@ -121,7 +121,7 @@ export default class SongsScreen extends React.Component {
                 AlbumArt.getAlbumArt(songs[0].artist, album)
                 .then((path) => {
                     if (path) {
-                        this.setState({imagePath: "file://"+path});
+                        this.setState({imagePath: path});
                     }
                 });
             })

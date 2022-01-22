@@ -128,7 +128,7 @@ export default class PlayScreen extends React.Component {
                         AlbumArt.getAlbumArt(status.currentsong.artist, status.currentsong.album)
                         .then((path) => {
                             if (path) {
-                                this.setState({imagePath: "file://"+path, searchedForAlbumArt: true});
+                                this.setState({imagePath: path, searchedForAlbumArt: true});
                             } else {
                                 this.setState({searchedForAlbumArt: true});
                             }
@@ -266,7 +266,7 @@ export default class PlayScreen extends React.Component {
             AlbumArt.getAlbumArt(currentsong.artist, currentsong.album)
             .then((path) => {
                 if (path) {
-                    this.setState({imagePath: "file://"+path});
+                    this.setState({imagePath: path});
                 }
             });
         }

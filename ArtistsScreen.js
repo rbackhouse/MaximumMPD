@@ -264,12 +264,12 @@ export default class ArtistsScreen extends React.Component {
             (album) => {
                 let idx = this.state.fullset.findIndex((a) => {return a.name === album.artist});
                 if (idx !== -1 && this.state.fullset[idx].imagePath === undefined) {
-                    this.state.fullset[idx].imagePath = "file://"+album.path;
+                    this.state.fullset[idx].imagePath = album.path;
                     this.setState({artists: this.state.artists, fullset: this.state.fullset});
                 }
                 idx = this.state.albumsFullset.findIndex((a) => {return a.name === album.name && a.artist === album.artist});
                 if (idx !== -1) {
-                    this.state.albumsFullset[idx].imagePath = "file://"+album.path;
+                    this.state.albumsFullset[idx].imagePath = album.path;
                     this.setState({albums: this.subset(this.state.albumsFullset), albumsFullset: this.state.albumsFullset});
                 }
             }
@@ -311,7 +311,7 @@ export default class ArtistsScreen extends React.Component {
         .then((artMap) => {
             this.state.fullset.forEach((artist) => {
                 if (artMap[artist.name]) {
-                    artist.imagePath = "file://"+artMap[artist.name];
+                    artist.imagePath = artMap[artist.name];
                 }
             })
             this.setState({artists: this.state.artists, fullset: this.state.fullset});
@@ -347,7 +347,7 @@ export default class ArtistsScreen extends React.Component {
                 .then((artMap) => {
                     artists.forEach((artist) => {
                         if (artMap[artist.name]) {
-                            artist.imagePath = "file://"+artMap[artist.name];
+                            artist.imagePath = artMap[artist.name];
                         }
                     })
                     this.setState({artists: this.state.artists, fullset: this.state.fullset});

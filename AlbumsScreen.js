@@ -122,7 +122,7 @@ export default class AlbumsScreen extends React.Component {
             (album) => {
                 idx = this.state.fullset.findIndex((a) => {return a.name === album.name && a.artist === album.artist});
                 if (idx !== -1) {
-                    this.state.fullset[idx].imagePath = "file://"+album.path;
+                    this.state.fullset[idx].imagePath = album.path;
                     this.setState({albums: this.state.albums, fullset: this.state.fullset});
                 }
             }

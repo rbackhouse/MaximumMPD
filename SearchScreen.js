@@ -96,7 +96,7 @@ export default class SearchScreen extends React.Component {
                         AlbumArt.getAlbumArtForArtists()
                         .then((artistArt) => {
                             if (artistArt[artist.artist]) {
-                                artist.imagePath = "file://"+artistArt[artist.artist];
+                                artist.imagePath = artistArt[artist.artist];
                                 this.setState({artists: artists});
                             }
                         });
@@ -107,7 +107,7 @@ export default class SearchScreen extends React.Component {
                         AlbumArt.getAlbumArt(artist.artist, album.album)
                         .then((path) => {
                             if (path) {
-                                album.imagePath = "file://"+path;
+                                album.imagePath = path;
                                 this.setState({albums: albums});
                             }
                         });
@@ -125,7 +125,7 @@ export default class SearchScreen extends React.Component {
                         AlbumArt.getAlbumArt(artist.artist, album.album)
                         .then((path) => {
                             if (path) {
-                                song.imagePath = "file://"+path;
+                                song.imagePath = path;
                                 this.setState({songs: songs});
                             }
                         });

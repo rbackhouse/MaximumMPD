@@ -50,6 +50,7 @@ async function getAlbumArt(album, options, loaderId) {
         albumArtEventEmiiter.emit('OnAlbumArtStart', album);
         if (songs.length > 0) {
             const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
+            let urlPrefix = "file://";
             await albumArtStorage.updateState(key, STARTED);
             try {
                 if (options.type === "UPnP") {
@@ -117,9 +118,9 @@ async function getAlbumArt(album, options, loaderId) {
                         albumArtEventEmiiter.emit('OnAlbumArtStatus', {album: album, size: sizeInK, percentageDowloaded: percentageDowloaded});
                     });
                 }
-                albumArt[key] = album.path;
+                albumArt[key] = urlPrefix+album.path;
                 if (!artistArt[album.artist]) {
-                    artistArt[album.artist] = album.path;
+                    artistArt[album.artist] = urlPrefix+album.path;
                 }
                 albumArtEventEmiiter.emit('OnAlbumArtEnd', album);
                 await albumArtStorage.updateState(key, COMPLETE);
@@ -160,6 +161,7 @@ const loader = async (options, loaderId) => {
             const filename = 'albumart_'+key+".png";
             const full = MPDConnection.current().getAlbumArtDir()+'/'+filename;
             album.path = full;
+            let urlPrefix = "file://";
 
             let add = true;
 
@@ -177,9 +179,9 @@ const loader = async (options, loaderId) => {
             if (add) {
                 albums.push(album);
             } else {
-                albumArt[key] = full;
+                albumArt[key] = urlPrefix+full;
                 if (files.includes(filename) && !artistArt[album.artist]) {
-                    artistArt[album.artist] = full;
+                    artistArt[album.artist] = urlPrefix+full;
                 }
             }
         });
@@ -573,7 +575,7 @@ export default {
                     albums.forEach((album) => {
                         const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
                         if (albumArt[key]) {
-                            album.imagePath = "file://"+albumArt[key];
+                            album.imagePath = albumArt[key];
                         }
                     });
                 }
