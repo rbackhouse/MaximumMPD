@@ -479,7 +479,7 @@ export default class PlayScreen extends React.Component {
                               <Text style={styles.paddingRight}>{elapsed}</Text>
                                 <Slider
                                     value={time}
-                                    onValueChange={this.setPosition}
+                                    onSlidingComplete={this.setPosition}
                                     maximumValue={dur}
                                     step={1}
                                     style={styles.positionSlider}
