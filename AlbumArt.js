@@ -50,7 +50,8 @@ async function getAlbumArt(album, options, loaderId) {
         albumArtEventEmiiter.emit('OnAlbumArtStart', album);
         if (songs.length > 0) {
             const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
-            let urlPrefix = "file://";
+            let imageUrl = album.path;
+            let entryState = COMPLETE;
             await albumArtStorage.updateState(key, STARTED);
             try {
                 if (options.type === "UPnP") {
@@ -97,7 +98,12 @@ async function getAlbumArt(album, options, loaderId) {
                 } else if (options.type === 'HTTP') {
                     const host = options.http.host === "" ? undefined : options.http.host;
                     if (options.http.searchForImageFile) {
-                        await MPDConnection.current().albumartFromURLWithSearch(songs[0].file, options.http.port, album.artist, album.name, options.http.urlPrefix, host);
+                        const httpImageUrl = await MPDConnection.current().albumartFromURLWithSearch(songs[0].file, options.http.port, album.artist, album.name, options.http.urlPrefix, !options.http.useAsURL, host);
+                        album.path = MPDConnection.current().buildURLPrefix(options.http.port, options.http.urlPrefix, host)+httpImageUrl;
+                        imageUrl = album.path;
+                        if (options.http.useAsURL) {
+                            entryState = httpImageUrl;
+                        }
                     } else {
                         await MPDConnection.current().albumartFromURL(songs[0].file, options.http.port, album.artist, album.name, options.http.urlPrefix, options.http.fileName, host);
                     }
@@ -118,12 +124,12 @@ async function getAlbumArt(album, options, loaderId) {
                         albumArtEventEmiiter.emit('OnAlbumArtStatus', {album: album, size: sizeInK, percentageDowloaded: percentageDowloaded});
                     });
                 }
-                albumArt[key] = urlPrefix+album.path;
+                albumArt[key] = imageUrl;
                 if (!artistArt[album.artist]) {
-                    artistArt[album.artist] = urlPrefix+album.path;
+                    artistArt[album.artist] = imageUrl;
                 }
                 albumArtEventEmiiter.emit('OnAlbumArtEnd', album);
-                await albumArtStorage.updateState(key, COMPLETE);
+                await albumArtStorage.updateState(key, entryState);
                 resolve(!loaders[loaderId].stop);
             } catch (err) {
                 console.log(err);
@@ -160,16 +166,22 @@ const loader = async (options, loaderId) => {
             const key = MPDConnection.current().toAlbumArtFilename(album.artist, album.name);
             const filename = 'albumart_'+key+".png";
             const full = MPDConnection.current().getAlbumArtDir()+'/'+filename;
-            album.path = full;
             let urlPrefix = "file://";
-
+            album.path = urlPrefix+full;
+            let imageUrl = urlPrefix+full;
             let add = true;
 
             if (state[key]) {
                 if (state[key] === ERROR) {
                     return;
                 }
-                add = state[key] === STARTED;
+                if (typeof state[key] === 'string' || state[key] instanceof String) {
+                    add = false;
+                    const host = options.http.host === "" ? undefined : options.http.host;
+                    imageUrl = MPDConnection.current().buildURLPrefix(options.http.port, options.http.urlPrefix, host)+state[key];
+                } else {
+                    add = state[key] === STARTED;
+                }
             }
 
             if (files.includes(filename) && add) {
@@ -179,9 +191,9 @@ const loader = async (options, loaderId) => {
             if (add) {
                 albums.push(album);
             } else {
-                albumArt[key] = urlPrefix+full;
-                if (files.includes(filename) && !artistArt[album.artist]) {
-                    artistArt[album.artist] = urlPrefix+full;
+                albumArt[key] = imageUrl;
+                if (!artistArt[album.artist]) {
+                    artistArt[album.artist] = imageUrl;
                 }
             }
         });
@@ -384,7 +396,8 @@ class AlbumArtStorage {
                     port: 8080, 
                     urlPrefix: "", 
                     fileName: "",
-                    searchForImageFile: false
+                    searchForImageFile: false,
+                    useAsURL: false
                 },                 
                 upnp: {
                     name:"", 
@@ -405,7 +418,8 @@ class AlbumArtStorage {
                         port: options.port || 8080, 
                         urlPrefix: options.urlPrefix || "", 
                         fileName: options.fileName || "",
-                        searchForImageFile: false
+                        searchForImageFile: false,
+                        useAsURL: false
                     },                 
                     upnp: {
                         name: "", 
@@ -489,6 +503,13 @@ class AlbumArtStorage {
         let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
         let options = JSON.parse(optionsStr);
         options.http.searchForImageFile = value;
+        AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify(options));
+    }
+
+    async setHTTPUseAsURL(value) {
+        let optionsStr = await AsyncStorage.getItem('@MPD:albumart_options');
+        let options = JSON.parse(optionsStr);
+        options.http.useAsURL = value;
         AsyncStorage.setItem('@MPD:albumart_options', JSON.stringify(options));
     }
 }
@@ -643,5 +664,8 @@ export default {
     },
     setHTTPSearchForImageFile: (value) => {
         albumArtStorage.setHTTPSearchForImageFile(value);
+    },
+    setHTTPUseAsURL: (value) => {
+        albumArtStorage.setHTTPUseAsURL(value);
     }
 }

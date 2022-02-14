@@ -323,7 +323,8 @@ export default class AlbumArtScreen extends React.Component {
         missingVisible: false,
         upnpListVisible: false,
         binarylimit: '8k',
-        searchForImageFile: false
+        searchForImageFile: false,
+        useAsURL: false
     };
 
     componentDidMount() {
@@ -405,7 +406,8 @@ export default class AlbumArtScreen extends React.Component {
                 serverType: options.type,
                 upnpServer: options.upnp,
                 binarylimit: limit,
-                searchForImageFile: options.http.searchForImageFile
+                searchForImageFile: options.http.searchForImageFile,
+                useAsURL: options.http.useAsURL
             });
         });
     }
@@ -504,6 +506,11 @@ export default class AlbumArtScreen extends React.Component {
         AlbumArt.setHTTPSearchForImageFile(value);
     }
 
+    onUseAsURLChange(value) {
+        this.setState({useAsURL: value});
+        AlbumArt.setHTTPUseAsURL(value);
+    }
+
     setServerType(idx) {
         let type = this.state.serverType;
         switch (idx) {
@@ -596,7 +603,8 @@ export default class AlbumArtScreen extends React.Component {
             serverTypesCancelIdx = 4;
             showBinaryLimit = this.state.serverType === "MPD" || this.state.serverType === "MPD Embedded";
         }
-        const showFilenamePrompt = !this.state.searchForImageFile;
+        const showFilenamePrompt = this.state.serverType === "HTTP" && !this.state.searchForImageFile;
+        const showUseAsURL = this.state.serverType === "HTTP" && this.state.searchForImageFile;
         return (
             <View style={styles.container}>
                 <ScrollView style={styles.scrollview}>
@@ -675,6 +683,18 @@ export default class AlbumArtScreen extends React.Component {
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onSearchForImageFileChange(value)}
                                 title='Search for Image File'/>
+                        </SettingsList>                        
+                    </View>
+                    }
+                    {showUseAsURL &&                    
+                    <View style={styles.container2}>
+                        <SettingsList backgroundColor={bgColor} underlayColor={bgColor} borderColor='#ffffff' defaultTitleStyle={styles.settingsItem} defaultItemSize={50}>
+                            <SettingsList.Item
+                                hasNavArrow={false}
+                                switchState={this.state.useAsURL}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onUseAsURLChange(value)}
+                                title='Use as URL'/>
                         </SettingsList>                        
                     </View>
                     }

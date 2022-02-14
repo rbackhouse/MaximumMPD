@@ -1792,15 +1792,20 @@ class MPDConnection {
         return promise;
     }
     
+    buildURLPrefix(port, prefix, host) {
+        const hostStr = host === undefined ? this.host : host;
+        let urlPrefix = "http://"+hostStr+":"+port;
+        if (prefix && prefix !== "") {
+            urlPrefix += prefix;
+        }
+        urlPrefix += "/";
+        return urlPrefix;
+    }
+
     albumartFromURL(uri, port, artist, album, prefix, suffix, host) {
         const filename = 'albumart_'+this.toAlbumArtFilename(artist, album)+".png";
         let path = uri.substring(0, uri.lastIndexOf('/'))+"/";
-        const hostStr = host === undefined ? this.host : host;
-        let url = "http://"+hostStr+":"+port;
-        if (prefix && prefix !== "") {
-            url += prefix;
-        }
-        url += "/";
+        let url = this.buildURLPrefix(port, prefix, host);
         if (suffix && suffix !== "") {
             path += suffix;
         } else {
@@ -1810,15 +1815,10 @@ class MPDConnection {
         return SocketConnection.writeAlbumArtFromURL(filename, url);
     }
 
-    albumartFromURLWithSearch(uri, port, artist, album, prefix, host) {
+    albumartFromURLWithSearch(uri, port, artist, album, prefix, download, host) {
         const filename = 'albumart_'+this.toAlbumArtFilename(artist, album)+".png";
         let path = uri.substring(0, uri.lastIndexOf('/'))+"/";
-        const hostStr = host === undefined ? this.host : host;
-        let url = "http://"+hostStr+":"+port;
-        if (prefix && prefix !== "") {
-            url += prefix;
-        }
-        url += "/";
+        let url = this.buildURLPrefix(port, prefix, host);
 
         const promise = new Promise((resolve, reject) => {
             const processor = (data) => {
@@ -1841,16 +1841,21 @@ class MPDConnection {
                     }
                 });
                 if (imageFile) {
-                    url += encodeURI(path);
+                    let encodedPath = encodeURI(path);
+                    url += encodedPath;
                     url += imageFile;
-                    SocketConnection.writeAlbumArtFromURL(filename, url)
-                    .then(() => {
-                        resolve();
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                        reject(err);        
-                    });
+                    if (download) {
+                        SocketConnection.writeAlbumArtFromURL(filename, url)
+                        .then(() => {
+                            resolve(encodedPath+imageFile);
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            reject(err);        
+                        });
+                    } else {
+                        resolve(encodedPath+imageFile);
+                    }
                 } else {
                     console.log("No album art file found for ["+path+"]");
                     reject("No album art file found for ["+path+"]");
