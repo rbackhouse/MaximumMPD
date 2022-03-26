@@ -54,7 +54,37 @@ class AddConnectionModal extends React.Component {
     }
 
     addConnection() {
-        this.props.addConnection(this.state.name, this.state.host, this.state.port, this.state.password);
+        if (this.state.name === "") {
+            Alert.alert(
+                "Create Connection Error",
+                "Name must not be blank"
+            );
+            return;
+        }
+        if (this.state.host === "") {
+            Alert.alert(
+                "Create Connection Error",
+                "Host must not be blank"
+            );
+            return;
+        }
+        if (this.state.port === "") {
+            Alert.alert(
+                "Create Connection Error",
+                "Port must not be blank"
+            );
+            return;
+        }
+        let parsedPort = parseInt(this.state.port);
+        if (isNaN(parsedPort)) {
+            Alert.alert(
+                "Create Connection Error",
+                "Port value must be a number"
+            );
+            return;
+        }
+
+        this.props.addConnection(this.state.name, this.state.host, parsedPort, this.state.password);
         this.setState({
             name: "",
             host: "",
@@ -299,47 +329,17 @@ export default class ConnectionsScreen extends React.Component {
     }
 
     addConnection = (name, host, port, password) => {
-        if (name === "") {
-            Alert.alert(
-                "Create Connection Error",
-                "Name must not be blank"
-            );
-            return;
-        }
-        if (host === "") {
-            Alert.alert(
-                "Create Connection Error",
-                "Host must not be blank"
-            );
-            return;
-        }
-        if (port === "") {
-            Alert.alert(
-                "Create Connection Error",
-                "Port must not be blank"
-            );
-            return;
-        }
-
-        let parsedPort = parseInt(port);
-        if (isNaN(parsedPort)) {
-            Alert.alert(
-                "Create Connection Error",
-                "Port value must be a number"
-            );
-        } else {
-            MPDConnection.addConnection(name, host, parsedPort, password, false, 0)
-                .then(() => {
-                    MPDConnection.getConnectionList()
-                        .then((connections) => {
-                            connections.forEach((c) => {
-                                c.key = c.name+c.ipAddress+c.port;
-                            })
-                            this.setState({configured: connections});
-                            this.onCancel();
-                        });
-                });
-        }
+        MPDConnection.addConnection(name, host, port, password, false, 0)
+            .then(() => {
+                MPDConnection.getConnectionList()
+                    .then((connections) => {
+                        connections.forEach((c) => {
+                            c.key = c.name+c.ipAddress+c.port;
+                        })
+                        this.setState({configured: connections});
+                        this.onCancel();
+                    });
+            });
     };
 
     onRowDidOpen() {
