@@ -80,16 +80,22 @@ export default class SearchScreen extends React.Component {
     }
 
     search = (text) => {
+        let checkDate = false;
+        let max = 49;
+        if (Number(text) !== NaN && text.length === 4) {
+            checkDate = true;
+            max = 999;
+        }
         this.setState({searchValue: text});
         let artists = [], albums = [], songs = [], artistCheck = [], albumCheck = [];
         if (text.length > 2) {
             this.setState({loading: true});
-            MPDConnection.current().search(text.toLowerCase(), 0, 49)
+            MPDConnection.current().search(text.toLowerCase(), 0, max)
             .then((results) => {
                 this.setState({loading: false});
                 results.forEach((result) => {
                     let artist = {artist: result.artist, key: result.artist, traverse: true};
-                    let album = {album: result.album, key: result.album, artist: result.artist, traverse: true};
+                    let album = {album: result.album, key: result.album, artist: result.artist, traverse: true, date: result.date};
                     if (result.artist && !artistCheck.includes(result.artist) && artist.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
                         artists.push(artist);
                         artistCheck.push(result.artist);
@@ -127,6 +133,17 @@ export default class SearchScreen extends React.Component {
                             if (path) {
                                 song.imagePath = path;
                                 this.setState({songs: songs});
+                            }
+                        });
+                    }
+                    if (checkDate && result.date && result.date === text && result.album && !albumCheck.includes(result.album)) {
+                        albums.push(album);
+                        albumCheck.push(result.album);
+                        AlbumArt.getAlbumArt(artist.artist, album.album)
+                        .then((path) => {
+                            if (path) {
+                                album.imagePath = path;
+                                this.setState({albums: albums});
                             }
                         });
                     }
@@ -296,6 +313,7 @@ export default class SearchScreen extends React.Component {
                                         <View style={common.container4}>
                                             {item.artist && <Text style={styles.item}>{item.artist}</Text>}
                                             {item.album && <Text style={styles.item}>{item.album}</Text>}
+                                            {item.date && <Text style={styles.item}>Date: {item.date}</Text>}
                                         </View>
                                         <EntypoIcon name="dots-three-horizontal" size={20} style={common.icon}/>                    
                                     </View>

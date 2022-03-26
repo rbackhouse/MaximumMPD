@@ -482,6 +482,8 @@ class MPDConnection {
 					song.time = MPDConnection._convertTime(line.substring(TIME_PREFIX.length));
 				} else if (line.indexOf(DURATION_PREFIX) === 0) {
 					song.duration = MPDConnection._convertTime(line.substring(DURATION_PREFIX.length));
+				} else if (line.indexOf(DATE_PREFIX) === 0) {
+					song.date = line.substring(DATE_PREFIX.length);
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
 					song = {};
 					songs.push(song);
