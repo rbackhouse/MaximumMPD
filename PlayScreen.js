@@ -510,7 +510,7 @@ export default class PlayScreen extends React.Component {
                                 </TouchableOpacity>
                                 <Slider
                                     value={this.state.volume}
-                                    onValueChange={this.setVolume}
+                                    onSlidingComplete={this.setVolume}
                                     maximumValue={100}
                                     step={1}
                                     style={styles.volumeSlider}
