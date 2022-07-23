@@ -99,15 +99,11 @@ export default class PlayScreen extends React.Component {
         this.onStatus = MPDConnection.getEventEmitter().addListener(
             "OnStatus",
             (status) => {
-                let currenttitle = "";
-
-                if (this.state.status) {
-                    currenttitle = this.state.status.currentsong.name !== undefined ? this.state.status.currentsong.name : this.state.status.currentsong.title;
-                } else {
-                    let volume = parseInt(status.volume);
-                    if (isNaN(volume)) {
-                        volume = 0;
-                    }
+                let volume = parseInt(status.volume);
+                if (isNaN(volume)) {
+                    volume = 0;
+                }
+                if (volume !== this.state.volume) {
                     this.setState({volume:volume});
                     Config.isUseDeviceVolume()
                     .then((useDeviceVolume) => {
@@ -115,6 +111,12 @@ export default class PlayScreen extends React.Component {
                             VolumeControl.setVolume(volume/100);
                         }
                     });
+                }
+
+                let currenttitle = "";
+
+                if (this.state.status) {
+                    currenttitle = this.state.status.currentsong.name !== undefined ? this.state.status.currentsong.name : this.state.status.currentsong.title;
                 }
                 this.setState({status: status, isPlaying: status.state === "play"});
                 //this.setState({status: status, volume: parseInt(status.volume), isPlaying: status.state === "play"});
