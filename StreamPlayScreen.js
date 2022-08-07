@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { Text, View, TouchableOpacity, Image, ActivityIndicator, Dimensions, FlatList, Alert } from 'react-native';
-import { Slider, ButtonGroup } from 'react-native-elements'
+import { Slider, ButtonGroup } from "@rneui/themed";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';

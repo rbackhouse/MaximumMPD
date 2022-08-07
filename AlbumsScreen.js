@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions, Appearance, ActionSheetIOS, Platform } from 'react-native';
-import { SearchBar } from "react-native-elements";
+import { SearchBar } from "@rneui/themed";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';

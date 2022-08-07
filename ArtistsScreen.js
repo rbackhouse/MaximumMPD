@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { Text, View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions, Appearance, ActionSheetIOS, Platform } from 'react-native';
-import { SearchBar, ButtonGroup } from "react-native-elements";
+import { SearchBar, ButtonGroup } from "@rneui/themed";
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';

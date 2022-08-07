@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Image, Modal } from 'react-native';
-import { SearchBar, Input, Button } from "react-native-elements";
+import { SearchBar, Input, Button } from "@rneui/themed";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 import EntypoIcon from 'react-native-vector-icons/Entypo';

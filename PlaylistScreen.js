@@ -18,7 +18,7 @@
 import React from 'react';
 import { Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Modal, ActionSheetIOS, Dimensions, Platform } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import { Input, Button } from 'react-native-elements'
+import { Input, Button } from "@rneui/themed";
 
 import ActionButton from 'react-native-action-button';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';

@@ -29,7 +29,7 @@ import MPDConnection from './MPDConnection';
 import UPnPManager from './UPnPManager';
 import IonIcon  from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Input, Button } from 'react-native-elements'
+import { Input, Button } from '@rneui/themed'
 import ActionButton from 'react-native-action-button';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Config from './Config';

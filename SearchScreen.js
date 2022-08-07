@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { View, Text, ActivityIndicator, TouchableOpacity, Alert, Image, Appearance } from 'react-native';
-import { SearchBar } from "react-native-elements";
+import { SearchBar } from "@rneui/themed";
 import Icon from 'react-native-vector-icons/Ionicons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 

@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { Text, View, TouchableOpacity, ActivityIndicator, Alert, Image, Appearance } from 'react-native';
-import { SearchBar } from "react-native-elements";
+import { SearchBar } from "@rneui/themed";
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
@@ -416,7 +416,6 @@ export default class SongsScreen extends React.Component {
                 <View style={common.container2}>
                     <View style={common.flex75}>
                         <SearchBar
-                            clearIcon
                             lightTheme
                             round
                             platform="ios"

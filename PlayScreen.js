@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { Text, View, TouchableOpacity, Image, Alert, Platform, Linking, ActivityIndicator, Appearance, ActionSheetIOS } from 'react-native';
-import { Slider, ButtonGroup } from 'react-native-elements'
+import { Slider, ButtonGroup } from "@rneui/themed";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import HeaderButtons from 'react-navigation-header-buttons';
@@ -65,6 +65,7 @@ export default class PlayScreen extends React.Component {
         this.state = {
             isPlaying: false,
             volume: 0,
+            volumeSlide: false,
             postion: 0,
             status: undefined,
             selectedTab: 0,
@@ -103,7 +104,7 @@ export default class PlayScreen extends React.Component {
                 if (isNaN(volume)) {
                     volume = 0;
                 }
-                if (volume !== this.state.volume) {
+                if (volume !== this.state.volume && !this.state.volumeSlide) {
                     this.setState({volume:volume});
                     Config.isUseDeviceVolume()
                     .then((useDeviceVolume) => {
@@ -300,6 +301,10 @@ export default class PlayScreen extends React.Component {
 
     setVolume = (value) => {
         this.setState({volume:value});
+        setTimeout(() => {
+            this.setState({volumeSlide:false});    
+        }, 500)
+
         Config.isUseDeviceVolume()
         .then((useDeviceVolume) => {
             if (useDeviceVolume) {
@@ -308,6 +313,10 @@ export default class PlayScreen extends React.Component {
         });
         MPDConnection.current().setVolume(value);
     };
+
+    startVolumeSlide = () => {
+        this.setState({volumeSlide:true});    
+    }
 
     setPosition = (value) => {
         MPDConnection.current().seekCurrrent(value);
@@ -486,6 +495,7 @@ export default class PlayScreen extends React.Component {
                                     step={1}
                                     style={styles.positionSlider}
                                     thumbTintColor="#3396FF"
+                                    thumbStyle={{ height: 25, width: 25 }}
                                 />
                                 <Text style={styles.paddingLeft}>{duration}</Text>
                             </View>
@@ -512,11 +522,13 @@ export default class PlayScreen extends React.Component {
                                 </TouchableOpacity>
                                 <Slider
                                     value={this.state.volume}
+                                    onSlidingStart={this.startVolumeSlide}
                                     onSlidingComplete={this.setVolume}
                                     maximumValue={100}
                                     step={1}
                                     style={styles.volumeSlider}
                                     thumbTintColor="#3396FF"
+                                    thumbStyle={{ height: 25, width: 25 }}
                                 />
                                 <TouchableOpacity
                                     onPress={this.onMax.bind(this)}>

@@ -17,12 +17,11 @@
 
 import React from 'react';
 import { Text, View, TouchableOpacity, ActivityIndicator, Alert, Appearance, ActionSheetIOS, Platform } from 'react-native';
-import { SearchBar } from "react-native-elements";
+import { SearchBar } from "@rneui/themed";
 import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import { HeaderBackButton } from 'react-navigation-stack';
-import { Button } from 'react-native-elements'
 import ActionButton from 'react-native-action-button';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
