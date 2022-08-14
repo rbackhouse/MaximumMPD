@@ -31,7 +31,7 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
     if ([keyPath isEqual:@"outputVolume"] && self.listening == YES) {
       float newVolume = [self.audioSession outputVolume];
-      NSLog(@"newVolume  %f", newVolume);
+      //NSLog(@"newVolume  %f", newVolume);
       [self sendEventWithName:@"OnVolumeChange" body:@{@"volume": [NSNumber numberWithFloat: newVolume]}];
     }
 }
@@ -89,7 +89,7 @@ RCT_EXPORT_METHOD(setVolume:(float)volume) {
     [self start];
   }
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-    NSLog(@"setVolume  %f", volume);
+    //NSLog(@"setVolume  %f", volume);
     self.volumeViewSlider.value = volume;
   });
 }
