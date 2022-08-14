@@ -117,12 +117,12 @@ export default class PlayScreen extends React.Component {
                 let currenttitle = "";
 
                 if (this.state.status) {
-                    currenttitle = this.state.status.currentsong.name !== undefined ? this.state.status.currentsong.name : this.state.status.currentsong.title;
+                    currenttitle = this.state.status.currentsong.title !== undefined ? this.state.status.currentsong.title : this.state.status.currentsong.name;
                 }
                 this.setState({status: status, isPlaying: status.state === "play"});
                 //this.setState({status: status, volume: parseInt(status.volume), isPlaying: status.state === "play"});
                 if (status.song) {
-                    const title = status.currentsong.name !== undefined ? status.currentsong.name : status.currentsong.title;
+                    const title = status.currentsong.title !== undefined ? status.currentsong.title : status.currentsong.name;
                     if (currenttitle !== title) {
                         this.setState({imagePath: '', searchedForAlbumArt: false});
                     }
@@ -172,7 +172,7 @@ export default class PlayScreen extends React.Component {
             payload => {
                 //MPDConnection.current().stopEmittingStatus();
                 this.setState({isVisible: false});
-                MPDConnection.current().startEmittingStatus(30000);
+                MPDConnection.current().startEmittingStatus(5000);
             }
         );
         this.didFocusSubscription = this.props.navigation.addListener(
@@ -208,8 +208,10 @@ export default class PlayScreen extends React.Component {
                 .then((useDeviceVolume) => {
                     if (useDeviceVolume) {
                         const newVolume = Math.round(result.volume*100);
-                        this.setState({volume:newVolume});
-                        MPDConnection.current().setVolume(newVolume);
+                        if (newVolume !== this.state.volume && !this.state.volumeSlide) {
+                            this.setState({volume:newVolume});
+                            MPDConnection.current().setVolume(newVolume);
+                        }
                     }
                 });
             }
@@ -467,7 +469,7 @@ export default class PlayScreen extends React.Component {
           bg = .13;
       }
       const albumArtSize = Math.round((height/10) * 4) - padding;
-      const title = currentsong.name !== undefined ? currentsong.name : currentsong.title
+      const title = currentsong.title !== undefined ? currentsong.title : currentsong.name
 
       if (this.state.selectedTab === 0) {
           return (
