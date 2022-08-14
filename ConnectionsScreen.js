@@ -462,6 +462,9 @@ export default class ConnectionsScreen extends React.Component {
                                     {item.port &&
                                         <Text style={styles.item}>{item.port}</Text>
                                     }
+                                    {item.version &&
+                                        <Text style={styles.item}>Version 0.{item.version}</Text>
+                                    }
                                     {stats &&
                                         <Text style={styles.item}>{stats}</Text>
                                     }
