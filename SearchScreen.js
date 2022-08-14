@@ -305,7 +305,7 @@ export default class SearchScreen extends React.Component {
                                     <View style={styles.container7}>
                                         <View style={styles.paddingLeft}/>
                                         {item.imagePath === undefined &&
-                                            <MaterialCommunityIcon name="artist" size={20} style={common.icon}/>
+                                            <MaterialCommunityIcon name="account-music" size={20} style={common.icon}/>
                                         }
                                         {item.imagePath !== undefined &&
                                             <Image style={styles.albumart} source={{uri: item.imagePath}}/>
