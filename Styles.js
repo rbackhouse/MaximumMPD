@@ -355,7 +355,7 @@ var connectionsStyles = {
         borderColor: '#e3e5e5',
         borderWidth: 1
     },
-    dialog1: {marginTop: 22, flex: .8, flexDirection: 'column', justifyContent: 'space-around', backgroundColor: bgColor},
+    dialog1: {marginTop: 22, flex: .9, flexDirection: 'column', justifyContent: 'space-around', backgroundColor: bgColor},
     dialog2: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor},
     dialog3: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: bgColor },
     dialogtext: { fontSize: 20, fontFamily: 'GillSans-Italic', color: textColor}
