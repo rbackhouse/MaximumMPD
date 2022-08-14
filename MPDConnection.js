@@ -95,6 +95,7 @@ class Discoverer {
                                 discovered.ipAddress === connection.host &&
                                 discovered.port === connection.port) {
                                 discovered.stats = connection.stats;
+                                discovered.version = connection.version+"."+connection.minorVersion;
                             }
                         }
                         this.discovered[discovered.name] = discovered;
@@ -130,6 +131,7 @@ class Discoverer {
                     c.ipAddress === connection.host &&
                     c.port === connection.port) {
                     c.stats = connection.stats;
+                    c.version = connection.version+"."+connection.minorVersion;
                 }
             });
         }
@@ -168,7 +170,7 @@ class MPDConnection {
                             callback(err);
                         });
                     }
-                    this.startEmittingStatus(30000);
+                    this.startEmittingStatus(5000);
                     if (!noemit) {
                         mpdEventEmiiter.emit('OnConnect', {host: this.host, port: this.port});
                         console.log("Connected");
@@ -265,8 +267,8 @@ class MPDConnection {
                 let split = versionString.split(".");
                 this.version = parseInt(split[1]);
                 this.minorVersion = parseInt(split[2]);
-                /*
                 console.log("version: "+this.version+" minorVersion: "+this.minorVersion);
+                /*
                 if (this.version < 21 && this.minorVersion === 0) {
                     console.log("old protocol");
                 } else {
@@ -1336,7 +1338,38 @@ class MPDConnection {
             });
             return promise;
         } else {
-            return this.createPromise("add \""+song+"\"");
+            if (this.version > 22 && this.currentstatus.random === "1") {
+                const processor = (data) => {
+                    const lines = MPDConnection._lineSplit(data);
+                    let result = 0;
+                    lines.forEach((line) => {
+                        if (line.indexOf(ID_PREFIX) === 0) {
+                            result = parseInt(line.substring(ID_PREFIX.length));
+                        }
+                    })
+                    return result;
+                };
+                const promise = new Promise((resolve, reject) => {
+                    this.createPromise("addid \""+song+"\"", processor)
+                    .then((result) => {
+                        this.createPromise("prioid 255 "+result)
+                        .then(() => {
+                            resolve();
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            reject(err);
+                        })        
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        reject(err);
+                    })    
+                });
+                return promise;
+            } else {
+                return this.createPromise("add \""+song+"\"");
+            }
         }
 	}
 
@@ -1859,7 +1892,7 @@ class MPDConnection {
                         resolve(encodedPath+imageFile);
                     }
                 } else {
-                    console.log("No album art file found for ["+path+"]");
+                    ("No album art file found for ["+path+"]");
                     reject("No album art file found for ["+path+"]");
                 }
             })
