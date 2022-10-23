@@ -587,18 +587,7 @@ export default class ArtistsScreen extends React.Component {
         if (rowMap[item.key]) {
 			rowMap[item.key].closeRow();
 		}
-        const albumNames = this.state.genreMap[item.name];
-
-        let albums = [];
-        albumNames.forEach((albumName) => {
-            let artist;
-            this.state.albumsFullset.forEach((album) => {
-                if (album.name === albumName) {
-                    artist = album.artist;
-                }
-            })
-            albums.push({name: albumName, artist: artist});
-        });
+        const albums = this.state.genreMap[item.name];
 
         const { navigation } = this.props;
         navigation.navigate('Albums', {albums: albums, genre: item.name});
