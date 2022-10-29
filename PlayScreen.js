@@ -469,7 +469,16 @@ export default class PlayScreen extends React.Component {
           bg = .13;
       }
       const albumArtSize = Math.round((height/10) * 4) - padding;
-      const title = currentsong.title !== undefined ? currentsong.title : currentsong.name
+
+      let title = currentsong.title !== undefined ? currentsong.title : currentsong.name;
+      if (currentsong.file && (currentsong.file.match("^http://") || currentsong.file.match("^https://"))) {
+        if (currentsong.name !== undefined) {
+            currentsong.album = currentsong.name;
+        }
+        if (currentsong.title !== undefined) {
+            title = currentsong.title;
+        }
+      }
 
       if (this.state.selectedTab === 0) {
           return (
