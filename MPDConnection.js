@@ -2216,7 +2216,11 @@ class MPDConnection {
 			});
 			return genres;
 		};
-        return this.createPromise("list genre group album group albumartist", processor);
+        let cmd = "list genre group album";
+        if (this.version > 22) {
+            cmd += " group albumartist";
+        }
+        return this.createPromise(cmd, processor);
     }
 
     getSongsForGenre(genre) {
