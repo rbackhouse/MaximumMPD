@@ -515,7 +515,7 @@ class MPDConnection {
 			let artists = [];
             let seen = {};
             lines.forEach((line) => {
-				let name = line.substring(ARTIST_PREFIX.length);
+				let name = line.substring(ALBUMARTIST_PREFIX.length);
                 const artist = {name: name};
 				if (name && name.trim().length > 0 && !seen[name]) {
                     seen[name] = true;
@@ -551,7 +551,7 @@ class MPDConnection {
 			});
 			return artists;
 		};
-        return this.createPromise("list artist", processor);
+        return this.createPromise("list albumartist", processor);
 	}
 
 	getAllAlbums(useAlbumArtist, sortByArtist) {
@@ -809,7 +809,7 @@ class MPDConnection {
 			});
 			return albums;
 		};
-        let cmd = "list album artist \""+artist+"\"";
+        let cmd = "list album albumartist \""+artist+"\"";
         if (sortAlbumsByDate) {
             cmd += " group date";
         }
@@ -2099,14 +2099,14 @@ class MPDConnection {
         return this.createPromise("repeat "+state);
 	}
 
-	consume(on) {
-		var state = (on === true) ? 1 : 0;
-        return this.createPromise("consume "+state);
+	consume(value) {
+        console.log("consume = "+value);
+        return this.createPromise("consume "+value);
 	}
 
-	single(on) {
-		var state = (on === true) ? 1 : 0;
-        return this.createPromise("single "+state);
+	single(value) {
+        console.log("single = "+value);
+        return this.createPromise("single "+value);
 	}
 
 	crossfade(seconds) {
