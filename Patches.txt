@@ -3,3 +3,13 @@ Patches applied
 https://github.com/mastermoo/react-native-action-button/pull/340/files
 
 Apply in xcode and build
+
+https://github.com/software-mansion/react-native-reanimated/issues/3242
+
+Add a section to the file <project_folder>/android/build.gradle
+
+subprojects { subproject ->
+        if(project['name'] == 'react-native-reanimated'){
+            project.configurations { compile { } }
+        }
+}
