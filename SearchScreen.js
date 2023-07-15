@@ -38,6 +38,7 @@ export default class SearchScreen extends React.Component {
 
     constructor(props) {
         super(props);
+        this.typingTimeout = null;
         this.state = {
           searchValue: "",
           artists: [],
@@ -89,79 +90,82 @@ export default class SearchScreen extends React.Component {
         this.setState({searchValue: text});
         let artists = [], albums = [], songs = [], artistCheck = [], albumCheck = [];
         if (text.length > 2) {
-            this.setState({loading: true});
-            MPDConnection.current().search(text.toLowerCase(), 0, max)
-            .then((results) => {
-                this.setState({loading: false});
-                results.forEach((result) => {
-                    let artist = {artist: result.artist, key: result.artist, traverse: true};
-                    let album = {album: result.album, key: result.album, artist: result.artist, traverse: true, date: result.date};
-                    if (result.artist && !artistCheck.includes(result.artist) && artist.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
-                        artists.push(artist);
-                        artistCheck.push(result.artist);
-                        AlbumArt.getAlbumArtForArtists()
-                        .then((artistArt) => {
-                            if (artistArt[artist.artist]) {
-                                artist.imagePath = artistArt[artist.artist];
-                                this.setState({artists: artists});
-                            }
-                        });
-                    }
-                    if (result.album && !albumCheck.includes(result.album) && album.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
-                        albums.push(album);
-                        albumCheck.push(result.album);
-                        AlbumArt.getAlbumArt(artist.artist, album.album)
-                        .then((path) => {
-                            if (path) {
-                                album.imagePath = path;
-                                this.setState({albums: albums});
-                            }
-                        });
-                    }
-                    if (result.title && result.title.toLowerCase().indexOf(text.toLowerCase()) > -1) {
-                        let song = {
-                            title: result.title,
-                            time: result.time,
-                            key: result.b64file,
-                            artist: result.artist,
-                            album: result.album,
-                            b64file: result.b64file
+            clearTimeout(this.typingTimeout);
+            this.typingTimeout = setTimeout(() => {
+                this.setState({loading: true});
+                MPDConnection.current().search(text.toLowerCase(), 0, max)
+                .then((results) => {
+                    this.setState({loading: false});
+                    results.forEach((result) => {
+                        let artist = {artist: result.artist, key: result.artist, traverse: true};
+                        let album = {album: result.album, key: result.album, artist: result.artist, traverse: true, date: result.date};
+                        if (result.artist && !artistCheck.includes(result.artist) && artist.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
+                            artists.push(artist);
+                            artistCheck.push(result.artist);
+                            AlbumArt.getAlbumArtForArtists()
+                            .then((artistArt) => {
+                                if (artistArt[artist.artist]) {
+                                    artist.imagePath = artistArt[artist.artist];
+                                    this.setState({artists: artists});
+                                }
+                            });
                         }
-                        songs.push(song);
-                        AlbumArt.getAlbumArt(artist.artist, album.album)
-                        .then((path) => {
-                            if (path) {
-                                song.imagePath = path;
-                                this.setState({songs: songs});
+                        if (result.album && !albumCheck.includes(result.album) && album.key.toLowerCase().indexOf(text.toLowerCase()) > -1) {
+                            albums.push(album);
+                            albumCheck.push(result.album);
+                            AlbumArt.getAlbumArt(artist.artist, album.album)
+                            .then((path) => {
+                                if (path) {
+                                    album.imagePath = path;
+                                    this.setState({albums: albums});
+                                }
+                            });
+                        }
+                        if (result.title && result.title.toLowerCase().indexOf(text.toLowerCase()) > -1) {
+                            let song = {
+                                title: result.title,
+                                time: result.time,
+                                key: result.b64file,
+                                artist: result.artist,
+                                album: result.album,
+                                b64file: result.b64file
                             }
-                        });
-                    }
-                    if (checkDate && result.date && result.date === text && result.album && !albumCheck.includes(result.album)) {
-                        albums.push(album);
-                        albumCheck.push(result.album);
-                        AlbumArt.getAlbumArt(artist.artist, album.album)
-                        .then((path) => {
-                            if (path) {
-                                album.imagePath = path;
-                                this.setState({albums: albums});
-                            }
-                        });
-                    }
+                            songs.push(song);
+                            AlbumArt.getAlbumArt(artist.artist, album.album)
+                            .then((path) => {
+                                if (path) {
+                                    song.imagePath = path;
+                                    this.setState({songs: songs});
+                                }
+                            });
+                        }
+                        if (checkDate && result.date && result.date === text && result.album && !albumCheck.includes(result.album)) {
+                            albums.push(album);
+                            albumCheck.push(result.album);
+                            AlbumArt.getAlbumArt(artist.artist, album.album)
+                            .then((path) => {
+                                if (path) {
+                                    album.imagePath = path;
+                                    this.setState({albums: albums});
+                                }
+                            });
+                        }
+                    });
+                    this.setState({
+                        artists: artists,
+                        albums: albums,
+                        songs: songs
+                    });
+                })
+                .catch((err) => {
+                    this.setState({loading: false});
+                    console.log(err);
+                    Alert.alert(
+                        "MPD Error",
+                        "Error : "+err
+                    );
                 });
-                this.setState({
-                    artists: artists,
-                    albums: albums,
-                    songs: songs
-                });
-            })
-            .catch((err) => {
-                this.setState({loading: false});
-                console.log(err);
-                Alert.alert(
-                    "MPD Error",
-                    "Error : "+err
-                );
-            });
+            }, 750);
         } else {
             let state = {
                 artists: artists,

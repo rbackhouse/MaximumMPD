@@ -500,11 +500,20 @@ class MPDConnection {
                     song.duration = undefined;
                 }
             });
+            songs.sort((a,b) => {
+                if (a.title.toLowerCase() === filter) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            });
 			return songs;
 		};
-        let searchCmd = "search any \""+filter+"\"";
-        if (this.version > 19) {
-            searchCmd += " window "+start+":"+end;
+        let searchCmd;
+        if (this.version > 20) {
+            searchCmd = "search \"(any contains '"+filter+"')\" sort title window "+start+":"+end;
+        } else {
+            searchCmd = "search any \""+filter+"\"";
         }
         return this.createPromise(searchCmd, processor);
     }
