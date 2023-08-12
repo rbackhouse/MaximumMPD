@@ -487,31 +487,32 @@ class MPDConnection {
 				} else if (line.indexOf(DATE_PREFIX) === 0) {
 					song.date = line.substring(DATE_PREFIX.length);
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
-					song = {};
-					songs.push(song);
+                    song = {};
 					const file = line.substring(FILE_PREFIX.length);
-					song.file = file;
-					song.b64file = this.toBase64(file);
+                    const b64file = this.toBase64(file);
+                    if (songs.find((s) => {
+                        return s.b64file === b64file;
+                    }) === undefined) {
+                        songs.push(song);
+                        song.file = file;
+                        song.b64file = b64file;    
+                    }
 				}
             });
-            songs.forEach((song) => {
+            songs.forEach((song, i) => {
                 if (song.duration) {
                     song.time = song.duration;
                     song.duration = undefined;
-                }
-            });
-            songs.sort((a,b) => {
-                if (a.title.toLowerCase() === filter) {
-                    return -1;
-                } else {
-                    return 1;
                 }
             });
 			return songs;
 		};
         let searchCmd;
         if (this.version > 20) {
-            searchCmd = "search \"(any contains '"+filter+"')\" sort title window "+start+":"+end;
+            searchCmd = "command_list_begin\n";
+            searchCmd += "search \"(title == '"+filter+"')\" sort title window "+start+":"+end+"\n";
+            searchCmd += "search \"(any contains '"+filter+"')\" sort title window "+start+":"+end+"\n";
+            searchCmd += "command_list_end";
         } else {
             searchCmd = "search any \""+filter+"\"";
         }
@@ -2108,14 +2109,14 @@ class MPDConnection {
         return this.createPromise("repeat "+state);
 	}
 
-	consume(value) {
-        console.log("consume = "+value);
-        return this.createPromise("consume "+value);
+	consume(on) {
+        var state = (on === true) ? 1 : 0;
+        return this.createPromise("consume "+state);
 	}
 
-	single(value) {
-        console.log("single = "+value);
-        return this.createPromise("single "+value);
+	single(on) {
+		var state = (on === true) ? 1 : 0;
+        return this.createPromise("single "+state);
 	}
 
 	crossfade(seconds) {
