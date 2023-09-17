@@ -65,6 +65,7 @@ const PLUGIN_PREFIX = "plugin: ";
 const REPEAT_PREFIX = "repeat: ";
 const CONSUME_PREFIX = "consume: ";
 const STATE_PREFIX = "state: ";
+const DISC_PREFIX = "Disc: ";
 
 const INITIAL = 0;
 const WRITTEN = 1;
@@ -525,7 +526,7 @@ class MPDConnection {
 			let artists = [];
             let seen = {};
             lines.forEach((line) => {
-				let name = line.substring(ALBUMARTIST_PREFIX.length);
+				let name = line.substring(ARTIST_PREFIX.length);
                 const artist = {name: name};
 				if (name && name.trim().length > 0 && !seen[name]) {
                     seen[name] = true;
@@ -561,7 +562,7 @@ class MPDConnection {
 			});
 			return artists;
 		};
-        return this.createPromise("list albumartist", processor);
+        return this.createPromise("list artist", processor);
 	}
 
 	getAllAlbums(useAlbumArtist, sortByArtist) {
@@ -819,7 +820,7 @@ class MPDConnection {
 			});
 			return albums;
 		};
-        let cmd = "list album albumartist \""+artist+"\"";
+        let cmd = "list album artist \""+artist+"\"";
         if (sortAlbumsByDate) {
             cmd += " group date";
         }
@@ -850,6 +851,8 @@ class MPDConnection {
 					song.performer = line.substring(PERFORMER_PREFIX.length);
 				} else if (line.indexOf(COMPOSER_PREFIX) === 0) {
 					song.composer = line.substring(COMPOSER_PREFIX.length);
+				} else if (line.indexOf(DISC_PREFIX) === 0) {
+					song.disc = line.substring(DISC_PREFIX.length);
 				} else if (line.indexOf(FILE_PREFIX) === 0) {
 					const file = line.substring(FILE_PREFIX.length);
                     song = {};
@@ -867,13 +870,25 @@ class MPDConnection {
             songs.sort((a,b) => {
                 let comp1 = a.file;
                 let comp2 = b.file;
-                if (a.track && b.track) {
+                if (a.track && b.track && a.disc && b.disc) {
+                    try {
+                        let t1 = parseInt(a.track);
+                        let t2 = parseInt(b.track);
+                        let d1 = parseInt(a.disc)*100;
+                        let d2 = parseInt(b.disc)*100;
+                        comp1 = t1+d1;
+                        comp2 = t2+d2;
+                    } catch (err) {
+                        comp1 = a.file;
+                        comp2 = b.file;
+                    }
+                } else if (a.track && b.track) {
                     try {
                         comp1 = parseInt(a.track);
                         comp2 = parseInt(b.track);
                     } catch (err) {
-                        comp1 = a.title;
-                        comp2 = b.title;
+                        comp1 = a.file;
+                        comp2 = b.file;
                     }
                 }
                 if (comp1 < comp2) {
@@ -2222,13 +2237,15 @@ class MPDConnection {
                     currentAlbum = line.substring(ALBUM_PREFIX.length);
                 } else if (line.indexOf(ALBUMARTIST_PREFIX) === 0) {
                     currentArtist = line.substring(ALBUMARTIST_PREFIX.length);
+                } else if (line.indexOf(ARTIST_PREFIX) === 0) {
+                    currentArtist = line.substring(ARTIST_PREFIX.length);
                 }
 			});
 			return genres;
 		};
         let cmd = "list genre group album";
         if (this.version > 22) {
-            cmd += " group albumartist";
+            cmd += " group albumartist group artist";
         }
         return this.createPromise(cmd, processor);
     }

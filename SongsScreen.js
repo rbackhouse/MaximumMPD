@@ -379,13 +379,25 @@ export default class SongsScreen extends React.Component {
             if (!useDefault && a.title && b.title) {
                 comp1 = a.title;
                 comp2 = b.title;
+            } else if (a.track && b.track && a.disc && b.disc) {
+                try {
+                    let t1 = parseInt(a.track);
+                    let t2 = parseInt(b.track);
+                    let d1 = parseInt(a.disc)*100;
+                    let d2 = parseInt(b.disc)*100;
+                    comp1 = t1+d1;
+                    comp2 = t2+d2;
+                } catch (err) {
+                    comp1 = a.file;
+                    comp2 = b.file;
+                }
             } else if (a.track && b.track) {
                 try {
                     comp1 = parseInt(a.track);
                     comp2 = parseInt(b.track);
                 } catch (err) {
-                    comp1 = a.title;
-                    comp2 = b.title;
+                    comp1 = a.file;
+                    comp2 = b.file;
                 }
             }
             if (comp1 < comp2) {
