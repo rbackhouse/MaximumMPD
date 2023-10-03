@@ -1531,6 +1531,10 @@ class MPDConnection {
 		};
         return this.createPromise(cmd, processor);
     }
+
+    saveDebugData(debugData) {
+        SocketConnection.saveDebugData(JSON.stringify(debugData, ' ', '\t'));
+    }
     
     randomPlayList(size, type, typevalue) {
         if (type) {

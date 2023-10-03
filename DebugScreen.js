@@ -22,6 +22,8 @@ import FAIcon from 'react-native-vector-icons/FontAwesome';
 
 import MPDConnection from './MPDConnection';
 import { StyleManager } from './Styles';
+import Config from './Config';
+import AlbumArt from './AlbumArt';
 
 export default class DebugScreen extends React.Component {
     static navigationOptions = {
@@ -63,7 +65,6 @@ export default class DebugScreen extends React.Component {
 
     onRun() {
         if (this.state.cmd !== "") {
-            console.log(this.state.cmd);
             this.setState({loading: true});
             let cmd = this.state.cmd;
             cmd = cmd.replace(/./g, (char) => {
@@ -93,6 +94,18 @@ export default class DebugScreen extends React.Component {
 
     onClear() {
         this.setState({debug: [], cmd:""});
+    }
+
+    onSave() {
+        Promise.all([AlbumArt.dump(), Config.dump()])
+        .then((results) => {            
+            MPDConnection.current().saveDebugData({
+                config: results[1],
+                albumart: results[0],
+                stats: MPDConnection.current().stats,
+                version: MPDConnection.current().version
+            });
+        });
     }
 
     renderSeparator = () => {
@@ -151,6 +164,9 @@ export default class DebugScreen extends React.Component {
                     </ActionButton.Item>
                     <ActionButton.Item buttonColor='#1abc9c' title="Clear" size={40} textStyle={common.actionButtonText} onPress={() => {this.onClear();}}>
                         <FAIcon name="eraser" size={15} color="#e6e6e6" />
+                    </ActionButton.Item>
+                    <ActionButton.Item buttonColor='#9b59b6' title="Save" size={40} textStyle={common.actionButtonText} onPress={() => {this.onSave();}}>
+                        <FAIcon name="floppy-o" size={15} color="#e6e6e6" />
                     </ActionButton.Item>
                 </ActionButton>
             </View>

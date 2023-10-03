@@ -667,5 +667,19 @@ export default {
     },
     setHTTPUseAsURL: (value) => {
         albumArtStorage.setHTTPUseAsURL(value);
+    },
+    dump: () => {
+        let promise = new Promise((resolve, reject) => {
+            Promise.all([albumArtStorage.getOptions(), albumArtStorage.getState()])
+            .then((results) => {
+                const options = results[0];
+                const state = results[1];
+                resolve({
+                    state: state,
+                    options: options
+                })
+            });
+        });
+        return promise;    
     }
 }

@@ -330,5 +330,8 @@ export default {
             });
         });
         return promise;
+    },
+    dump: () => {
+        return configStorage.getConfig();
     }
 }
