@@ -2248,7 +2248,7 @@ class MPDConnection {
 			return genres;
 		};
         let cmd = "list genre group album";
-        if (this.version > 22) {
+        if (this.version > 18) {
             cmd += " group albumartist group artist";
         }
         return this.createPromise(cmd, processor);
