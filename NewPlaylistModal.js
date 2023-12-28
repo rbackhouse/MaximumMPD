@@ -19,7 +19,7 @@ import React from 'react';
 import { Text, View, Modal, FlatList, TouchableOpacity, ActivityIndicator, Appearance } from 'react-native';
 import { SearchBar, Input, Button } from "@rneui/themed";
 import Icon from 'react-native-vector-icons/Ionicons';
-import FAIcon from 'react-native-vector-icons/FontAwesome';
+import SeachUtil from './SeachUtil';
 
 import MPDConnection from './MPDConnection';
 import { StyleManager } from './Styles';
@@ -69,6 +69,7 @@ export default class NewPlaylistModal extends React.Component {
 
     search = (text) => {
         if (text.length > 0) {
+            text = SeachUtil.convert(text);
             let filtered = this.state.fullset.filter((playlist) => {
                 return playlist.toLowerCase().indexOf(text.toLowerCase()) > -1;
             });

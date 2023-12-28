@@ -26,6 +26,7 @@ import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
 import MPDConnection from './MPDConnection';
 import { StyleManager } from './Styles';
+import SeachUtil from './SeachUtil';
 
 export default class PlaylistDetails extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -94,6 +95,7 @@ export default class PlaylistDetails extends React.Component {
 
     search = (text) => {
         if (text.length > 0) {
+            text = SeachUtil.convert(text);
             let filtered = this.state.fullset.filter((entry) => {
                 return entry.title.toLowerCase().indexOf(text.toLowerCase()) > -1;
             });

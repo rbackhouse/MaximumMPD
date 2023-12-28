@@ -31,6 +31,7 @@ import NewPlaylistModal from './NewPlaylistModal';
 import Config from './Config';
 import { StyleManager } from './Styles';
 import Base64 from './Base64';
+import SeachUtil from './SeachUtil';
 
 export default class AlbumsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -181,6 +182,7 @@ export default class AlbumsScreen extends React.Component {
 
     search = (text) => {
         if (text.length > 0) {
+            text = SeachUtil.convert(text);
             let filtered = this.state.fullset.filter((album) => {
                 return album.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
             });

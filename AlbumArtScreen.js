@@ -29,6 +29,7 @@ import AlbumArt from './AlbumArt';
 import MPDConnection from './MPDConnection';
 import { StyleManager, bgColor } from './Styles';
 import UPnPManager from './UPnPManager';
+import SeachUtil from './SeachUtil';
 
 class MissingModal extends React.Component {
     state = {
@@ -55,6 +56,7 @@ class MissingModal extends React.Component {
 
     search = (text) => {
         if (text.length > 0) {
+            text = SeachUtil.convert(text);
             let filtered = this.state.fullset.filter((item) => {
                 return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
             });

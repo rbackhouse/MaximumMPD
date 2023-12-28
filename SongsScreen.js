@@ -32,6 +32,7 @@ import Base64 from './Base64';
 import AlbumArt from './AlbumArt';
 import NewPlaylistModal from './NewPlaylistModal';
 import { StyleManager } from './Styles';
+import SeachUtil from './SeachUtil';
 
 export default class SongsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -150,6 +151,7 @@ export default class SongsScreen extends React.Component {
 
     search = (text) => {
         if (text.length > 0) {
+            text = SeachUtil.convert(text);
             let filtered = this.state.fullset.filter((song) => {
                 return song.title.toLowerCase().indexOf(text.toLowerCase()) > -1;
             });

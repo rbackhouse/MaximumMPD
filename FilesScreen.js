@@ -31,6 +31,7 @@ import Base64 from './Base64';
 import NewPlaylistModal from './NewPlaylistModal';
 import { StyleManager } from './Styles';
 import Config from './Config';
+import SeachUtil from './SeachUtil';
 
 export default class FilesScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -255,6 +256,7 @@ export default class FilesScreen extends React.Component {
 
     search = (text) => {
         if (text.length > 0) {
+            text = SeachUtil.convert(text);
             let filtered = this.state.fullset.filter((file) => {
                 if (file.dir) {
                     return file.dir.toLowerCase().indexOf(text.toLowerCase()) > -1;

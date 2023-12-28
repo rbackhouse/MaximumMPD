@@ -29,6 +29,7 @@ import { StyleManager } from './Styles';
 import Config from './Config';
 import UPnPManager from './UPnPManager';
 import AudioStreamManager from './AudioStreamManager';
+import SeachUtil from './SeachUtil';
 
 export default class UPnPBrowseScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -128,6 +129,7 @@ export default class UPnPBrowseScreen extends React.Component {
 
     search = (text) => {
         if (text.length > 0) {
+            text = SeachUtil.convert(text);
             let filtered = this.state.fullset.filter((item) => {
                 return item.title.toLowerCase().indexOf(text.toLowerCase()) > -1;
             });

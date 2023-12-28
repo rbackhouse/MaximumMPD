@@ -26,6 +26,7 @@ import ActionButton from 'react-native-action-button';
 import MPDConnection from './MPDConnection';
 import NewPlaylistModal from './NewPlaylistModal';
 import { StyleManager } from './Styles';
+import SeachUtil from './SeachUtil';
 
 class AddStreamURLModal extends React.Component {
     state = {
@@ -139,6 +140,7 @@ export default class PlaylistEditor extends React.Component {
 
     search = (text) => {
         if (text.length > 0) {
+            text = SeachUtil.convert(text);
             let filtered = this.state.fullset.filter((playlist) => {
                 return playlist.toLowerCase().indexOf(text.toLowerCase()) > -1;
             });

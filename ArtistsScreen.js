@@ -31,6 +31,7 @@ import AlbumArt from './AlbumArt';
 import Config from './Config';
 import { StyleManager } from './Styles';
 import NewPlaylistModal from './NewPlaylistModal';
+import SeachUtil from './SeachUtil';
 
 class AlbumListItem extends React.PureComponent {
     constructor(props) {
@@ -400,6 +401,7 @@ export default class ArtistsScreen extends React.Component {
 
     search = (text) => {
         if (text.length > 0) {
+            text = SeachUtil.convert(text);
             let filtered = this.state.fullset.filter((artist) => {
                 return artist.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
             });
@@ -411,6 +413,7 @@ export default class ArtistsScreen extends React.Component {
 
     searchGenres = (text) => {
         if (text.length > 0) {
+            text = SeachUtil.convert(text);
             let filtered = this.state.genresFullset.filter((genre) => {
                 return genre.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
             });
@@ -422,6 +425,7 @@ export default class ArtistsScreen extends React.Component {
 
     searchAlbums = (text) => {
         if (text.length > 0) {
+            text = SeachUtil.convert(text);
             let filtered = this.state.albumsFullset.filter((album) => {
                 return album.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
             });
