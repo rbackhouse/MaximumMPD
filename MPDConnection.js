@@ -745,8 +745,8 @@ class MPDConnection {
 
 	getAlbumsForArtist(artist, sortAlbumsByDate) {
 		const processor = (data) => {
-			const lines = MPDConnection._lineSplit(data);
-			let albums = [];
+            			const lines = MPDConnection._lineSplit(data);
+            			let albums = [];
             let album;
             let currentDate;
             lines.forEach((line) => {
@@ -2345,7 +2345,7 @@ class MPDConnection {
 		let lines = [];
 		let split = data.split(/\n\r|\n|\r/);
 		while(split.length) {
-			const line = split.shift().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+			const line = split.shift();
 			if (line !== "") {
 				lines.push(line);
 			}
