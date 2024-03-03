@@ -156,7 +156,7 @@ class AboutModal extends React.Component {
                     <View style={styles.flex3}>
                         <Text style={styles.text2}>About Maximum MPD</Text>
                     </View>
-                    <Text style={[styles.text1, {padding: 15}]}>Version: 6.4</Text>
+                    <Text style={[styles.text1, {padding: 15}]}>Version: 6.5</Text>
                     <Text style={[styles.text1, {padding: 15}]}>Author: Richard Backhouse</Text>
                     <Text style={[styles.text1, {padding: 15}]}>Various Images provided by Icons8 (https://icons8.com)</Text>
                     <View style={styles.flex1}>
@@ -260,7 +260,8 @@ export default class SettingsScreen extends React.Component {
         darkMode: false,
         sortAlbumsByArtist: false,
         sortFilesByTitle: false,
-        useNowPlayingControl: false
+        useNowPlayingControl: false,
+        useRawArtistName: false
     }
 
     componentDidMount() {
@@ -295,6 +296,10 @@ export default class SettingsScreen extends React.Component {
         Config.getRandomPlaylistSize()
         .then((value) => {
             this.setState({randomPlaylistSize: value});
+        });
+        Config.isUseRawArtistName()
+        .then((value) => {
+            this.setState({useRawArtistName: value});
         });
         this.onConnect = MPDConnection.getEventEmitter().addListener(
             "OnConnect",
@@ -499,6 +504,11 @@ export default class SettingsScreen extends React.Component {
         }
     }
 
+    onUseRawArtistName(value) {
+        this.setState({useRawArtistName: value});
+        Config.setUseRawArtistName(value);
+    }
+
     onSortAlbumsByArtist(value) {
         this.setState({sortAlbumsByArtist: value});
         Config.setSortSettings({albumSortByArtist: value, fileSortByTitle: this.state.sortFilesByTitle});
@@ -660,6 +670,12 @@ export default class SettingsScreen extends React.Component {
                                 hasSwitch={true}
                                 switchOnValueChange={(value) => this.onUseNowPlayingControl(value)}
                                 title='Use Now Playing Control'/>
+                    <SettingsList.Item
+                        hasNavArrow={false}
+                                switchState={this.state.useRawArtistName}
+                                hasSwitch={true}
+                                switchOnValueChange={(value) => this.onUseRawArtistName(value)}
+                                title='Use Raw Artist Names'/>
                     <SettingsList.Header headerStyle={styles.headerStyle} headerText="Sort Options"/>
                     <SettingsList.Item
                         hasNavArrow={false}

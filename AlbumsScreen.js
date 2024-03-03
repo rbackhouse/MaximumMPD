@@ -73,13 +73,13 @@ export default class AlbumsScreen extends React.Component {
         });
         const artist = navigation.getParam('artist');
         const albums = navigation.getParam('albums');
+        const artisttags = navigation.getParam('tags');
         if (artist) {
             this.setState({loading: true});
             Config.isSortAlbumsByDate()
             .then((sortAlbumsByDate) => {
                 const a = MPDConnection.current().getSongCountWithNoAlbum(artist);
-                const b = MPDConnection.current().getAlbumsForArtist(artist, sortAlbumsByDate);
-    
+                const b = MPDConnection.current().getAlbumsForArtist(artisttags, sortAlbumsByDate);
                 Promise.all([a, b])                    
                 .then((results) => {
                     this.setState({loading: false});
@@ -194,11 +194,7 @@ export default class AlbumsScreen extends React.Component {
 
     onPress(item) {
         const { navigation } = this.props;
-        let artist = navigation.getParam('artist');
-        if (!artist) {
-            artist = item.artist;
-        }
-        navigation.navigate('Songs', {artist: artist, album: item.name, hasNoAlbum: item.hasNoAlbum});
+        navigation.navigate('Songs', {artist: item.artist, album: item.name, hasNoAlbum: item.hasNoAlbum});
     }
 
     onLongPress(item) {

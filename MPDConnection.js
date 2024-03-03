@@ -520,23 +520,31 @@ class MPDConnection {
         return this.createPromise(searchCmd, processor);
     }
 
-    getAllArtists(filter) {
+    getAllArtists(useRaw) {
 		const processor = (data) => {
 			const lines = MPDConnection._lineSplit(data);
 			let artists = [];
             let seen = {};
             lines.forEach((line) => {
 				let name = line.substring(ARTIST_PREFIX.length);
-                const artist = {name: name};
-				if (name && name.trim().length > 0 && !seen[name]) {
-                    seen[name] = true;
-					if (filter) {
-						if (name.toLowerCase().indexOf(filter.toLowerCase()) === 0) {
-							artists.push(artist);
-						}
-					} else {
-						artists.push(artist);
-					}
+                let cleansed = name; 
+                if (!useRaw) {
+                    cleansed = cleansed.trim().toLowerCase();                
+                    let split = cleansed.split(' ');
+                    if (split.length > 1 && split[0].toLowerCase() === "the" && split[1].toLowerCase() !== "the") {
+                        split.shift();
+                        cleansed = split.join(' ');
+                    }
+                }
+                let artist = {name: name.trim(), tags:[]};
+				if (cleansed && cleansed.length > 0) {
+                    if (!seen[cleansed]) {
+                        seen[cleansed] = artist;
+                        artist.tags.push(name);
+                        artists.push(artist);
+                    } else {
+                        seen[cleansed].tags.push(name);
+                    }
 				}
 			});
 			artists.sort((a,b) => {
@@ -743,17 +751,18 @@ class MPDConnection {
 		});
 	}
 
-	getAlbumsForArtist(artist, sortAlbumsByDate) {
+	getAlbumsForArtist(tags, sortAlbumsByDate) {
 		const processor = (data) => {
             			const lines = MPDConnection._lineSplit(data);
             			let albums = [];
             let album;
             let currentDate;
+            let currentArtist;
             lines.forEach((line) => {
                 if (line.indexOf(ALBUM_PREFIX) === 0) {
                     if (this.version < 21 && this.minorVersion === 0) {
                         if (album) {
-                            albums.push({name: album.name, artist: artist});
+                            albums.push({name: album.name, artist: currentArtist});
                         }
                         album = {};
                     }
@@ -764,7 +773,7 @@ class MPDConnection {
                         } else {
                             const date = currentDate;
                             //const date = currentDate || "Unknown";
-                            albums.push({name: name, artist: artist, date: date});
+                            albums.push({name: name, artist: currentArtist, date: date});
                         }
     				}
                 } else if (line.indexOf(DATE_PREFIX) === 0) {
@@ -773,18 +782,20 @@ class MPDConnection {
                         if (this.version < 21 && this.minorVersion === 0) {
                             album.date = date;
                             if (album.name && album.date) {
-        						albums.push({name: album.name, artist: artist, date: album.date});
+        						albums.push({name: album.name, artist: currentArtist, date: album.date});
                                 album = undefined;
                             }
                         } else {
                             currentDate = date;
                         }
                     }
+                } else if (line.indexOf(ARTIST_PREFIX) === 0) {
+                    currentArtist = line.substring(ARTIST_PREFIX.length);
                 }
 			});
             if (this.version < 21 && this.minorVersion === 0) {
                 if (album && album.name) {
-                    albums.push({name: album.name, artist: artist});
+                    albums.push({name: album.name, artist: currentArtist});
                 }
             }
 			albums.sort((a,b) => {
@@ -820,9 +831,23 @@ class MPDConnection {
 			});
 			return albums;
 		};
-        let cmd = "list album artist \""+artist+"\"";
-        if (sortAlbumsByDate) {
-            cmd += " group date";
+        let cmd; 
+        if (tags.length > 1) {
+            cmd = "command_list_begin\n";
+            tags.forEach((tag) => {
+                cmd += "list album artist \""+tag+"\"";
+                if (sortAlbumsByDate) {
+                    cmd += " group date";
+                }
+                cmd += " group artist\n";
+            });
+            cmd += "command_list_end";
+        } else {
+            cmd = "list album artist \""+tags[0]+"\"";
+            if (sortAlbumsByDate) {
+                cmd += " group date";
+            }
+            cmd += " group artist";
         }
         return this.createPromise(cmd, processor);
 	}
@@ -1341,7 +1366,6 @@ class MPDConnection {
             const promise = new Promise((resolve, reject) => {
                 this.createPromise(cmd, processor)
                 .then((result) => {
-                    console.log(result);
                     this.autoplaysong = {
                         songid: result.songid,
                         state: result.state,

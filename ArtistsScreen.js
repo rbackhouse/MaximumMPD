@@ -301,6 +301,23 @@ export default class ArtistsScreen extends React.Component {
             this.setState({loading: this.state.loading});
         });
 
+        this.didFocusSubscription = this.props.navigation.addListener(
+            'didFocus',
+            payload => {
+                /*
+                Config.getGridViewConfig()
+                .then((gridViewConfig) => {
+                    if (gridViewConfig[0] !== this.state.grid) {
+                        Config.getGridViewColumns()
+                        .then((numColumns) => {
+                            this.setState({grid: gridViewConfig[0], numColumns: numColumns});
+                        });
+                    }
+                });
+                */
+            }
+        );
+        
         Config.getMaxListSize()
         .then((size) => {
             //this.setState({maxListSize: size});
@@ -324,13 +341,13 @@ export default class ArtistsScreen extends React.Component {
     }
 
     load() {
-        Config.getSortSettings()
-        .then((sortSettings) => {
-            const allArtist = MPDConnection.current().getAllArtists();
-            const allAlbums = MPDConnection.current().getAllAlbums(true, sortSettings.albumSortByArtist);
+        Config.getConfig()
+        .then((config) => {
+            const allArtist = MPDConnection.current().getAllArtists(config.useRawArtistName);
+            const allAlbums = MPDConnection.current().getAllAlbums(true, config.sortSettings.albumSortByArtist);
             const allGenres = MPDConnection.current().getAllGenres();
 
-            this.setState({loading: true, defaultAlbumSort: !sortSettings.albumSortByArtist});
+            this.setState({loading: true, defaultAlbumSort: !config.sortSettings.albumSortByArtist});
 
             Promise.all([allArtist, allAlbums, allGenres])
             .then((results) => {
@@ -394,6 +411,7 @@ export default class ArtistsScreen extends React.Component {
         this.onAlbumArtEnd.remove();
         this.onAlbumArtComplete.remove();
         this.onAlbumArtError.remove();
+        this.didFocusSubscription.remove();
         if (this.onApperance) {
             this.onApperance.remove();
         }
@@ -498,7 +516,7 @@ export default class ArtistsScreen extends React.Component {
 
     onPress(item) {
         const { navigation } = this.props;
-        navigation.navigate('Albums', {artist: item.name});
+        navigation.navigate('Albums', {artist: item.name, tags: item.tags});
     }
 
     onAlbumPress(item) {

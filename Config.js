@@ -331,7 +331,37 @@ export default {
         });
         return promise;
     },
-    dump: () => {
+    isUseRawArtistName: () => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                if (config.useRawArtistName !== undefined) {
+                    resolve(config.useRawArtistName);
+                } else {
+                    config.useRawArtistName = false;
+                    configStorage.setConfig(config)
+                    .then(() => {
+                        resolve(config.useRawArtistName);
+                    });
+                }
+            });
+        });
+        return promise;
+    },
+    setUseRawArtistName: (useRawArtistName) => {
+        let promise = new Promise((resolve, reject) => {
+            configStorage.getConfig()
+            .then((config) => {
+                config.useRawArtistName = useRawArtistName;
+                configStorage.setConfig(config)
+                .then(() => {
+                    resolve();
+                })
+            });
+        });
+        return promise;
+    },
+    getConfig: () => {
         return configStorage.getConfig();
     }
 }

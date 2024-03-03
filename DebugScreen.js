@@ -97,7 +97,7 @@ export default class DebugScreen extends React.Component {
     }
 
     onSave() {
-        Promise.all([AlbumArt.dump(), Config.dump()])
+        Promise.all([AlbumArt.dump(), Config.getConfig()])
         .then((results) => {            
             MPDConnection.current().saveDebugData({
                 config: results[1],
