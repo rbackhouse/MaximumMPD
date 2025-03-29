@@ -247,7 +247,7 @@ export default class SettingsScreen extends React.Component {
         maxListSizeVisible: false,
         shuffle: false,
         repeat: false,
-        stopAftetSongPlayed: false,
+        stopAfterSongPlayed: false,
         removeSongAfterPlay: false,
         randomPlaylistByType: false,
         randomPlaylistSize: 50,
@@ -315,7 +315,7 @@ export default class SettingsScreen extends React.Component {
                     crossfade: 0,
                     shuffle: false,
                     repeat: false,
-                    stopAftetSongPlayed: false,
+                    stopAfterSongPlayed: false,
                     removeSongAfterPlay: false
                 });
             }
@@ -351,7 +351,7 @@ export default class SettingsScreen extends React.Component {
                     crossfade: status.xfade || 0,
                     shuffle: (status.random === '1') ? true : false,
                     repeat: (status.repeat === '1') ? true : false,
-                    stopAftetSongPlayed: (status.single === '1') ? true : false,
+                    stopAfterSongPlayed: (status.single === '1') ? true : false,
                     removeSongAfterPlay: (status.consume === '1') ? true : false
                 });
             },
@@ -400,8 +400,8 @@ export default class SettingsScreen extends React.Component {
         }
     }
 
-    onStopAftetSongPlayedChange(value) {
-        this.setState({stopAftetSongPlayed: value});
+    onStopAfterSongPlayedChange(value) {
+        this.setState({stopAfterSongPlayed: value});
         if (MPDConnection.isConnected()) {
             MPDConnection.current().single(value);
         }
@@ -607,9 +607,9 @@ export default class SettingsScreen extends React.Component {
                                 title='Remove song after play'/>
                     <SettingsList.Item
                         hasNavArrow={false}
-                                switchState={this.state.stopAftetSongPlayed}
+                                switchState={this.state.stopAfterSongPlayed}
                                 hasSwitch={true}
-                                switchOnValueChange={(value) => this.onStopAftetSongPlayedChange(value)}
+                                switchOnValueChange={(value) => this.onStopAfterSongPlayedChange(value)}
                                 title='Stop after song played'/>
                     <SettingsList.Item
                         hasNavArrow={true}
