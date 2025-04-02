@@ -137,6 +137,129 @@ class ReplayGainModal extends React.Component {
     }
 }
 
+class SingleModal extends React.Component {
+    state = {
+        single: "",
+    }
+
+    onOk() {
+        this.props.onSet(this.state.single);
+    }
+
+    onCancel(visible) {
+        this.props.onCancel();
+    }
+
+    render() {
+        const styles = StyleManager.getStyles("settingsStyles");
+        const common = StyleManager.getStyles("styles");
+        const visible = this.props.visible;
+        let value = this.state.single;
+        return (
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={visible}
+                onRequestClose={() => {
+            }}>
+                <View style={styles.container1}>
+                    <View style={styles.flex3}>
+                        <Text style={styles.text2}>Set Single or Comsume</Text>
+                    </View>
+                    <Picker
+                        itemStyle={common.picker}
+                        selectedValue={value}
+                        onValueChange={(itemValue, itemIndex) => {
+                            this.setState({single: itemValue});
+                        }}>
+                        <Picker.Item label="Off" value="0" />
+                        <Picker.Item label="On" value="1" />
+                        <Picker.Item label="Oneshot" value="oneshot" />
+                    </Picker>
+                    <View style={styles.flex1}>
+                        <Button
+                            onPress={() => {this.onOk();}}
+                            title="Ok"
+                            icon={{name: 'check',  size: 15, type: 'font-awesome'}}
+                            raised={true}
+                            type="outline"
+                        />
+                        <Button
+                            onPress={() => {this.onCancel();}}
+                            title="Cancel"
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome'}}
+                            raised={true}
+                            type="outline"
+                        />
+                    </View>
+                </View>
+            </Modal>
+        );
+    }
+}
+
+class ConsumeModal extends React.Component {
+    state = {
+        consume: ""
+    }
+
+    onOk() {
+        this.props.onSet(this.state.consume);
+    }
+
+    onCancel(visible) {
+        this.props.onCancel();
+    }
+
+    render() {
+        const styles = StyleManager.getStyles("settingsStyles");
+        const common = StyleManager.getStyles("styles");
+        const visible = this.props.visible;
+        let value = this.state.consume;
+        
+        return (
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={visible}
+                onRequestClose={() => {
+            }}>
+                <View style={styles.container1}>
+                    <View style={styles.flex3}>
+                        <Text style={styles.text2}>Set Single or Comsume</Text>
+                    </View>
+                    <Picker
+                        itemStyle={common.picker}
+                        selectedValue={value}
+                        onValueChange={(itemValue, itemIndex) => {
+                            this.setState({consume: itemValue});
+                        }}>
+                        <Picker.Item label="Off" value="0" />
+                        <Picker.Item label="On" value="1" />
+                        <Picker.Item label="Oneshot" value="oneshot" />
+                    </Picker>
+                    <View style={styles.flex1}>
+                        <Button
+                            onPress={() => {this.onOk();}}
+                            title="Ok"
+                            icon={{name: 'check',  size: 15, type: 'font-awesome'}}
+                            raised={true}
+                            type="outline"
+                        />
+                        <Button
+                            onPress={() => {this.onCancel();}}
+                            title="Cancel"
+                            icon={{name: 'times-circle',  size: 15, type: 'font-awesome'}}
+                            raised={true}
+                            type="outline"
+                        />
+                    </View>
+                </View>
+            </Modal>
+        );
+    }
+}
+
 class AboutModal extends React.Component {
     onOk() {
         this.props.onOk();
@@ -156,7 +279,7 @@ class AboutModal extends React.Component {
                     <View style={styles.flex3}>
                         <Text style={styles.text2}>About Maximum MPD</Text>
                     </View>
-                    <Text style={[styles.text1, {padding: 15}]}>Version: 6.5</Text>
+                    <Text style={[styles.text1, {padding: 15}]}>Version: 6.6</Text>
                     <Text style={[styles.text1, {padding: 15}]}>Author: Richard Backhouse</Text>
                     <Text style={[styles.text1, {padding: 15}]}>Various Images provided by Icons8 (https://icons8.com)</Text>
                     <View style={styles.flex1}>
@@ -247,8 +370,10 @@ export default class SettingsScreen extends React.Component {
         maxListSizeVisible: false,
         shuffle: false,
         repeat: false,
-        stopAfterSongPlayed: false,
-        removeSongAfterPlay: false,
+        stopAfterSongPlayed: "0",
+        removeSongAfterPlay: "0",
+        consumeVisible: false,
+        singleVisible: false,
         randomPlaylistByType: false,
         randomPlaylistSize: 50,
         aboutVisible: false,
@@ -315,8 +440,8 @@ export default class SettingsScreen extends React.Component {
                     crossfade: 0,
                     shuffle: false,
                     repeat: false,
-                    stopAfterSongPlayed: false,
-                    removeSongAfterPlay: false
+                    stopAfterSongPlayed: "0",
+                    removeSongAfterPlay: "0"
                 });
             }
         );
@@ -351,8 +476,8 @@ export default class SettingsScreen extends React.Component {
                     crossfade: status.xfade || 0,
                     shuffle: (status.random === '1') ? true : false,
                     repeat: (status.repeat === '1') ? true : false,
-                    stopAfterSongPlayed: (status.single === '1') ? true : false,
-                    removeSongAfterPlay: (status.consume === '1') ? true : false
+                    stopAfterSongPlayed: status.single || "0",
+                    removeSongAfterPlay: status.consume || "0"
                 });
             },
             (err) => {
@@ -390,20 +515,6 @@ export default class SettingsScreen extends React.Component {
         this.setState({repeat: value});
         if (MPDConnection.isConnected()) {
             MPDConnection.current().repeat(value);
-        }
-    }
-
-    onRemoveSongAfterPlayChange(value) {
-        this.setState({removeSongAfterPlay: value});
-        if (MPDConnection.isConnected()) {
-            MPDConnection.current().consume(value);
-        }
-    }
-
-    onStopAfterSongPlayedChange(value) {
-        this.setState({stopAfterSongPlayed: value});
-        if (MPDConnection.isConnected()) {
-            MPDConnection.current().single(value);
         }
     }
 
@@ -543,11 +654,40 @@ export default class SettingsScreen extends React.Component {
         }
     }
 
+    setSingle(value) {
+        this.setState({singleVisible: false});
+        this.setState({stopAfterSongPlayed: value});
+        if (MPDConnection.isConnected()) {
+            MPDConnection.current().single(value);
+        }
+    }
+
+    setConsume(value) {
+        this.setState({consumeVisible: false});
+        this.setState({removeSongAfterPlay: value});
+        if (MPDConnection.isConnected()) {
+            MPDConnection.current().consume(value);
+        }
+    }
+
+    getSingleConsumeLabel(value) {
+        switch (value) {
+            case "0":
+                return "Off";
+            case "1":
+                return "On";
+            case "oneshot":
+                return "Oneshot";
+        }
+    }
+
     render() {
         const styles = StyleManager.getStyles("settingsStyles");
         const replayGainValue = this.state.replayGain;
         const crossfadeValue = this.state.crossfade + " seconds";
         const maxListSize = ""+this.state.maxListSize;
+        const removeSongAfterPlay = this.getSingleConsumeLabel(this.state.removeSongAfterPlay);
+        const stopAfterSongPlayed = this.getSingleConsumeLabel(this.state.stopAfterSongPlayed);
 
         const {height, width} = Dimensions.get('window');
         let options = ['2', '3', '4', 'Cancel'];
@@ -600,17 +740,21 @@ export default class SettingsScreen extends React.Component {
                                 switchOnValueChange={(value) => this.onRepeatChange(value)}
                                 title='Repeat'/>
                     <SettingsList.Item
-                        hasNavArrow={false}
-                                switchState={this.state.removeSongAfterPlay}
-                                hasSwitch={true}
-                                switchOnValueChange={(value) => this.onRemoveSongAfterPlayChange(value)}
-                                title='Remove song after play'/>
+                        hasNavArrow={true}
+                                  title='Remove song after play'
+                                  titleInfo={removeSongAfterPlay}
+                                  titleInfoStyle={{fontFamily: 'GillSans-Italic'}}
+                                  onPress={() => this.setState({consumeVisible: true})}
+                                />
                     <SettingsList.Item
-                        hasNavArrow={false}
-                                switchState={this.state.stopAfterSongPlayed}
-                                hasSwitch={true}
-                                switchOnValueChange={(value) => this.onStopAfterSongPlayedChange(value)}
-                                title='Stop after song played'/>
+                        hasNavArrow={true}
+                                  title='Stop after song played'
+                                  titleInfo={stopAfterSongPlayed}
+                                  titleInfoStyle={{fontFamily: 'GillSans-Italic'}}
+                                  onPress={() => {
+                                    this.setState({singleVisible: true})
+                                  }}
+                                />
                     <SettingsList.Item
                         hasNavArrow={true}
                                   title='Replay Gain'
@@ -706,6 +850,22 @@ export default class SettingsScreen extends React.Component {
                 <CrossfadeModal value={this.state.crossfade} visible={this.state.crossfadeVisible} onSet={(value) => {this.setCrossfade(value)}} onCancel={() => this.setState({crossfadeVisible: false})}></CrossfadeModal>
                 <AboutModal visible={this.state.aboutVisible} onOk={() => this.setState({aboutVisible: false})}></AboutModal>
                 <MaxListSizeModal value={this.state.maxListSize} visible={this.state.maxListSizeVisible} onSet={(value) => {this.setMaxListSize(value)}} onCancel={() => this.setState({maxListSizeVisible: false})}></MaxListSizeModal>
+                <SingleModal 
+                    single={this.state.stopAfterSongPlayed} 
+                    visible={this.state.singleVisible} 
+                    onSet={(value) => {
+                        this.setSingle(value);
+                    }} 
+                    onCancel={() => this.setState({singleVisible: false})}>
+                </SingleModal>
+                <ConsumeModal 
+                    consume={this.state.removeSongAfterPlay} 
+                    visible={this.state.consumeVisible} 
+                    onSet={(value) => {
+                        this.setConsume(value)
+                    }} 
+                    onCancel={() => this.setState({consumeVisible: false})}>
+                </ConsumeModal>
                 {Platform.OS === 'android' &&
                     <ActionSheet
                         ref={o => this.ActionSheet = o}

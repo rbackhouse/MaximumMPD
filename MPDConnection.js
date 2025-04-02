@@ -2152,14 +2152,12 @@ class MPDConnection {
         return this.createPromise("repeat "+state);
 	}
 
-	consume(on) {
-        var state = (on === true) ? 1 : 0;
-        return this.createPromise("consume "+state);
+	consume(value) {
+        return this.createPromise("consume "+value);
 	}
 
-	single(on) {
-		var state = (on === true) ? 1 : 0;
-        return this.createPromise("single "+state);
+	single(value) {
+        return this.createPromise("single "+value);
 	}
 
 	crossfade(seconds) {
