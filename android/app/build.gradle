@@ -98,8 +98,8 @@ android {
         applicationId "com.maximummpd"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 23
-        versionName "6.7"
+        versionCode 24
+        versionName "6.8"
     }
 
     splits {

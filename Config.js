@@ -32,7 +32,11 @@ class ConfigStorage {
                     autoConnect: false,
                     autoConnectServer: {},
                     useDeviceVolume: true,
-                    useGridView: false
+                    useGridView: false,
+                    sortSettings: {
+                        albumSortByArtist: false,
+                        fileSortByTitle: false
+                    }
                 };
                 AsyncStorage.setItem('@MPD:config', JSON.stringify(config));
             }
